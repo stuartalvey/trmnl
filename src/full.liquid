@@ -1,0 +1,86 @@
+{% comment %}
+  Simple iCloud agenda. Live data stays in TRMNL; no events are stored in this template.
+  Use the Apple Calendar timestamps and its formatted times, preserving all-day flags.
+{% endcomment %}
+{% assign calendar = apple_calendar_535612 %}
+{% assign events = calendar.events | sort: 'start_full' %}
+{% assign now_ts = trmnl.system.timestamp_utc | plus: 0 %}
+{% assign local_now = now_ts | plus: trmnl.user.utc_offset %}
+{% assign today = local_now | date: '%Y-%m-%d' %}
+{% assign event_count = 0 %}
+{% for event in events %}
+  {% assign event_day = event.start_full | date: '%Y-%m-%d' %}
+  {% assign event_end = event.end_full | date: '%s' | plus: 0 %}
+  {% assign status = event.status | downcase %}
+  {% unless status == 'cancelled' or status == 'canceled' %}
+    {% if event_day >= today or event_end > now_ts %}
+      {% assign event_count = event_count | plus: 1 %}
+    {% endif %}
+  {% endunless %}
+{% endfor %}
+
+<div class="layout layout--col gap--large">
+  <div class="flex flex--row flex--between flex--center-y w--full">
+    <span class="title title--large lg:title--xxlarge">Today &amp; ahead</span>
+    <span class="label label--large">{{ local_now | date: '%A, %B %-d' }}</span>
+  </div>
+  {% if calendar == blank or calendar.events == nil %}
+    <div class="flex flex--col flex--center-x flex--center-y gap--small stretch">
+      <span class="title title--large">Calendar unavailable</span>
+      <span class="description">Check your Apple Calendar connection in TRMNL.</span>
+    </div>
+  {% elsif event_count == 0 %}
+    <div class="flex flex--col flex--center-x flex--center-y gap--small stretch">
+      <span class="title title--large">Nothing scheduled</span>
+      <span class="description">No events in the current calendar feed.</span>
+    </div>
+  {% else %}
+    <table class="table table--large" data-table-limit="true" data-table-max-height="auto">
+      <thead>
+        <tr>
+          <th class="w--40"><span class="label label--gray">WHEN</span></th>
+          <th><span class="label label--gray">WHAT'S ON</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for event in events %}
+          {% assign event_day = event.start_full | date: '%Y-%m-%d' %}
+          {% assign event_end = event.end_full | date: '%s' | plus: 0 %}
+          {% assign status = event.status | downcase %}
+          {% unless status == 'cancelled' or status == 'canceled' %}
+            {% if event_day >= today or event_end > now_ts %}
+              <tr>
+                <td>
+                  <div class="flex flex--col gap--xsmall">
+                    <span class="title title--small">
+                      {% if event_day == today %}Today{% else %}{{ event.start_full | date: '%a, %b %-d' }}{% endif %}
+                    </span>
+                    <span class="label">
+                      {% if event.all_day %}
+                        All day
+                      {% else %}
+                        {{ event.start | escape }}{% if event.end != blank and event.end != event.start %} – {{ event.end | escape }}{% endif %}
+                      {% endif %}
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <div class="flex flex--col gap--xsmall">
+                    <span class="title title--base lg:title--large" data-clamp="1">{{ event.summary | default: 'Untitled event' | escape }}</span>
+                    <span class="label label--gray" data-clamp="1">
+                      {{ event.calname | escape }}{% if event.location != blank %} · {{ event.location | newline_to_br | strip_html | escape }}{% endif %}
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            {% endif %}
+          {% endunless %}
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</div>
+<div class="title_bar">
+  <span class="title">iCloud Calendar</span>
+  <span class="instance">{{ event_count }} {% if event_count == 1 %}event{% else %}events{% endif %}</span>
+</div>
