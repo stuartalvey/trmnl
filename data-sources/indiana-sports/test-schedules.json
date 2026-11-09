@@ -1,0 +1,981 @@
+[
+  {
+    "team": {
+      "id": "11",
+      "displayName": "Indiana Pacers",
+      "logo": "https://a.espncdn.com/i/teamlogos/nba/500/ind.png"
+    },
+    "events": [
+      {
+        "id": "401909839",
+        "date": "2026-10-22T00:00Z",
+        "timeValid": true,
+        "competitions": [
+          {
+            "id": "401909839",
+            "date": "2026-10-22T00:00Z",
+            "timeValid": true,
+            "neutralSite": false,
+            "status": {
+              "clock": 720.0,
+              "displayClock": "12:00",
+              "period": 4,
+              "type": {
+                "id": "3",
+                "name": "STATUS_FINAL",
+                "state": "post",
+                "completed": true,
+                "description": "Final",
+                "detail": "Final",
+                "shortDetail": "Final"
+              }
+            },
+            "competitors": [
+              {
+                "id": "3",
+                "homeAway": "home",
+                "team": {
+                  "id": "3",
+                  "abbreviation": "NO",
+                  "displayName": "New Orleans Pelicans",
+                  "shortDisplayName": "Pelicans"
+                }
+              },
+              {
+                "id": "11",
+                "homeAway": "away",
+                "team": {
+                  "id": "11",
+                  "abbreviation": "IND",
+                  "displayName": "Indiana Pacers",
+                  "shortDisplayName": "Pacers"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "401909956",
+        "date": "2026-11-10T01:00Z",
+        "timeValid": true,
+        "competitions": [
+          {
+            "id": "401909956",
+            "date": "2026-11-10T01:00Z",
+            "timeValid": true,
+            "neutralSite": false,
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0.0",
+              "period": 0,
+              "type": {
+                "id": "1",
+                "name": "STATUS_SCHEDULED",
+                "state": "pre",
+                "completed": false,
+                "description": "Scheduled",
+                "detail": "Mon, November 9th at 8:00 PM EST",
+                "shortDetail": "11/9 - 8:00 PM EST"
+              }
+            },
+            "competitors": [
+              {
+                "id": "6",
+                "homeAway": "home",
+                "team": {
+                  "id": "6",
+                  "abbreviation": "DAL",
+                  "displayName": "Dallas Mavericks",
+                  "shortDisplayName": "Mavericks"
+                }
+              },
+              {
+                "id": "11",
+                "homeAway": "away",
+                "team": {
+                  "id": "11",
+                  "abbreviation": "IND",
+                  "displayName": "Indiana Pacers",
+                  "shortDisplayName": "Pacers"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "401909966",
+        "date": "2026-11-12T00:00Z",
+        "timeValid": true,
+        "competitions": [
+          {
+            "id": "401909966",
+            "date": "2026-11-12T00:00Z",
+            "timeValid": true,
+            "neutralSite": false,
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0.0",
+              "period": 0,
+              "type": {
+                "id": "1",
+                "name": "STATUS_SCHEDULED",
+                "state": "pre",
+                "completed": false,
+                "description": "Scheduled",
+                "detail": "Wed, November 11th at 7:00 PM EST",
+                "shortDetail": "11/11 - 7:00 PM EST"
+              }
+            },
+            "competitors": [
+              {
+                "id": "11",
+                "homeAway": "home",
+                "team": {
+                  "id": "11",
+                  "abbreviation": "IND",
+                  "displayName": "Indiana Pacers",
+                  "shortDisplayName": "Pacers"
+                }
+              },
+              {
+                "id": "27",
+                "homeAway": "away",
+                "team": {
+                  "id": "27",
+                  "abbreviation": "WSH",
+                  "displayName": "Washington Wizards",
+                  "shortDisplayName": "Wizards"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "401909296",
+        "date": "2026-11-14T00:00Z",
+        "timeValid": true,
+        "competitions": [
+          {
+            "id": "401909296",
+            "date": "2026-11-14T00:00Z",
+            "timeValid": true,
+            "neutralSite": false,
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0.0",
+              "period": 0,
+              "type": {
+                "id": "1",
+                "name": "STATUS_SCHEDULED",
+                "state": "pre",
+                "completed": false,
+                "description": "Scheduled",
+                "detail": "Fri, November 13th at 7:00 PM EST",
+                "shortDetail": "11/13 - 7:00 PM EST"
+              }
+            },
+            "competitors": [
+              {
+                "id": "11",
+                "homeAway": "home",
+                "team": {
+                  "id": "11",
+                  "abbreviation": "IND",
+                  "displayName": "Indiana Pacers",
+                  "shortDisplayName": "Pacers"
+                }
+              },
+              {
+                "id": "18",
+                "homeAway": "away",
+                "team": {
+                  "id": "18",
+                  "abbreviation": "NY",
+                  "displayName": "New York Knicks",
+                  "shortDisplayName": "Knicks"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "401909985",
+        "date": "2026-11-15T18:00Z",
+        "timeValid": true,
+        "competitions": [
+          {
+            "id": "401909985",
+            "date": "2026-11-15T18:00Z",
+            "timeValid": true,
+            "neutralSite": false,
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0.0",
+              "period": 0,
+              "type": {
+                "id": "1",
+                "name": "STATUS_SCHEDULED",
+                "state": "pre",
+                "completed": false,
+                "description": "Scheduled",
+                "detail": "Sun, November 15th at 1:00 PM EST",
+                "shortDetail": "11/15 - 1:00 PM EST"
+              }
+            },
+            "competitors": [
+              {
+                "id": "20",
+                "homeAway": "home",
+                "team": {
+                  "id": "20",
+                  "abbreviation": "PHI",
+                  "displayName": "Philadelphia 76ers",
+                  "shortDisplayName": "76ers"
+                }
+              },
+              {
+                "id": "11",
+                "homeAway": "away",
+                "team": {
+                  "id": "11",
+                  "abbreviation": "IND",
+                  "displayName": "Indiana Pacers",
+                  "shortDisplayName": "Pacers"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "401910008",
+        "date": "2026-11-19T00:00Z",
+        "timeValid": true,
+        "competitions": [
+          {
+            "id": "401910008",
+            "date": "2026-11-19T00:00Z",
+            "timeValid": true,
+            "neutralSite": false,
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0.0",
+              "period": 0,
+              "type": {
+                "id": "1",
+                "name": "STATUS_SCHEDULED",
+                "state": "pre",
+                "completed": false,
+                "description": "Scheduled",
+                "detail": "Wed, November 18th at 7:00 PM EST",
+                "shortDetail": "11/18 - 7:00 PM EST"
+              }
+            },
+            "competitors": [
+              {
+                "id": "11",
+                "homeAway": "home",
+                "team": {
+                  "id": "11",
+                  "abbreviation": "IND",
+                  "displayName": "Indiana Pacers",
+                  "shortDisplayName": "Pacers"
+                }
+              },
+              {
+                "id": "10",
+                "homeAway": "away",
+                "team": {
+                  "id": "10",
+                  "abbreviation": "HOU",
+                  "displayName": "Houston Rockets",
+                  "shortDisplayName": "Rockets"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "team": {
+      "id": "11",
+      "displayName": "Indianapolis Colts",
+      "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/ind.png"
+    },
+    "events": [
+      {
+        "id": "401872659",
+        "date": "2026-09-13T17:00Z",
+        "timeValid": true,
+        "competitions": [
+          {
+            "id": "401872659",
+            "date": "2026-09-13T17:00Z",
+            "timeValid": true,
+            "neutralSite": false,
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0:00",
+              "period": 4,
+              "type": {
+                "id": "3",
+                "name": "STATUS_FINAL",
+                "state": "post",
+                "completed": true,
+                "description": "Final",
+                "detail": "Final",
+                "shortDetail": "Final"
+              },
+              "isTBDFlex": false
+            },
+            "competitors": [
+              {
+                "id": "11",
+                "homeAway": "home",
+                "team": {
+                  "id": "11",
+                  "abbreviation": "IND",
+                  "displayName": "Indianapolis Colts",
+                  "shortDisplayName": "Colts"
+                }
+              },
+              {
+                "id": "33",
+                "homeAway": "away",
+                "team": {
+                  "id": "33",
+                  "abbreviation": "BAL",
+                  "displayName": "Baltimore Ravens",
+                  "shortDisplayName": "Ravens"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "401873059",
+        "date": "2026-11-15T18:00Z",
+        "timeValid": true,
+        "competitions": [
+          {
+            "id": "401873059",
+            "date": "2026-11-15T18:00Z",
+            "timeValid": true,
+            "neutralSite": false,
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0:00",
+              "period": 0,
+              "type": {
+                "id": "1",
+                "name": "STATUS_SCHEDULED",
+                "state": "pre",
+                "completed": false,
+                "description": "Scheduled",
+                "detail": "Sun, November 15th at 1:00 PM EST",
+                "shortDetail": "11/15 - 1:00 PM EST"
+              },
+              "isTBDFlex": false
+            },
+            "competitors": [
+              {
+                "id": "11",
+                "homeAway": "home",
+                "team": {
+                  "id": "11",
+                  "abbreviation": "IND",
+                  "displayName": "Indianapolis Colts",
+                  "shortDisplayName": "Colts"
+                }
+              },
+              {
+                "id": "15",
+                "homeAway": "away",
+                "team": {
+                  "id": "15",
+                  "abbreviation": "MIA",
+                  "displayName": "Miami Dolphins",
+                  "shortDisplayName": "Dolphins"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "401873066",
+        "date": "2026-11-20T01:15Z",
+        "timeValid": true,
+        "competitions": [
+          {
+            "id": "401873066",
+            "date": "2026-11-20T01:15Z",
+            "timeValid": true,
+            "neutralSite": false,
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0:00",
+              "period": 0,
+              "type": {
+                "id": "1",
+                "name": "STATUS_SCHEDULED",
+                "state": "pre",
+                "completed": false,
+                "description": "Scheduled",
+                "detail": "Thu, November 19th at 8:15 PM EST",
+                "shortDetail": "11/19 - 8:15 PM EST"
+              },
+              "isTBDFlex": false
+            },
+            "competitors": [
+              {
+                "id": "34",
+                "homeAway": "home",
+                "team": {
+                  "id": "34",
+                  "abbreviation": "HOU",
+                  "displayName": "Houston Texans",
+                  "shortDisplayName": "Texans"
+                }
+              },
+              {
+                "id": "11",
+                "homeAway": "away",
+                "team": {
+                  "id": "11",
+                  "abbreviation": "IND",
+                  "displayName": "Indianapolis Colts",
+                  "shortDisplayName": "Colts"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "team": {
+      "id": "2509",
+      "displayName": "Purdue Boilermakers",
+      "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2509.png"
+    },
+    "events": [
+      {
+        "id": "401858435",
+        "date": "2026-09-04T23:00Z",
+        "timeValid": true,
+        "competitions": [
+          {
+            "id": "401858435",
+            "date": "2026-09-04T23:00Z",
+            "timeValid": true,
+            "neutralSite": false,
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0:00",
+              "period": 4,
+              "type": {
+                "id": "3",
+                "name": "STATUS_FINAL",
+                "state": "post",
+                "completed": true,
+                "description": "Final",
+                "detail": "Final",
+                "shortDetail": "Final"
+              }
+            },
+            "competitors": [
+              {
+                "id": "2509",
+                "homeAway": "home",
+                "team": {
+                  "id": "2509",
+                  "abbreviation": "PUR",
+                  "displayName": "Purdue Boilermakers",
+                  "shortDisplayName": "Purdue"
+                }
+              },
+              {
+                "id": "282",
+                "homeAway": "away",
+                "team": {
+                  "id": "282",
+                  "abbreviation": "INST",
+                  "displayName": "Indiana State Sycamores",
+                  "shortDisplayName": "Indiana St"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "401858519",
+        "date": "2026-11-15T00:30Z",
+        "timeValid": true,
+        "competitions": [
+          {
+            "id": "401858519",
+            "date": "2026-11-15T00:30Z",
+            "timeValid": true,
+            "neutralSite": false,
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0:00",
+              "period": 0,
+              "type": {
+                "id": "1",
+                "name": "STATUS_SCHEDULED",
+                "state": "pre",
+                "completed": false,
+                "description": "Scheduled",
+                "detail": "Sat, November 14th at 7:30 PM EST",
+                "shortDetail": "11/14 - 7:30 PM EST"
+              }
+            },
+            "competitors": [
+              {
+                "id": "2294",
+                "homeAway": "home",
+                "team": {
+                  "id": "2294",
+                  "abbreviation": "IOWA",
+                  "displayName": "Iowa Hawkeyes",
+                  "shortDisplayName": "Iowa"
+                }
+              },
+              {
+                "id": "2509",
+                "homeAway": "away",
+                "team": {
+                  "id": "2509",
+                  "abbreviation": "PUR",
+                  "displayName": "Purdue Boilermakers",
+                  "shortDisplayName": "Purdue"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "401858533",
+        "date": "2026-11-21T05:00Z",
+        "timeValid": false,
+        "competitions": [
+          {
+            "id": "401858533",
+            "date": "2026-11-21T05:00Z",
+            "timeValid": false,
+            "neutralSite": false,
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0:00",
+              "period": 0,
+              "type": {
+                "id": "1",
+                "name": "STATUS_SCHEDULED",
+                "state": "pre",
+                "completed": false,
+                "description": "Scheduled",
+                "detail": "11/21 - TBD",
+                "shortDetail": "TBD"
+              }
+            },
+            "competitors": [
+              {
+                "id": "2509",
+                "homeAway": "home",
+                "team": {
+                  "id": "2509",
+                  "abbreviation": "PUR",
+                  "displayName": "Purdue Boilermakers",
+                  "shortDisplayName": "Purdue"
+                }
+              },
+              {
+                "id": "275",
+                "homeAway": "away",
+                "team": {
+                  "id": "275",
+                  "abbreviation": "WIS",
+                  "displayName": "Wisconsin Badgers",
+                  "shortDisplayName": "Wisconsin"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "team": {
+      "id": "2509",
+      "displayName": "Purdue Boilermakers",
+      "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2509.png"
+    },
+    "events": [
+      {
+        "id": "401921704",
+        "date": "2026-11-03T00:30Z",
+        "timeValid": true,
+        "competitions": [
+          {
+            "id": "401921704",
+            "date": "2026-11-03T00:30Z",
+            "timeValid": true,
+            "neutralSite": true,
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0:00",
+              "period": 2,
+              "type": {
+                "id": "3",
+                "name": "STATUS_FINAL",
+                "state": "post",
+                "completed": true,
+                "description": "Final",
+                "detail": "Final",
+                "shortDetail": "Final"
+              }
+            },
+            "competitors": [
+              {
+                "id": "2250",
+                "homeAway": "home",
+                "team": {
+                  "id": "2250",
+                  "abbreviation": "GONZ",
+                  "displayName": "Gonzaga Bulldogs",
+                  "shortDisplayName": "Gonzaga"
+                }
+              },
+              {
+                "id": "2509",
+                "homeAway": "away",
+                "team": {
+                  "id": "2509",
+                  "abbreviation": "PUR",
+                  "displayName": "Purdue Boilermakers",
+                  "shortDisplayName": "Purdue"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "401926132",
+        "date": "2026-11-10T01:30Z",
+        "timeValid": true,
+        "competitions": [
+          {
+            "id": "401926132",
+            "date": "2026-11-10T01:30Z",
+            "timeValid": true,
+            "neutralSite": false,
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0:00",
+              "period": 0,
+              "type": {
+                "id": "1",
+                "name": "STATUS_SCHEDULED",
+                "state": "pre",
+                "completed": false,
+                "description": "Scheduled",
+                "detail": "Mon, November 9th at 8:30 PM EST",
+                "shortDetail": "11/9 - 8:30 PM EST"
+              }
+            },
+            "competitors": [
+              {
+                "id": "2509",
+                "homeAway": "home",
+                "team": {
+                  "id": "2509",
+                  "abbreviation": "PUR",
+                  "displayName": "Purdue Boilermakers",
+                  "shortDisplayName": "Purdue"
+                }
+              },
+              {
+                "id": "2287",
+                "homeAway": "away",
+                "team": {
+                  "id": "2287",
+                  "abbreviation": "ILST",
+                  "displayName": "Illinois State Redbirds",
+                  "shortDisplayName": "Illinois St"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "401926133",
+        "date": "2026-11-14T00:00Z",
+        "timeValid": true,
+        "competitions": [
+          {
+            "id": "401926133",
+            "date": "2026-11-14T00:00Z",
+            "timeValid": true,
+            "neutralSite": false,
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0:00",
+              "period": 0,
+              "type": {
+                "id": "1",
+                "name": "STATUS_SCHEDULED",
+                "state": "pre",
+                "completed": false,
+                "description": "Scheduled",
+                "detail": "Fri, November 13th at 7:00 PM EST",
+                "shortDetail": "11/13 - 7:00 PM EST"
+              }
+            },
+            "competitors": [
+              {
+                "id": "2509",
+                "homeAway": "home",
+                "team": {
+                  "id": "2509",
+                  "abbreviation": "PUR",
+                  "displayName": "Purdue Boilermakers",
+                  "shortDisplayName": "Purdue"
+                }
+              },
+              {
+                "id": "195",
+                "homeAway": "away",
+                "team": {
+                  "id": "195",
+                  "abbreviation": "OHIO",
+                  "displayName": "Ohio Bobcats",
+                  "shortDisplayName": "Ohio"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "401920706",
+        "date": "2026-11-17T23:30Z",
+        "timeValid": true,
+        "competitions": [
+          {
+            "id": "401920706",
+            "date": "2026-11-17T23:30Z",
+            "timeValid": true,
+            "neutralSite": false,
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0:00",
+              "period": 0,
+              "type": {
+                "id": "1",
+                "name": "STATUS_SCHEDULED",
+                "state": "pre",
+                "completed": false,
+                "description": "Scheduled",
+                "detail": "Tue, November 17th at 6:30 PM EST",
+                "shortDetail": "11/17 - 6:30 PM EST"
+              }
+            },
+            "competitors": [
+              {
+                "id": "2509",
+                "homeAway": "home",
+                "team": {
+                  "id": "2509",
+                  "abbreviation": "PUR",
+                  "displayName": "Purdue Boilermakers",
+                  "shortDisplayName": "Purdue"
+                }
+              },
+              {
+                "id": "288",
+                "homeAway": "away",
+                "team": {
+                  "id": "288",
+                  "abbreviation": "LIP",
+                  "displayName": "Lipscomb Bisons",
+                  "shortDisplayName": "Lipscomb"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "team": {
+      "id": "2086",
+      "displayName": "Butler Bulldogs",
+      "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2086.png"
+    },
+    "events": [
+      {
+        "id": "401902275",
+        "date": "2026-11-03T00:00Z",
+        "timeValid": true,
+        "competitions": [
+          {
+            "id": "401902275",
+            "date": "2026-11-03T00:00Z",
+            "timeValid": true,
+            "neutralSite": false,
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0:00",
+              "period": 2,
+              "type": {
+                "id": "3",
+                "name": "STATUS_FINAL",
+                "state": "post",
+                "completed": true,
+                "description": "Final",
+                "detail": "Final",
+                "shortDetail": "Final"
+              }
+            },
+            "competitors": [
+              {
+                "id": "2086",
+                "homeAway": "home",
+                "team": {
+                  "id": "2086",
+                  "abbreviation": "BTLR",
+                  "displayName": "Butler Bulldogs",
+                  "shortDisplayName": "Butler"
+                }
+              },
+              {
+                "id": "322",
+                "homeAway": "away",
+                "team": {
+                  "id": "322",
+                  "abbreviation": "LAF",
+                  "displayName": "Lafayette Leopards",
+                  "shortDisplayName": "Lafayette"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "401902278",
+        "date": "2026-11-13T23:30Z",
+        "timeValid": true,
+        "competitions": [
+          {
+            "id": "401902278",
+            "date": "2026-11-13T23:30Z",
+            "timeValid": true,
+            "neutralSite": false,
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0:00",
+              "period": 0,
+              "type": {
+                "id": "1",
+                "name": "STATUS_SCHEDULED",
+                "state": "pre",
+                "completed": false,
+                "description": "Scheduled",
+                "detail": "Fri, November 13th at 6:30 PM EST",
+                "shortDetail": "11/13 - 6:30 PM EST"
+              }
+            },
+            "competitors": [
+              {
+                "id": "2086",
+                "homeAway": "home",
+                "team": {
+                  "id": "2086",
+                  "abbreviation": "BTLR",
+                  "displayName": "Butler Bulldogs",
+                  "shortDisplayName": "Butler"
+                }
+              },
+              {
+                "id": "221",
+                "homeAway": "away",
+                "team": {
+                  "id": "221",
+                  "abbreviation": "PITT",
+                  "displayName": "Pittsburgh Panthers",
+                  "shortDisplayName": "Pitt"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "401902279",
+        "date": "2026-11-18T00:00Z",
+        "timeValid": true,
+        "competitions": [
+          {
+            "id": "401902279",
+            "date": "2026-11-18T00:00Z",
+            "timeValid": true,
+            "neutralSite": false,
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0:00",
+              "period": 0,
+              "type": {
+                "id": "1",
+                "name": "STATUS_SCHEDULED",
+                "state": "pre",
+                "completed": false,
+                "description": "Scheduled",
+                "detail": "Tue, November 17th at 7:00 PM EST",
+                "shortDetail": "11/17 - 7:00 PM EST"
+              }
+            },
+            "competitors": [
+              {
+                "id": "2086",
+                "homeAway": "home",
+                "team": {
+                  "id": "2086",
+                  "abbreviation": "BTLR",
+                  "displayName": "Butler Bulldogs",
+                  "shortDisplayName": "Butler"
+                }
+              },
+              {
+                "id": "2717",
+                "homeAway": "away",
+                "team": {
+                  "id": "2717",
+                  "abbreviation": "WCU",
+                  "displayName": "Western Carolina Catamounts",
+                  "shortDisplayName": "W Carolina"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
