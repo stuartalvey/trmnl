@@ -1,7 +1,7 @@
 # Alvey Command Center
 
 A personal TRMNL X dashboard combining the family's calendar, Noblesville weather,
-favorite teams' games, and an NLT Bible verse in one rolling seven-day view.
+favorite teams' games, Oura readiness balance, and an NLT Bible verse in one rolling seven-day view.
 
 This repository is the canonical source of code and shared project context for
 both regular ChatGPT and Codex. The live TRMNL account is the running deployment.
@@ -32,10 +32,10 @@ does not transfer account authorization.
 - Pacers, Colts, Purdue football, Purdue men's basketball, and Butler men's
   basketball schedules from ESPN, with team logos and Eastern start times.
 - Daily NLT verse from DailyVerses.
+- **Today's Balance**: Stuart/Ali readiness scores and a normalized percentage donut beside the verse.
 - Full-screen landscape layout using TRMNL framework **3.4.6**.
 
-Oura-based Home Page features and additional detail screens are planned, not
-implemented; Oura account connections are being set up. See
+Additional detail screens remain planned. See
 [STATUS.md](docs/STATUS.md) for priorities and limitations.
 
 ## Repository structure
@@ -43,6 +43,7 @@ implemented; Oura account connections are being set up. See
 | Path | Purpose |
 | --- | --- |
 | [src/](src/) | Home Page Liquid templates and exported plugin settings |
+| [tests/](tests/) | Synthetic Oura adapter and balance tests; no personal health data |
 | [.trmnlp.yml](.trmnlp.yml) | Optional development-preview configuration |
 | [data-sources/](data-sources/) | Reviewed helper-plugin manifests and sports processing/tests |
 | [AGENTS.md](AGENTS.md) | Standing instructions shared by AI development environments |
@@ -63,10 +64,11 @@ TRMNL-to-GitHub Sync exports Home Page saves to this repository. GitHub-to-TRMNL
 deployment is manual, and helper-plugin changes must be captured explicitly.
 Follow [DEPLOYMENT.md](docs/DEPLOYMENT.md) in either environment.
 
-The existing offline sports test requires Node.js 20+ and no installed packages:
+The offline tests require Node.js 20+ and no installed packages:
 
 ```sh
 node data-sources/indiana-sports/test-transform.cjs
+node tests/balance.test.cjs
 ```
 
 Optional local/cloud template preview uses [trmnlp](https://github.com/usetrmnl/trmnlp).

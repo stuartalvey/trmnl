@@ -1,74 +1,50 @@
 # Current project status
 
-Last compared **2026-11-09 10:57 EST**, time zone `America/Indiana/Indianapolis`.
-Implementation baseline:
-[`d4662e3`](https://github.com/stuartalvey/trmnl/commit/d4662e374a608d94e280997ba52633261f019b0d).
-This documentation update changes no runtime files and deploys nothing to TRMNL.
+Last compared **2026-11-09**, after adding Today's Balance. Starting documentation
+baseline: [c0bd596](https://github.com/stuartalvey/trmnl/commit/c0bd596a98d87734c0f547cb3fcc8ca6c4ef6649).
+See this file's latest commit for the implementation handoff.
 
 ## Implemented
 
 - Home Page `535610`, headed **Alvey Command Center**, full-screen landscape.
-- Seven-day local-date grid: family events, five favorite teams' games with
-  logos/Eastern times, vector weather icons, Fahrenheit highs/lows, precipitation.
-- Daily NLT verse and current Noblesville temperature.
-- Apple Calendar `535612`; verse/weather/sports helpers `536052`, `536062`,
-  `536071`. Home Page, the calendar, and all three helpers were healthy.
+- Seven-day grid: family events, five teams' games, weather icons, Fahrenheit
+  highs/lows, and precipitation; current Noblesville temperature.
+- Daily NLT verse beside **Today's Balance**: Stuart/Ali readiness scores,
+  normalized percentages, and a black/gray donut with a small heart.
+- Apple Calendar `535612`; verse/weather/sports `536052` / `536062` / `536071`.
+- Healthy third-party Oura instances **Stu's Oura** `536089` and **Ali's Oura**
+  `536097`. Home reads their rendered snapshots; no personal payload is committed.
 
-## Next work
+## Active priorities and pending work
 
-The owner is connecting separate Oura accounts for Stuart and Ali. Two native
-instances appeared during the audit: **Stu's Oura** `536089` (connection healthy)
-and **[Copy] Stu's Oura** `536093` (connection degraded at the snapshot time).
-The copied instance's intended owner is not yet confirmed. These are operational
-connection states, not personal health scores. No Oura data is displayed by
-Home Page, and no Oura payload or credentials are stored in this repository.
+- Iterate on Home Page appearance with the owner. Separate Weather, Sports,
+  Health, and Markets/News detail screens remain planned.
+- Verify on physical TRMNL X when available; server preview is the current visual check.
 
-After confirming each instance's owner and successful connection, inspect the actual readiness schemas
-and freshness, then design **Today's Balance**: readiness divided by combined
-readiness (hypothetical 90 and 80 → 53% / 47%). Missing/stale/zero scores need a
-defined fallback before implementation. The chart is planned, not built.
+## Deployment and synchronization
 
-Separate Weather, Sports, Health, and Markets/News detail screens are also
-planned. No additional core views have been implemented.
+- Home full/shared templates deployed through MCP; X-model full-screen preview
+  verified with both accounts. Seven dates, verse, and existing integrations remain.
+- Matching runtime source, synthetic tests, and documentation captured in GitHub.
+- TRMNL → GitHub export is automatic for Home Page; reverse deployment is manual.
+  Helpers still require explicit capture; no Actions deployment is configured.
+- Existing Home settings differ only in empty headers/body YAML representation
+  (empty strings versus null). No detected functional template drift.
+- Device `75111`, model `v2`, landscape, 900-second wake, 4-bit render context;
+  no physical screen/check-in verification established.
+- Oura entries remain visible in the playlist; existing Welcome, Calendar,
+  unrelated BTC entry, and three hidden helper entries were left intact.
 
-## GitHub versus live TRMNL
+## Validation and known limitations
 
-| Item | Last verification |
-| --- | --- |
-| Home `full.liquid` and `shared.liquid` | Exact match with repository baseline |
-| Sports `transform.js` | Exact match with repository baseline |
-| Three helper manifests | Every represented setting matches live values |
-| Home settings | Match except unset headers/body: repo empty strings, live YAML null |
-| Helper export defaults | Additional defaults exist in live exports; manifests are intentionally partial |
-| Oura connections | Account setup in progress; no Home Page binding or repository data-source implementation yet |
-| GitHub → TRMNL | Manual; no CI/deployment workflow configured |
-| TRMNL → GitHub | Automatic export verified for Home Page; helper auto-export not verified |
-| Physical device | Record `75111`, `v2`, landscape, 900-second wake, 4-bit render context; no hardware check-in/firmware reported |
-
-There is no detected functional code/configuration drift in the compared
-components. This is not a claim of a complete account backup or physical-device
-deployment verification. Calendar credentials, account/playlist configuration,
-and other integrations are managed in TRMNL.
-
-The playlist retains visible Welcome and Apple Calendar entries and an unrelated
-unconfigured BTC recipe entry. Three data helpers are hidden. Nothing was
-removed or reconfigured during the audit.
-
-## Validation and known gaps
-
-- Existing offline sports tests and syntax check pass in the cloud environment.
-- Documentation links/references and unchanged runtime files are checked for
-  this documentation-only update; no new render or live mutation is required.
-- No automated deployment or full-layout tests. Local preview has no live merge
-  fixtures. Crowded days may trigger row hiding/title clamping.
-- Source polling and device waking have independent schedules. NLT daily
-  polling does not guarantee a local-midnight change.
-- API availability and fresh data still need verification when developing;
-  current health alone does not prove every displayed value is current.
-
-## Handoff checklist
-
-Read the linked baseline/status, fetch current GitHub state, inspect affected
-live definitions, and reconcile differences before editing. Follow
-[DEPLOYMENT.md](DEPLOYMENT.md); record the final commit, actual deployment,
-validation, pending work, and any drift here after significant changes.
+- Synthetic balance tests pass: percentages, boundary values, missing/invalid
+  scores, stale/prior-day/future timestamps, and timezone offsets.
+- Both actual source snapshots parse privately; readiness values and screenshots
+  stay out of this public repository.
+- Oura HTML is an upstream dependency. Missing/stale/combined-zero input shows
+  neutral/dashes. Same-day, six-hour freshness uses the plugin's Last updated
+  footer, which is not proof of the readiness measurement date.
+- No automated full-layout or device tests; crowded days may clamp/hide content.
+  Source polling, Home refresh, and device wake schedules are independent.
+- See [ARCHITECTURE.md](ARCHITECTURE.md) and [DEPLOYMENT.md](DEPLOYMENT.md)
+  before editing or deploying. Fetch current GitHub and live state first.

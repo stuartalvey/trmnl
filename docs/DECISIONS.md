@@ -92,3 +92,21 @@ The VM returns only the fields required by the dashboard.
 the MCP language-change request was explicitly rejected. Keep the small polling
 seed, test date/DST/TBD behavior, and show partial/unavailable feed states.
 The sports test fixtures are public, fixed historical schedules, not live data.
+
+## 2026-11-09 — Compact Oura balance beside the verse
+
+**Decision:** Add a black/gray readiness donut, percentages, and both raw scores
+in a small card beside the NLT verse; preserve the seven-day grid below.
+
+**Reason:** The owner requested an iOS-like simple visual expressing relative
+capacity: hypothetical readiness 90/80 becomes 53%/47%.
+
+**Alternatives:** A separate health screen would not meet the requested Home
+Page placement. A raw JSON adapter would be preferable if the connected plugin
+exposed one; the inspected third-party plugin supplies HTML only.
+
+**Consequences:** Strictly parse the readiness label from escaped inert snapshots.
+Require current-day snapshot timestamps within six hours; show neutral/dashes
+for missing, stale, malformed, or combined-zero data. The snapshot footer does
+not prove the readiness measurement date. Keep raw scores visible, use synthetic
+tests only, and revisit the adapter if the provider changes its HTML contract.

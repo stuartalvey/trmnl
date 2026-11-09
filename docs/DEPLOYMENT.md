@@ -43,6 +43,10 @@ node data-sources/indiana-sports/test-transform.cjs
 The test uses public fixtures and a fixed November 2026 clock. Nine fixture games
 is an assertion about those fixtures, not today's live game count.
 
+For the Oura adapter/calculation, run `node tests/balance.test.cjs`. It executes
+the production shared script with synthetic HTML and a fixed clock, covering
+rounding, bounds, missing data, and snapshot freshness. Never add real scores.
+
 For visual/data changes, inspect actual merge-variable schemas, verify real
 source availability, then inspect an X preview for every modified layout.
 Check seven local dates, busy days, NLT text, zero precipitation, missing-data
@@ -51,8 +55,7 @@ states, and game times/TBD labels. Never commit private preview data or images.
 Optional local/cloud template preview uses
 [trmnlp](https://github.com/usetrmnl/trmnlp) and the root [.trmnlp.yml](../.trmnlp.yml).
 That config watches `src/` and supplies empty overrides; it does not reproduce
-the native calendar and helper merge data. There is no RSpec `tests/` suite in
-this repository. Do not treat a fixture-only local preview as live verification.
+the native calendar and helper merge data. There is no RSpec suite; `tests/` contains dependency-free Node tests. Do not treat a fixture-only local preview as live verification.
 
 For documentation-only tasks, validate links/references and confirm runtime
 files are unchanged. Do not edit, refresh, or render the live dashboard just to

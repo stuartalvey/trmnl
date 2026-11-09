@@ -27,6 +27,8 @@ flowchart TD
   V --> Home
   W --> Home
   S --> Home
+  Oura[Two Oura accounts] --> O[Third-party Oura plugins 536089 / 536097]
+  O --> Home
   Home --> Render[Liquid + framework: server-rendered image]
   Render --> Preview[Browser preview]
   Render --> Device[Device downloads image when it wakes]
@@ -44,6 +46,7 @@ flowchart TD
 | `535612` Stu's iCal | Native Apple Calendar connection and parsed events | 30 min | Connection/credentials remain in TRMNL; no calendar payload is stored here |
 | `536052` Daily Bible Verse — Data | First item of DailyVerses NLT RSS | 1440 min | [settings](../data-sources/daily-bible-verse/settings.yml) |
 | `536062` Noblesville Weather — Data | Open-Meteo current weather and 14 forecast days | 60 min | [settings](../data-sources/noblesville-weather/settings.yml) |
+| `536089` Stu's Oura / `536097` Ali's Oura | Account-specific rendered readiness snapshots | 60 min / provider default 60 min | Connections stay in TRMNL; adapter in shared.liquid |
 | `536071` Indiana Sports — Data | Compact five ESPN schedules into seven local days | 60 min | [settings](../data-sources/indiana-sports/settings.yml), [transform](../data-sources/indiana-sports/transform.js) |
 
 The three helper entries are hidden in the device playlist. They supply data
@@ -88,8 +91,8 @@ are fetched inside the VM to avoid the standard polling payload cap.
 ## Templates and refresh behavior
 
 [full.liquid](../src/full.liquid) renders the heading/current temperature,
-NLT verse, and daily Family/Games/Weather/Precipitation grid.
-[shared.liquid](../src/shared.liquid) defines inline vector weather icons.
+NLT verse beside Today's Balance, and daily Family/Games/Weather/Precipitation grid.
+[shared.liquid](../src/shared.liquid) defines inline vector weather icons and the readiness adapter/chart script.
 Other layout sizes and a Home Page transform are not implemented.
 
 Calendar, games, and forecasts join by local date. Table overflow handling may
@@ -114,7 +117,27 @@ See [TRMNL's data-mode guidance](https://docs.trmnl.com/go/private-api/plugin-da
   translation label. Daily polling is not guaranteed to align with local midnight.
 - Sports has fixture tests; there is no automated full-screen, source-availability,
   or physical-device test suite. Local preview lacks live merge fixtures.
-- Oura connections appeared in the account during this audit; see
-  [STATUS.md](STATUS.md). They are not referenced by Home Page yet. Today's
-  Balance and separate Weather, Sports, Health, Markets/News detail screens are
-  planned only and are not part of the current data flow.
+- Separate Weather, Sports, Health, and Markets/News detail screens remain planned.
+
+## Today's Balance
+
+Home consumes `oura_536089.markup_full` (Stuart) and `oura_536097.markup_full`
+(Ali). This third-party plugin exposes rendered HTML, not structured readiness
+metrics; its `merge_variables` object is empty. Templates escape each snapshot
+into inert HTML template elements. The shared script extracts only a numeric
+value immediately followed by the Readiness label, then updates text and SVG
+before TRMNL captures the rendered image. No browser-side API request or device
+JavaScript is required.
+
+Stuart's share is rounded readiness / combined readiness × 100; Ali receives
+the remainder, guaranteeing 100%. Both raw scores remain visible. Synthetic
+90/80 yields 53/47. This is the owner's playful support-balance indicator, not
+a medical recommendation or a measure of relationship obligations.
+
+Only 0–100 scores with a same-local-day Last updated footer no older than six
+hours (at most five minutes ahead) qualify. Missing, undated, stale, malformed,
+or combined-zero inputs show a neutral ring and dashes rather than invented
+percentages; individually fresh scores can still appear. The footer is snapshot
+freshness, **not a verified readiness measurement date**. Upstream markup or
+footer format changes can disable this adapter; inspect actual schemas before
+repairing it. Synthetic unit tests live in [tests/balance.test.cjs](../tests/balance.test.cjs).
