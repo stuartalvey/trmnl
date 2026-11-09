@@ -134,3 +134,22 @@ missing-source behavior, and verify the seven-day X preview.
 The owner requested **H** for the synced holiday calendar. The inspected source
 name is `US Holidays`; use it for classification instead of assigning those
 events to the account owner or guessing from event titles.
+
+## 2026-11-09 — Standalone Weather Detail
+
+**Decision:** Create Weather Detail `536164` with its own hourly Open-Meteo
+polling query, full/shared templates under `views/weather/`, framework 3.4.6,
+and a visible playlist entry immediately after Home Page.
+
+**Reason:** The owner requested the next detail view, in the same simple visual
+style. Hourly forecast, wind, sunrise/sunset, and UV need more data than Home's
+working weather helper supplies.
+
+**Alternatives:** Expand the shared helper and merge it into this page. Independent
+polling avoids modifying Home's source contract at the cost of another request.
+
+**Consequences:** Manual capture/deployment for this view; root `src/` remains
+Home Page. Show next precipitation probability ≥40% over 24 hourly samples,
+explicit incomplete/stale states, eight three-hour checkpoints, and seven days.
+No radar, alerts, or exact precipitation onset claim. Validate Liquid with
+synthetic data and inspect a full X preview before completion.

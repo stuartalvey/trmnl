@@ -2,7 +2,7 @@
 
 ## Screen and device
 
-The implemented screen is the private plugin **Home Page** (`535610`); its heading
+The Home Page screen is the private plugin **Home Page** (`535610`); its heading
 is **Alvey Command Center**. It uses `plugin_merge`, framework **3.4.6** pinned,
 light mode, normal screen padding, and a 15-minute refresh setting.
 
@@ -22,6 +22,8 @@ flowchart TD
   Apple[Stuart and Ali iCloud Calendars] --> Native[Native Apple Calendar 535612 / 536125]
   Verse[DailyVerses NLT RSS] --> V[Polling helper 536052]
   Weather[Open-Meteo] --> W[Polling helper 536062]
+  Weather --> WD[Weather Detail 536164: independent polling]
+  WD --> Render
   ESPN[Five ESPN team schedules] --> S[Node Serverless helper 536071]
   Native --> Home[Home Page 535610: Plugin Merge]
   V --> Home
@@ -116,7 +118,7 @@ See [TRMNL's data-mode guidance](https://docs.trmnl.com/go/private-api/plugin-da
   translation label. Daily polling is not guaranteed to align with local midnight.
 - Sports has fixture tests; there is no automated full-screen, source-availability,
   or physical-device test suite. Local preview lacks live merge fixtures.
-- Separate Weather, Sports, Health, and Markets/News detail screens remain planned.
+- Separate Sports, Health, and Markets/News detail screens remain planned.
 
 ## Today's Balance
 
@@ -167,3 +169,44 @@ Events whose source `calname` is `US Holidays` (case/outer-whitespace insensitiv
 use **H**, overriding the personal source label. Holiday status comes from this
 verified source name, never from words in the event title. Other holiday-feed
 names require explicit mapping if added later.
+
+## Weather Detail
+
+**Weather Detail** `536164` is a separate full-screen landscape private plugin,
+framework 3.4.6, light mode, normal padding, polling hourly. Visible playlist
+item `901626` on device `75111` follows Home Page. Existing item order/visibility
+is preserved. Its code lives in [views/weather/](../views/weather/), with no
+Home Page or Plugin Merge dependencies. It calls Open-Meteo independently;
+Home's existing hidden source `536062` is unchanged. This costs a second small
+hourly forecast request and avoids changing a working integration.
+
+Data flow: Open-Meteo → Weather Detail polling data → full/shared Liquid →
+TRMNL rendered image → playlist/device. Current, hourly, and daily objects are
+available directly at the template root. No transform, Node mode, API key, or
+client-side JavaScript is needed. Units: °F, mph, inches; city-center coordinates
+and `America/Indiana/Indianapolis` match Home. Settings record the exact query.
+
+The layout shows current conditions/feels-like/high/low; wind/gusts, humidity,
+sunrise/sunset, and daily max UV; eight checkpoints every three forecast hours;
+and seven daily forecasts. Hourly/current clear skies use moon icons at night.
+Precipitation bars show probability, not quantity. Precipitation includes rain
+and snow; this is not a radar/nowcast or weather-alert service.
+
+Starting at the first local hourly timestamp at or after render time, scan the
+next 24 samples for probability ≥40%. Display its time (Tomorrow when needed),
+or Low chance ahead only when all 24 probabilities exist and remain below 40%.
+Missing coverage reports Forecast incomplete. This threshold is a design choice,
+not a promise that precipitation starts then. Eight display samples use offsets
+0,3,…,21; they summarize, rather than display, every hour in the window.
+
+Local ISO timestamps are already provided by Open-Meteo. Render clock uses
+TRMNL's user offset; daily lookup uses local dates rather than assuming index 0.
+A current observation over three hours old or over one hour ahead shows a refresh
+warning. Missing values show dashes/unavailable; zero values stay visible.
+Local repeated/skipped hours around DST depend on upstream timestamp ordering;
+this version does not disambiguate repeated local hours. Night-aware weather
+icons are a view-local copy; root Home icons were deliberately left untouched.
+
+Only full-screen is implemented. Weather Detail has **no verified GitHub Sync**;
+its source/settings were manually captured. Do not import this view into root
+Home Page. See [DEPLOYMENT.md](DEPLOYMENT.md).

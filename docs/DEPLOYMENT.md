@@ -6,6 +6,7 @@
 | --- | --- |
 | Home Page: TRMNL → GitHub | Automatic GitHub Sync exports saves to root `src/`; `trmnl-sync[bot]` commits and matching live files were verified |
 | GitHub → Home Page | **Manual deployment**: use TRMNL's GitHub import or explicitly write the reviewed files through MCP |
+| Weather Detail ↔ GitHub | Manual capture/deployment of `views/weather/`; automatic sync is not verified |
 | Helper data sources ↔ GitHub | Manifests and sports transform were captured manually; automatic synchronization is not verified |
 | Tests/deployment from GitHub Actions | None: no `.github/workflows/` files exist |
 | Rendered image → physical device | Device downloads content on its wake/playlist schedule; a commit or preview is not proof of display |
@@ -53,9 +54,14 @@ LiquidJS 10 is a test-only dependency; install it in a temporary directory:
 ```sh
 npm install --prefix /tmp/trmnl-test-deps liquidjs@10 --no-audit --no-fund
 NODE_PATH=/tmp/trmnl-test-deps/node_modules node tests/calendar.test.cjs
+NODE_PATH=/tmp/trmnl-test-deps/node_modules node tests/weather.test.cjs
 ```
 
-These tests cover matching, individual/shared labels, cancellations, all-day and
+Weather tests execute full/shared Liquid with synthetic forecasts: 24-hour
+precipitation threshold/window, eight checkpoints, seven days, night icons,
+zero values, stale and missing-data states.
+
+Calendar tests cover matching, individual/shared labels, cancellations, all-day and
 multi-day boundaries, and missing feeds. LiquidJS preserves input time zones;
 TRMNL's actual renderer still needs an X preview. Never add personal events.
 
@@ -144,3 +150,25 @@ Commit the reviewed rollback and deploy it explicitly using the same procedure
 above. A Git revert alone does not roll back TRMNL. Refresh/preview as needed,
 verify live files again, and update STATUS.md. Calendar/Oura credentials cannot
 be reconstructed from this public repository; reconnect them in TRMNL if needed.
+
+## Deploy or roll back Weather Detail
+
+Target **536164**, never Home **535610**. Files:
+
+- [views/weather/full.liquid](../views/weather/full.liquid) → `markup_full`.
+- [views/weather/shared.liquid](../views/weather/shared.liquid) → `markup_shared`.
+- [views/weather/settings.yml](../views/weather/settings.yml) → reviewed polling
+  URL, GET, framework 3.4.6, light/normal padding, hourly refresh. Preserve unknown
+  live fields and never replay masked credentials.
+
+Inspect live files and current GitHub first. Run the weather Liquid suite, write
+changed files/settings through MCP, refresh polling and await its job, inspect
+root current/hourly/daily fields, then preview `v2` / `markup_full`. Confirm all
+seven daily cards and their precipitation percentages fit above the title bar.
+Read back live files and explicitly capture changes here: Home's automatic root
+export does not establish synchronization for this separate plugin.
+
+Playlist item `901626` is visible immediately after Home. Preserve unrelated
+items and schedules. For rollback, restore reviewed prior view files and deploy
+them explicitly; to withdraw only the new view, hide that playlist item. Leave
+Home and its hidden weather helper intact. A Git revert alone does not deploy.

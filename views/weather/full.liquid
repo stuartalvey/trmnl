@@ -1,0 +1,101 @@
+{% comment %}Weather Detail: standalone polling view. Local ISO timestamps from Open-Meteo. No Home Page dependencies.{% endcomment %}
+{% assign now_ts = trmnl.system.timestamp_utc | plus: 0 %}
+{% assign local_now = now_ts | plus: trmnl.user.utc_offset %}
+{% assign local_iso = local_now | date: '%Y-%m-%dT%H:%M' %}
+{% assign today = local_now | date: '%Y-%m-%d' %}
+{% assign source_ts = current.time | date: '%s' | plus: 0 %}
+{% assign age = local_now | minus: source_ts %}
+{% assign today_index = nil %}
+{% for day in daily.time %}{% if day == today %}{% assign today_index = forloop.index0 %}{% break %}{% endif %}{% endfor %}
+{% assign first_hour = nil %}
+{% assign wet_hour = nil %}
+{% assign wet_chance = nil %}
+{% assign checked_hours = 0 %}
+{% assign known_hours = 0 %}
+{% for time in hourly.time %}
+  {% if time >= local_iso %}
+    {% if first_hour == nil %}{% assign first_hour = forloop.index0 %}{% endif %}
+    {% if checked_hours < 24 %}
+      {% assign chance = hourly.precipitation_probability[forloop.index0] %}
+      {% if chance != nil %}{% assign known_hours = known_hours | plus: 1 %}{% endif %}
+      {% if wet_hour == nil and chance >= 40 %}{% assign wet_hour = time %}{% assign wet_chance = chance %}{% endif %}
+      {% assign checked_hours = checked_hours | plus: 1 %}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+<div class="layout layout--col layout--top gap--small">
+  <div class="flex flex--row flex--between flex--center-y w--full">
+    <div class="flex flex--col gap--xsmall"><span class="title title--large lg:title--xxlarge">Noblesville Weather</span><span class="label label--gray">Alvey Command Center · {{ local_now | date: '%A, %B %-d' }}</span></div>
+    <span class="label label--small label--gray">{% if current.time == nil %}Weather unavailable{% elsif age > 10800 or age < -3600 %}Forecast needs refresh{% else %}As of {{ current.time | date: '%-I:%M %p' }} ET{% endif %}</span>
+  </div>
+
+  <div class="grid grid--cols-12 gap--medium w--full">
+    <div class="col--span-7 flex flex--row flex--center-y gap--large bg--gray-75 rounded--large p--3">
+      <div class="flex flex--col gap--small">
+        <div class="flex flex--row gap--small flex--center-y">{% render "weather_icon", code: current.weather_code, is_day: current.is_day, description: 'Current conditions' %}<span class="label label--large">{% render "weather_label", code: current.weather_code %}</span></div>
+        <span class="value value--xlarge lg:value--xxlarge value--tnums">{% render "metric", value: current.temperature_2m, unit: '°', precision: 0 %}</span>
+        <span class="label">Feels like {% render "metric", value: current.apparent_temperature, unit: '°F', precision: 0 %} · H {% render "metric", value: daily.temperature_2m_max[today_index], unit: '°', precision: 0 %} / L {% render "metric", value: daily.temperature_2m_min[today_index], unit: '°', precision: 0 %}</span>
+      </div>
+    </div>
+    <div class="col--span-5 flex flex--col flex--center-y gap--medium outline outline--muted rounded--large p--3">
+      <span class="label label--small label--gray">NEXT PRECIPITATION · NEXT 24 HOURS</span>
+      {% if wet_hour != nil %}
+        <span class="title title--large">{% assign wet_day = wet_hour | slice: 0,10 %}{% if wet_day != today %}Tomorrow {% endif %}{{ wet_hour | date: '%-I %p' }}</span>
+        <span class="label">{{ wet_chance }}% chance · rain or snow</span>
+      {% elsif known_hours == 24 %}
+        <span class="title title--large">Low chance ahead</span>
+        <span class="label">Below 40% through the next 24 hours</span>
+      {% else %}
+        <span class="title">Forecast incomplete</span><span class="label">Precipitation timing unavailable</span>
+      {% endif %}
+      <div class="flex flex--row flex--between w--full">
+        <span class="label">Today’s chance</span><span class="title title--small">{% render "metric", value: daily.precipitation_probability_max[today_index], unit: '%', precision: 0 %}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex--row flex--between w--full">
+    <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">WIND</span><span class="title">{% render "metric", value: current.wind_speed_10m, unit: ' mph', precision: 0 %}</span><span class="label label--small label--gray">Gusts {% render "metric", value: current.wind_gusts_10m, unit: ' mph', precision: 0 %}</span></div>
+    <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">HUMIDITY</span><span class="title">{% render "metric", value: current.relative_humidity_2m, unit: '%', precision: 0 %}</span><span class="label label--small label--gray">Relative humidity</span></div>
+    <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">SUNRISE / SUNSET</span><span class="title">{% if today_index != nil %}{{ daily.sunrise[today_index] | date: '%-I:%M' }} / {{ daily.sunset[today_index] | date: '%-I:%M' }}{% else %}—{% endif %}</span><span class="label label--small label--gray">AM / PM · local time</span></div>
+    <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">UV INDEX</span><span class="title">{% render "metric", value: daily.uv_index_max[today_index], unit: '', precision: 1 %}</span><span class="label label--small label--gray">Today’s maximum</span></div>
+  </div>
+
+  <div class="flex flex--col gap--small w--full">
+    <div class="flex flex--row flex--between w--full"><span class="title title--small">The next 24 hours</span><span class="label label--small label--gray">Every 3 hours · bars show precipitation chance</span></div>
+    <div class="flex flex--row gap--small w--full">
+      {% if first_hour != nil %}{% for slot in (0..7) %}
+        {% assign step = slot | times: 3 %}{% assign i = first_hour | plus: step %}
+        {% assign chance = hourly.precipitation_probability[i] %}
+        <div class="flex flex--col flex--center-x gap--small stretch bg--gray-75 rounded--large p--2">
+          <span class="label label--small">{% if hourly.time[i] %}{{ hourly.time[i] | date: '%-I %p' }}{% else %}—{% endif %}</span>
+          {% render "weather_icon", code: hourly.weather_code[i], is_day: hourly.is_day[i], description: 'Hourly forecast' %}
+          <span class="title">{% render "metric", value: hourly.temperature_2m[i], unit: '°', precision: 0 %}</span>
+          <svg class="w--6 h--6" viewBox="0 0 32 32" role="img" aria-label="{% if chance != nil %}{{ chance }} percent precipitation chance{% else %}Precipitation chance unavailable{% endif %}">
+            <rect x="11" y="1" width="10" height="30" rx="5" fill="white"/>
+            {% if chance != nil %}{% assign bar = chance | times: 0.3 %}{% assign top = 31 | minus: bar %}<rect x="11" y="{{ top }}" width="10" height="{{ bar }}" rx="2" fill="black"/>{% endif %}
+          </svg>
+          <span class="label label--small">{% render "metric", value: chance, unit: '%', precision: 0 %}</span>
+        </div>
+      {% endfor %}{% else %}<span class="label label--gray">Hourly forecast unavailable</span>{% endif %}
+    </div>
+  </div>
+
+  <div class="flex flex--col gap--small w--full">
+    <span class="title title--small">Seven-day outlook</span>
+    <div class="flex flex--row gap--small w--full">
+      {% assign days_shown = 0 %}
+      {% for day in daily.time %}{% if day >= today and days_shown < 7 %}
+        {% assign i = forloop.index0 %}{% assign days_shown = days_shown | plus: 1 %}
+        <div class="flex flex--col flex--center-x gap--small stretch outline outline--muted rounded--large p--2">
+          <span class="title title--small">{% if day == today %}Today{% else %}{{ day | date: '%a' }}{% endif %}</span>
+          {% render "weather_icon", code: daily.weather_code[i], description: 'Daily forecast' %}
+          <span class="title title--small">{% render "metric", value: daily.temperature_2m_max[i], unit: '°', precision: 0 %} <span class="label label--gray">{% render "metric", value: daily.temperature_2m_min[i], unit: '°', precision: 0 %}</span></span>
+          <span class="label label--small">{% render "metric", value: daily.precipitation_probability_max[i], unit: '%', precision: 0 %} precip.</span>
+        </div>
+      {% endif %}{% endfor %}
+      {% if days_shown == 0 %}<span class="label label--gray">Daily forecast unavailable</span>{% endif %}
+    </div>
+  </div>
+</div>
+<div class="title_bar"><span class="title">Weather Detail</span><span class="instance">Noblesville, IN · °F · ET · Open-Meteo · Hourly refresh</span></div>

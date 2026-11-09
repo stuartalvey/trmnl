@@ -30,6 +30,8 @@ does not transfer account authorization.
 - Stuart and Ali's Apple Calendars merged with shared-event deduplication,
   compact S / A / S+A labels (H for the synced holiday calendar), and all-day/multi-day handling.
 - Noblesville, Indiana forecasts from Open-Meteo.
+- **Weather Detail**: current/feels-like temperature, precipitation timing,
+  wind/gusts, humidity, sunrise/sunset, UV, 24-hour checkpoints, and seven-day outlook.
 - Pacers, Colts, Purdue football, Purdue men's basketball, and Butler men's
   basketball schedules from ESPN, with team logos and Eastern start times.
 - Daily NLT verse from DailyVerses.
@@ -44,7 +46,8 @@ Additional detail screens remain planned. See
 | Path | Purpose |
 | --- | --- |
 | [src/](src/) | Home Page Liquid templates and exported plugin settings |
-| [tests/](tests/) | Synthetic calendar merge and Oura balance tests; no personal data |
+| [views/weather/](views/weather/) | Standalone Weather Detail templates and reviewed polling settings |
+| [tests/](tests/) | Synthetic calendar merge, weather, and Oura balance tests; no personal data |
 | [.trmnlp.yml](.trmnlp.yml) | Optional development-preview configuration |
 | [data-sources/](data-sources/) | Reviewed helper-plugin manifests and sports processing/tests |
 | [AGENTS.md](AGENTS.md) | Standing instructions shared by AI development environments |
@@ -72,7 +75,7 @@ node data-sources/indiana-sports/test-transform.cjs
 node tests/balance.test.cjs
 ```
 
-Calendar tests additionally need LiquidJS 10; see the commands in
+Calendar and weather tests additionally need LiquidJS 10; see the commands in
 [DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 Optional local/cloud template preview uses [trmnlp](https://github.com/usetrmnl/trmnlp).

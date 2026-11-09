@@ -1,6 +1,6 @@
 # Current project status
 
-Last compared **2026-11-09**, after merging Stuart and Ali's calendars. Starting documentation
+Last compared **2026-11-09**, after adding Weather Detail. Starting documentation
 baseline: [c0bd596](https://github.com/stuartalvey/trmnl/commit/c0bd596a98d87734c0f547cb3fcc8ca6c4ef6649).
 See this file's latest commit for the implementation handoff.
 
@@ -17,9 +17,14 @@ See this file's latest commit for the implementation handoff.
 - Healthy third-party Oura instances **Stu's Oura** `536089` and **Ali's Oura**
   `536097`. Home reads their rendered snapshots; no personal payload is committed.
 
+- **Weather Detail** `536164`, playlist item `901626` immediately after Home:
+  independent hourly Open-Meteo polling; current/feels-like/high/low, wind/gusts,
+  humidity, sunrise/sunset, UV, next precipitation chance, eight hourly checkpoints
+  over 24 hours, and a seven-day outlook. Source: `views/weather/`.
+
 ## Active priorities and pending work
 
-- Iterate on Home Page appearance with the owner. Separate Weather, Sports,
+- Iterate on Home Page appearance with the owner. Separate Sports,
   Health, and Markets/News detail screens remain planned.
 - Verify on physical TRMNL X when available; server preview is the current visual check.
 
@@ -28,7 +33,10 @@ See this file's latest commit for the implementation handoff.
 - Home full/shared templates deployed through MCP; X-model full-screen preview
   verified with both Oura and calendar accounts. Seven dates, verse, games, and
   weather remain visible. Shared calendar matches appear once; holiday source events use H.
+- Weather Detail deployed/configured; hourly polling succeeded and full X preview
+  verified, including night icons and all seven daily precipitation labels.
 - Matching runtime source, synthetic tests, and documentation captured in GitHub.
+  Weather Detail is captured manually; automatic sync is not configured/verified.
 - TRMNL → GitHub export is automatic for Home Page; reverse deployment is manual.
   Helpers still require explicit capture; no Actions deployment is configured.
 - Existing Home settings differ only in empty headers/body YAML representation
@@ -40,6 +48,9 @@ See this file's latest commit for the implementation handoff.
 
 ## Validation and known limitations
 
+- Synthetic weather Liquid tests pass: eight slots/seven days, precipitation
+  threshold/window, night icons, zero values, stale and missing-data states.
+- Home template and existing helper settings unchanged by Weather Detail work.
 - Synthetic calendar Liquid tests pass: shared and within-feed deduplication,
   distinct events, source and holiday labels, cancellation, date spans, and missing feeds.
 - Synthetic balance tests pass: percentages, boundary values, missing/invalid
@@ -51,6 +62,9 @@ See this file's latest commit for the implementation handoff.
   footer, which is not proof of the readiness measurement date.
 - Calendar matching is conservative: title/start/end/all-day/location must match;
   S/A labels indicate calendar membership, not attendance. Neither source is edited.
+- Weather Detail uses a 40% precipitation threshold over 24 hourly samples;
+  it is not radar/nowcasting or an alert feed. DST repeated local hours are not
+  disambiguated. Its separate request can briefly differ from Home's forecast.
 - No automated full-layout or device tests; crowded days may clamp/hide content.
   Source polling, Home refresh, and device wake schedules are independent.
 - See [ARCHITECTURE.md](ARCHITECTURE.md) and [DEPLOYMENT.md](DEPLOYMENT.md)
