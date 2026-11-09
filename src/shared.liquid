@@ -27,3 +27,92 @@
   {% endcase %}
 </svg>
 {% endtemplate %}
+
+{% comment %}Readiness adapter and chart binding. Runtime Oura payloads are never stored in this file.{% endcomment %}
+<script>
+/* AlveyBalance:start */
+(function (root) {
+  "use strict";
+  var MAX_AGE_MINUTES = 360;
+  var MONTHS = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+
+  function parseSnapshot(markup, nowSeconds, utcOffsetSeconds) {
+    if (typeof markup !== "string" || !markup.trim()) return { status: "missing", score: null };
+    // The third-party Oura plugin currently exposes rendered markup, not raw scores.
+    // Match only the numeric value immediately followed by its Readiness label.
+    var scoreMatch = markup.match(/<span\b[^>]*class=["'][^"']*\bvalue\b[^"']*["'][^>]*>\s*(\d{1,3})\s*<\/span>\s*<span\b[^>]*>\s*Readiness\s*<\/span>/i);
+    if (!scoreMatch) return { status: "missing", score: null };
+    var score = Number(scoreMatch[1]);
+    if (!Number.isInteger(score) || score < 0 || score > 100) return { status: "invalid", score: null };
+    var updated = markup.match(/Last\s+updated:\s*(\d{1,2})\s+([A-Za-z]{3,9})\s+(\d{1,2}):(\d{2})(?:\s*(AM|PM))?/i);
+    if (!updated || !Number.isFinite(nowSeconds) || !Number.isFinite(utcOffsetSeconds)) return { status: "undated", score: score };
+    var month = MONTHS[updated[2].slice(0, 3).toLowerCase()];
+    var day = Number(updated[1]);
+    var hour = Number(updated[3]);
+    var minute = Number(updated[4]);
+    if (updated[5]) {
+      if (hour < 1 || hour > 12) return { status: "undated", score: score };
+      hour = hour % 12 + (updated[5].toLowerCase() === "pm" ? 12 : 0);
+    }
+    if (month === undefined || day < 1 || day > 31 || hour < 0 || hour > 23 || minute < 0 || minute > 59) return { status: "undated", score: score };
+    var localNow = new Date((nowSeconds + utcOffsetSeconds) * 1000);
+    if (month !== localNow.getUTCMonth() || day !== localNow.getUTCDate()) return { status: "stale", score: score };
+    var updatedMs = Date.UTC(localNow.getUTCFullYear(), month, day, hour, minute);
+    var ageMinutes = (localNow.getTime() - updatedMs) / 60000;
+    if (ageMinutes > MAX_AGE_MINUTES || ageMinutes < -5) return { status: "stale", score: score };
+    return { status: "fresh", score: score };
+  }
+
+  function calculate(stuart, ali) {
+    if (!Number.isFinite(stuart) || !Number.isFinite(ali) || stuart < 0 || stuart > 100 || ali < 0 || ali > 100 || stuart + ali <= 0) return null;
+    var stuartPercent = Math.round(stuart * 100 / (stuart + ali));
+    return { stuart: stuartPercent, ali: 100 - stuartPercent };
+  }
+
+  function buildState(stuartMarkup, aliMarkup, nowSeconds, utcOffsetSeconds) {
+    var stuart = parseSnapshot(stuartMarkup, nowSeconds, utcOffsetSeconds);
+    var ali = parseSnapshot(aliMarkup, nowSeconds, utcOffsetSeconds);
+    var balance = stuart.status === "fresh" && ali.status === "fresh" ? calculate(stuart.score, ali.score) : null;
+    return { stuart: stuart, ali: ali, balance: balance, status: balance ? "ready" : "waiting" };
+  }
+
+  root.AlveyBalance = { parseSnapshot: parseSnapshot, calculate: calculate, buildState: buildState };
+
+  function render() {
+    var card = document.querySelector("[data-balance-card]");
+    if (!card) return;
+    function source(name) {
+      var node = card.querySelector('template[data-balance-source="' + name + '"]');
+      return node && node.content ? node.content.textContent : "";
+    }
+    function text(selector, value) {
+      var node = card.querySelector(selector);
+      if (node) node.textContent = value;
+    }
+    var state = buildState(source("stuart"), source("ali"), Number(card.dataset.now), Number(card.dataset.utcOffset));
+    text("[data-balance-stuart-score]", state.stuart.status === "fresh" ? String(state.stuart.score) : "—");
+    text("[data-balance-ali-score]", state.ali.status === "fresh" ? String(state.ali.score) : "—");
+    var arc = card.querySelector("[data-balance-stuart-arc]");
+    var chart = card.querySelector("[data-balance-chart]");
+    if (state.balance) {
+      text("[data-balance-stuart-percent]", state.balance.stuart + "%");
+      text("[data-balance-ali-percent]", state.balance.ali + "%");
+      text("[data-balance-status]", "Oura readiness");
+      if (arc) arc.setAttribute("stroke-dasharray", state.balance.stuart + " " + state.balance.ali);
+      if (chart) chart.setAttribute("aria-label", "Readiness balance: Stuart " + state.balance.stuart + " percent, Ali " + state.balance.ali + " percent");
+    } else {
+      text("[data-balance-stuart-percent]", "—");
+      text("[data-balance-ali-percent]", "—");
+      text("[data-balance-status]", "Sync Oura");
+      if (arc) arc.setAttribute("stroke-dasharray", "0 100");
+      if (chart) chart.setAttribute("aria-label", "Balance unavailable: current-day readiness needed");
+    }
+    card.dataset.balanceState = state.status;
+  }
+  if (typeof document !== "undefined") {
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", render, { once: true });
+    else render();
+  }
+})(typeof window !== "undefined" ? window : globalThis);
+/* AlveyBalance:end */
+</script>

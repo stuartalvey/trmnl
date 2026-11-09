@@ -21,15 +21,51 @@
     <span class="label label--large">{{ local_now | date: '%A, %B %-d' }}</span>
   </div>
 
-  {% if daily_verse.description != blank %}
-    <div class="flex flex--col gap--small w--full bg--gray-75 rounded--base p--3">
-      <div class="flex flex--row flex--between w--full">
-        <span class="label label--small">VERSE OF THE DAY</span>
-        <span class="label label--small">{{ daily_verse.title | escape }} · NLT</span>
-      </div>
-      <span class="description description--large w--full text--left">{{ daily_verse.description | escape }}</span>
+  <div class="grid grid--cols-12 gap--medium w--full">
+    <div class="col--span-7 flex flex--col flex--left flex--center-y gap--small bg--gray-75 rounded--large p--3">
+      {% if daily_verse.description != blank %}
+        <div class="flex flex--row flex--between w--full">
+          <span class="label label--small">VERSE OF THE DAY</span>
+          <span class="label label--small">{{ daily_verse.title | escape }} · NLT</span>
+        </div>
+        <span class="description description--large w--full text--left">{{ daily_verse.description | escape }}</span>
+      {% else %}
+        <span class="label w--full text--left">Verse of the day unavailable</span>
+      {% endif %}
     </div>
-  {% endif %}
+
+    <div class="col--span-5 flex flex--col gap--small outline outline--muted rounded--large p--2" data-balance-card data-now="{{ trmnl.system.timestamp_utc }}" data-utc-offset="{{ trmnl.user.utc_offset }}">
+      <div class="flex flex--row flex--between w--full">
+        <span class="title title--small">Today's Balance</span>
+        <span class="label label--small label--gray" data-balance-status>Oura readiness</span>
+      </div>
+      <div class="flex flex--row flex--between flex--center-y gap--small w--full">
+        <div class="flex flex--col flex--center-x gap--xsmall">
+          <div class="flex flex--row flex--center-y gap--xsmall">
+            <span class="w--2 h--2 rounded--full bg--black"></span>
+            <span class="label">Stuart</span>
+          </div>
+          <span class="title title--large value--tnums" data-balance-stuart-percent>—</span>
+          <span class="label label--small label--gray">Readiness <span data-balance-stuart-score>—</span></span>
+        </div>
+        <svg class="w--20 h--20 no-shrink" viewBox="0 0 80 80" role="img" aria-label="Readiness balance" data-balance-chart>
+          <circle class="text--gray-40" cx="40" cy="40" r="29" fill="none" stroke="currentColor" stroke-width="10"/>
+          <circle class="text--black" cx="40" cy="40" r="29" fill="none" stroke="currentColor" stroke-width="10" pathLength="100" stroke-dasharray="0 100" transform="rotate(-90 40 40)" data-balance-stuart-arc/>
+          <path class="text--gray-30" d="M40 47 30 37a6 6 0 0 1 10-6 6 6 0 0 1 10 6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+        <div class="flex flex--col flex--center-x gap--xsmall">
+          <div class="flex flex--row flex--center-y gap--xsmall">
+            <span class="w--2 h--2 rounded--full bg--gray-40"></span>
+            <span class="label">Ali</span>
+          </div>
+          <span class="title title--large value--tnums" data-balance-ali-percent>—</span>
+          <span class="label label--small label--gray">Readiness <span data-balance-ali-score>—</span></span>
+        </div>
+      </div>
+      <template data-balance-source="stuart">{{ oura_536089.markup_full | escape }}</template>
+      <template data-balance-source="ali">{{ oura_536097.markup_full | escape }}</template>
+    </div>
+  </div>
 
   <table class="table table--base" data-table-limit="true" data-table-max-height="auto">
     <thead>
