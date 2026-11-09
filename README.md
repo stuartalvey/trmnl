@@ -28,7 +28,7 @@ does not transfer account authorization.
 - **Home Page**, headed **Alvey Command Center**: day/date, family events, games,
   weather icons, Fahrenheit highs/lows, and precipitation probability.
 - Stuart and Ali's Apple Calendars merged with shared-event deduplication,
-  compact S / A / S+A labels, and all-day/multi-day handling.
+  compact S / A / S+A labels (H for the synced holiday calendar), and all-day/multi-day handling.
 - Noblesville, Indiana forecasts from Open-Meteo.
 - Pacers, Colts, Purdue football, Purdue men's basketball, and Butler men's
   basketball schedules from ESPN, with team logos and Eastern start times.

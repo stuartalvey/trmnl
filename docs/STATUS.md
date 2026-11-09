@@ -12,7 +12,7 @@ See this file's latest commit for the implementation handoff.
 - Daily NLT verse beside **Today's Balance**: Stuart/Ali readiness scores,
   normalized percentages, and a black/gray donut with a small heart.
 - Apple Calendars Stuart `535612` and Ali `536125`, merged and deduplicated
-  in Family with S / A / S+A source labels;
+  in Family with S / A / S+A source labels and H for US Holidays;
    verse/weather/sports `536052` / `536062` / `536071`.
 - Healthy third-party Oura instances **Stu's Oura** `536089` and **Ali's Oura**
   `536097`. Home reads their rendered snapshots; no personal payload is committed.
@@ -27,7 +27,7 @@ See this file's latest commit for the implementation handoff.
 
 - Home full/shared templates deployed through MCP; X-model full-screen preview
   verified with both Oura and calendar accounts. Seven dates, verse, games, and
-  weather remain visible. Shared calendar matches appear once.
+  weather remain visible. Shared calendar matches appear once; holiday source events use H.
 - Matching runtime source, synthetic tests, and documentation captured in GitHub.
 - TRMNL → GitHub export is automatic for Home Page; reverse deployment is manual.
   Helpers still require explicit capture; no Actions deployment is configured.
@@ -41,7 +41,7 @@ See this file's latest commit for the implementation handoff.
 ## Validation and known limitations
 
 - Synthetic calendar Liquid tests pass: shared and within-feed deduplication,
-  distinct events, source labels, cancellation, date spans, and missing feeds.
+  distinct events, source and holiday labels, cancellation, date spans, and missing feeds.
 - Synthetic balance tests pass: percentages, boundary values, missing/invalid
   scores, stale/prior-day/future timestamps, and timezone offsets.
 - Both actual source snapshots parse privately; readiness values and screenshots

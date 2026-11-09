@@ -128,3 +128,9 @@ matching risks removing genuinely different events.
 can leave duplicates; distinct times/locations remain separate. No upstream
 calendar records or settings are changed. Preserve cancellation, multi-day,
 missing-source behavior, and verify the seven-day X preview.
+
+### Holiday label refinement, 2026-11-09
+
+The owner requested **H** for the synced holiday calendar. The inspected source
+name is `US Holidays`; use it for classification instead of assigning those
+events to the account owner or guessing from event titles.

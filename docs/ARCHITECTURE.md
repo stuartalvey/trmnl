@@ -162,3 +162,8 @@ Existing all-day end-exclusive and multi-day rules remain. A missing source
 shows an explicit calendar-unavailable notice while retaining the other feed;
 empty healthy feeds show No events scheduled. Synthetic tests execute the actual
 marked Liquid sections in [calendar.test.cjs](../tests/calendar.test.cjs).
+
+Events whose source `calname` is `US Holidays` (case/outer-whitespace insensitive)
+use **H**, overriding the personal source label. Holiday status comes from this
+verified source name, never from words in the event title. Other holiday-feed
+names require explicit mapping if added later.
