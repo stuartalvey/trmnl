@@ -3,8 +3,24 @@
   Weather: Open-Meteo (CC BY 4.0). Event and forecast values remain in TRMNL.
   WMO weather interpretation codes: https://open-meteo.com/en/docs
 {% endcomment %}
-{% assign calendar = apple_calendar_535612 %}
-{% assign events = calendar.events | sort: 'start_full' %}
+{% comment %}CalendarMerge:setup:start{% endcomment %}
+{% comment %}Calendar merge: conservative title/time/type/location matching; no private event fixtures.{% endcomment %}
+{% assign stu_calendar = apple_calendar_535612 %}
+{% assign ali_calendar = apple_calendar_536125 %}
+{% assign stu_events = stu_calendar.events | default: empty | sort: 'start_full' %}
+{% assign ali_events = ali_calendar.events | default: empty | sort: 'start_full' %}
+{% assign events = stu_events | concat: ali_events | sort: 'start_full' %}
+{% capture stu_keys %}{% for event in stu_events %}{% assign event_status = event.status | downcase %}{% unless event_status == 'cancelled' or event_status == 'canceled' %}{%- assign normalized_title = event.summary | strip | downcase -%}
+{%- assign normalized_location = event.location | strip | downcase -%}
+{%- if event.summary != blank and event.start_full != blank and event.end_full != blank -%}
+{%- capture event_key -%}~{{ normalized_title | url_encode }}|{% if event.all_day %}{{ event.start_full | date: '%Y-%m-%d' }}|{{ event.end_full | date: '%Y-%m-%d' }}{% else %}{{ event.start_full | date: '%s' }}|{{ event.end_full | date: '%s' }}{% endif %}|{{ event.all_day }}|{{ normalized_location | url_encode }}~{%- endcapture -%}
+{%- else -%}{%- assign event_key = '' -%}{%- endif -%}{{ event_key }}{% endunless %}{% endfor %}{% endcapture %}
+{% capture ali_keys %}{% for event in ali_events %}{% assign event_status = event.status | downcase %}{% unless event_status == 'cancelled' or event_status == 'canceled' %}{%- assign normalized_title = event.summary | strip | downcase -%}
+{%- assign normalized_location = event.location | strip | downcase -%}
+{%- if event.summary != blank and event.start_full != blank and event.end_full != blank -%}
+{%- capture event_key -%}~{{ normalized_title | url_encode }}|{% if event.all_day %}{{ event.start_full | date: '%Y-%m-%d' }}|{{ event.end_full | date: '%Y-%m-%d' }}{% else %}{{ event.start_full | date: '%s' }}|{{ event.end_full | date: '%s' }}{% endif %}|{{ event.all_day }}|{{ normalized_location | url_encode }}~{%- endcapture -%}
+{%- else -%}{%- assign event_key = '' -%}{%- endif -%}{{ event_key }}{% endunless %}{% endfor %}{% endcapture %}
+{% comment %}CalendarMerge:setup:end{% endcomment %}
 {% assign daily_verse = private_plugin_536052.merge_variables.rss.channel.item | first %}
 {% assign weather = private_plugin_536062.merge_variables %}
 {% assign sports = private_plugin_536071.merge_variables %}
@@ -71,7 +87,7 @@
     <thead>
       <tr>
         <th class="w--24"><span class="label label--gray">DAY</span></th>
-        <th><span class="label label--gray">FAMILY</span></th>
+        <th><span class="label label--gray">FAMILY · S = Stu · A = Ali</span></th>
         <th class="w--64"><span class="label label--gray">GAMES</span></th>
         <th class="w--36"><span class="label label--gray">WEATHER</span></th>
         <th class="w--16"><span class="label label--gray">PRECIP.</span></th>
@@ -98,7 +114,9 @@
           </td>
           <td>
             <div class="flex flex--col gap--small w--full">
+{% comment %}CalendarMerge:day:start{% endcomment %}
               {% assign day_events = 0 %}
+              {% assign seen_keys = '' %}
               {% for event in events %}
                 {% assign event_day = event.start_full | date: '%Y-%m-%d' %}
                 {% assign event_end_day = event.end_full | date: '%Y-%m-%d' %}
@@ -116,19 +134,31 @@
                 {% endif %}
                 {% unless status == 'cancelled' or status == 'canceled' %}
                   {% if on_day %}
+                    {%- assign normalized_title = event.summary | strip | downcase -%}
+{%- assign normalized_location = event.location | strip | downcase -%}
+{%- if event.summary != blank and event.start_full != blank and event.end_full != blank -%}
+{%- capture event_key -%}~{{ normalized_title | url_encode }}|{% if event.all_day %}{{ event.start_full | date: '%Y-%m-%d' }}|{{ event.end_full | date: '%Y-%m-%d' }}{% else %}{{ event.start_full | date: '%s' }}|{{ event.end_full | date: '%s' }}{% endif %}|{{ event.all_day }}|{{ normalized_location | url_encode }}~{%- endcapture -%}
+{%- else -%}{%- assign event_key = '' -%}{%- endif -%}
+                    {% if event_key != blank and seen_keys contains event_key %}{% continue %}{% endif %}
+                    {% assign seen_keys = seen_keys | append: event_key %}
+                    {% assign owner = 'S' %}
+                    {% if event_key != blank and ali_keys contains event_key %}{% assign owner = 'A' %}{% if stu_keys contains event_key %}{% assign owner = 'S+A' %}{% endif %}{% elsif event_key == blank %}{% if ali_events contains event %}{% assign owner = 'A' %}{% endif %}{% endif %}
                     {% assign day_events = day_events | plus: 1 %}
                     <div class="flex flex--row gap--small w--full">
                       <span class="label w--24 text--left">{% if event.all_day %}All day{% elsif event_day < day %}Continues{% else %}{{ event.start | escape }}{% endif %}</span>
+                      <span class="label label--small label--gray w--8 text--center" title="{% if owner == 'S' %}Stuart calendar{% elsif owner == 'A' %}Ali calendar{% else %}Both calendars{% endif %}">{{ owner }}</span>
                       <span class="title title--small text--left stretch" data-clamp="1">{{ event.summary | default: 'Untitled event' | escape }}</span>
                     </div>
                   {% endif %}
                 {% endunless %}
               {% endfor %}
-              {% if calendar == blank or calendar.events == nil %}
+              {% if stu_calendar.events == nil and ali_calendar.events == nil %}
                 <span class="label label--gray w--full text--left">Calendar unavailable</span>
               {% elsif day_events == 0 %}
                 <span class="label label--gray w--full text--left">No events scheduled</span>
               {% endif %}
+              {% if stu_calendar.events == nil and ali_calendar.events != nil %}<span class="label label--small label--gray">Stuart calendar unavailable</span>{% elsif ali_calendar.events == nil and stu_calendar.events != nil %}<span class="label label--small label--gray">Ali calendar unavailable</span>{% endif %}
+{% comment %}CalendarMerge:day:end{% endcomment %}
             </div>
           </td>
           <td>
