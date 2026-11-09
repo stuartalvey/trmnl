@@ -19,8 +19,8 @@
         <span class="title title--small">{{ team.name | escape }}</span>
       </div>
       <span class="label label--small label--gray">{{ team.record | escape }}</span>
-      <span class="label label--small w--full text--center" data-clamp="1">{% if team.standings.conference %}{{ team.standings.conference | escape }}{% if team.standings.division %} · {{ team.standings.division | escape }}{% endif %}{% elsif team.standing != blank %}{{ team.standing | escape }}{% else %}Standings unavailable{% endif %}</span>
-      {% if team.standings.conference_record and team.standings.division == nil %}<span class="label label--small label--gray">Conf {{ team.standings.conference_record | escape }}</span>{% endif %}
+      <div class="flex flex--row flex--center-x w--full"><span class="label label--small">{% if team.standings.conference %}{{ team.standings.conference | escape }}{% if team.standings.division %} · {{ team.standings.division | escape }}{% endif %}{% elsif team.standing != blank %}{{ team.standing | escape }}{% else %}Standings unavailable{% endif %}</span></div>
+      {% if team.standings.conference_record and team.standings.division == nil %}<div class="flex flex--row flex--center-x w--full"><span class="label label--small label--gray">Conf {{ team.standings.conference_record | escape }}</span></div>{% endif %}
       {% if team.status != 'ok' %}<span class="label">Feed unavailable</span>
       {% elsif team.next %}
         <span class="title title--small" data-clamp="1">{{ team.next.matchup | escape }}</span>

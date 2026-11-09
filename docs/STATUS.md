@@ -27,7 +27,7 @@ See this file's latest commit for the implementation handoff.
   five teams' next games/records/latest results, PGA leaderboard/next tournament,
   APEX and NOB current matchup/live score snapshots/projections, ESPN win chances,
   and previous results. Team cards include conference/division positions where
-  applicable; PGA and Fantasy are symmetric enclosed sections.
+  applicable, centered within each team card; PGA and Fantasy are symmetric enclosed sections.
   Both fantasy leagues authenticated and returned valid matchups; separate S2 fields.
   Source: `views/sports/`. No Sites dependency; cookies remain in TRMNL.
 
