@@ -172,3 +172,26 @@ additional playlist entry is needed.
 maximum UV for current UV. Gap missing chart values, handle flat/negative
 forecasts, retain the 24-hour precipitation summary and stale-source warning,
 and continue manual GitHub capture. Home Page and playlist order stay intact.
+
+## 2026-11-09 — Direct ESPN Sports Detail, independent of Sites
+
+**Decision:** Build Sports Detail `536256` with five public team feeds, PGA,
+and APEX/NOB fantasy fetched directly by a GET-only TRMNL transform. Keep its
+source under `views/sports/`, separate from Home and Weather.
+
+**Reason:** The owner explicitly rejected reliance on the Fantasy Parlay site
+and accepted storing ESPN credentials in TRMNL password fields.
+
+**Alternatives:** Reuse or extend the Sites backend; host a separate collector.
+The site was inspected for request logic but is not a runtime dependency.
+
+**Consequences:** Use separate per-league S2 cookies and optional separate NOB
+SWID. Keep cookies out of Git/source/outputs. Check real private schemas before
+claiming live support; live score fields differ from finalized totals. Isolate
+source failures and show snapshot age. Native async runtime worked without a
+manual Node change; verify actual refresh jobs. No fantasy account mutations.
+
+**Design:** Five small team cards above PGA and two large fantasy matchup cards;
+PGA's next tournament has its own card. Match the simple grayscale visual style
+of Weather Detail, preserve long team names with clamping, and keep projections
+and previous results secondary to current scores.

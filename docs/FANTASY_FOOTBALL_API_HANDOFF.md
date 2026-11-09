@@ -102,3 +102,16 @@ This is a **display and informational insights project**. The owner's establishe
 This handoff is based on previously captured user-project context and the earlier ESPN fantasy connector/script description. It is not a checked-in implementation, and no live private ESPN call was made in this task. The live GitHub repo's public schedule helper was inspected on 2026-11-09. No sensitive cookies were copied into this document.
 
 **Next action for Codex:** plan and build the Sports Detail feature using this integration contract while verifying every external assumption and maintaining existing screens.
+
+## Implementation update — 2026-11-09
+
+The owner subsequently authorized direct ESPN calls from TRMNL and rejected a
+Sites/proxy dependency. Sports Detail `536256` is now implemented under
+[views/sports/](../views/sports/); see [ARCHITECTURE.md](ARCHITECTURE.md) and
+[STATUS.md](STATUS.md) for the verified current state. Both leagues authenticated
+successfully after credentials were entered directly in TRMNL. Separate APEX/NOB
+S2 fields are supported; optional NOB SWID falls back to APEX SWID, never its S2.
+Fresh responses confirmed `totalPointsLive` / `totalProjectedPointsLive` for active
+matchups; finalized results use finalized totals. Historical recommendations
+above are retained as provenance and do not override the later owner decision.
+No real scores, team names, payloads, or cookies were added to the repository.

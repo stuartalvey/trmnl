@@ -1,6 +1,6 @@
 # Current project status
 
-Last compared **2026-11-09**, after the Weather Detail curve redesign. Starting documentation
+Last compared **2026-11-09**, after Sports Detail and direct fantasy integration. Starting documentation
 baseline: [c0bd596](https://github.com/stuartalvey/trmnl/commit/c0bd596a98d87734c0f547cb3fcc8ca6c4ef6649).
 See this file's latest commit for the implementation handoff.
 
@@ -23,10 +23,16 @@ See this file's latest commit for the implementation handoff.
   cards: sunrise/sunset, current-hour estimated UV, current wind/gusts/direction,
   and current humidity. Source: `views/weather/`.
 
+- **Sports Detail** `536256`, playlist item `901764` after Weather Detail:
+  five teams' next games/records/latest results, PGA leaderboard/next tournament,
+  APEX and NOB current matchup/live score snapshots/projections and previous results.
+  Both fantasy leagues authenticated and returned valid matchups; separate S2 fields.
+  Source: `views/sports/`. No Sites dependency; cookies remain in TRMNL.
+
 ## Active priorities and pending work
 
-- Iterate on Home Page appearance with the owner. Separate Sports,
-  Health, and Markets/News detail screens remain planned.
+- Iterate on Home Page appearance with the owner. Separate
+  Health and Markets/News detail screens remain planned.
 - Verify on physical TRMNL X when available; server preview is the current visual check.
 
 ## Deployment and synchronization
@@ -37,6 +43,9 @@ See this file's latest commit for the implementation handoff.
 - Weather Detail deployed/configured; hourly polling succeeded and full X preview
   verified after the curve redesign, including all seven days, curve labels,
   precipitation shading, and the four cards.
+- Sports Detail deployed/configured; direct public and both private ESPN sources
+  verified, X/full preview inspected with connected cards. Refresh interval 15 min;
+  render updates periodically, not streaming. Source/settings captured manually.
 - Matching runtime source, synthetic tests, and documentation captured in GitHub.
   Weather Detail is captured manually; automatic sync is not configured/verified.
 - TRMNL → GitHub export is automatic for Home Page; reverse deployment is manual.
@@ -49,6 +58,15 @@ See this file's latest commit for the implementation handoff.
   unrelated BTC entry, and three hidden helper entries were left intact.
 
 ## Validation and known limitations
+
+- Sports Detail transform and synthetic Liquid suites pass, including independent
+  S2 routing, live/final fields, null/zero, expiry, byes/inactive, schema validation,
+  partial failures, dates/DST, PGA, and escaped display values.
+- No real private league payloads or credential values are committed. No write
+  requests are made to ESPN. The season form currently targets 2026.
+- Sports Detail default async runtime and polling jobs work; inline write-time
+  transform trials intermittently reported a local runtime connection error.
+  Home/Weather source and existing helper definitions were not changed.
 
 - Synthetic weather Liquid tests pass: seven-day curves, gaps in temperature
   and precipitation, flat/negative temperatures, current-hour UV selection,

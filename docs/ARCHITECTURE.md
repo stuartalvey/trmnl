@@ -118,7 +118,7 @@ See [TRMNL's data-mode guidance](https://docs.trmnl.com/go/private-api/plugin-da
   translation label. Daily polling is not guaranteed to align with local midnight.
 - Sports has fixture tests; there is no automated full-screen, source-availability,
   or physical-device test suite. Local preview lacks live merge fixtures.
-- Separate Sports, Health, and Markets/News detail screens remain planned.
+- Separate Health and Markets/News detail screens remain planned.
 
 ## Today's Balance
 
@@ -223,3 +223,60 @@ icons are a view-local copy; root Home icons were deliberately left untouched.
 Only full-screen is implemented. Weather Detail has **no verified GitHub Sync**;
 its source/settings were manually captured. Do not import this view into root
 Home Page. See [DEPLOYMENT.md](DEPLOYMENT.md).
+
+## Sports Detail
+
+**Sports Detail** `536256` is a standalone polling private plugin with a direct
+GET-only ESPN transform, light mode, normal padding, framework 3.4.6, 15-minute
+refresh. Visible playlist item `901764` follows Weather Detail. Files live in
+[views/sports/](../views/sports/). Home's helper `536071` is untouched.
+
+Data flow: small public Pacers metadata polling seed → `run(input)` fetches five
+team schedules, PGA scoreboard, and two authenticated ESPN fantasy league reads
+in parallel → sanitized compact JSON → full/shared Liquid → rendered image.
+There is **no Sites app, proxy, hosted collector, or separate fantasy service**.
+
+The five team cards show record, next/live game and latest final result. PGA
+shows the returned current/latest tournament's first five leaderboard entries
+in provider order, its state, and the next calendar event. It is explicitly a
+snapshot, not streaming scores. Public ESPN payload fields were inspected live.
+
+Fantasy APEX `244513322` / team `7` and NOB `35481112` / team `3` use season
+2026, configurable in the form. Requests target only the ESPN fantasy host with
+`mTeam`, `mMatchupScore`, and `mSettings`. Current team names are resolved from
+responses; league/season/team presence is checked. Both authenticated responses
+were verified after the owner entered the credentials. No personal values were
+saved as fixtures or documentation.
+
+Password fields: `espn_s2` / `espn_swid` for APEX; `nob_espn_s2` for NOB and
+optional `nob_espn_swid`, which defaults to APEX's SWID when blank. **S2 never
+falls back across leagues.** Secrets are read only inside the transform, sent
+only as Cookie headers to the fixed ESPN fantasy host, never returned/logged.
+Requests are GET-only, redirects are rejected, and public requests receive no
+cookies. ESPN sessions themselves are not inherently read-only credentials.
+
+Active matchups prefer verified `totalPointsLive` / `totalProjectedPointsLive`
+fields; finalized results use `totalPoints` with a live fallback only if missing.
+Null is distinct from zero. Current matchup and scoring period IDs plus league
+matchup-period mappings determine phase. Previous results must be confirmed
+completed; no result is inferred from the calendar or a partial score. Bye,
+inactive, unknown period/schema, missing auth, access denied, and unavailable
+sources have explicit states. Record and playoff seed come from API team data.
+Projections are omitted when either is missing; they are not guaranteed outcomes.
+
+Sources fail independently. There is no cross-refresh response cache in this
+transform; a source failure renders unavailable instead of silently reusing old
+data. Rendered snapshots older than 30 minutes show a refresh warning. Default
+4.5-second fetch timeouts bound each request. Stat corrections can change results.
+
+The live export currently leaves `serverless_language` blank while details
+report `transform_runtime: serverless`; scheduled refresh jobs successfully run
+async fetch. Do not require a Node switch solely from the blank export. The MCP
+write-time transform preview returned an intermittent localhost connection error;
+subsequent actual refresh jobs completed successfully. Verify refresh results,
+not just the inline transform trial. Historical sports helper Node instructions
+remain specific to that separate helper.
+
+The manifest is intentionally partial and includes only form definitions, never
+saved credential values. Automatic Sync is not configured/verified for this
+plugin; capture only reviewed source and settings manually.

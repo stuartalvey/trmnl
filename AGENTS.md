@@ -49,7 +49,8 @@ this repository, including agents editing TRMNL directly through MCP.
 15. Never commit credentials, API tokens, app-specific passwords, private feed
     URLs, personal calendar/health data, or other secrets. Inspect exports before
     saving them. A masked secret such as `[set]` is not a value to write back.
-    Test fixtures here contain public sports data only.
+    Test fixtures contain public sports data or synthetic examples only, never real
+    private league, calendar, or health payloads.
 
 ## Handoff
 

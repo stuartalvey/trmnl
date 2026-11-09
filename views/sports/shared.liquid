@@ -1,0 +1,2 @@
+{% comment %}Only sanitized score values are rendered; no credential fields in display markup.{% endcomment %}
+{% template fantasy_score %}{% if value != nil %}{{ value | round: 1 }}{% else %}—{% endif %}{% endtemplate %}

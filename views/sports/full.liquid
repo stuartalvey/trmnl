@@ -1,0 +1,81 @@
+{% assign now_ts = trmnl.system.timestamp_utc | plus: 0 %}
+{% assign local_now = now_ts | plus: trmnl.user.utc_offset %}
+{% assign fetched = updated_at | date: '%s' | plus: 0 %}
+{% assign age = now_ts | minus: fetched %}
+<div class="layout layout--col layout--top gap--medium">
+  <div class="flex flex--row flex--between flex--center-y w--full">
+    <div class="flex flex--col gap--xsmall"><span class="title title--large lg:title--xxlarge">Alvey Sports Center</span><span class="label label--gray">{{ local_now | date: '%A, %B %-d' }} · Teams · PGA Tour · Fantasy</span></div>
+    <span class="label label--small label--gray">{% if updated_at == nil %}Waiting for data{% elsif age > 1800 or age < -300 %}Data needs refresh{% else %}Updated {{ fetched | plus: trmnl.user.utc_offset | date: '%-I:%M %p' }} ET{% endif %}</span>
+  </div>
+
+  <div class="flex flex--row gap--small w--full">
+    {% for team in teams %}
+    <div class="flex flex--col gap--small stretch bg--gray-75 rounded--large p--3">
+      <div class="flex flex--row gap--small flex--center-y">
+        {% if team.logo != blank %}<img class="image image-dither w--8 h--8" src="{{ team.logo | escape }}" alt="{{ team.name | escape }}">{% endif %}
+        <span class="title title--small">{{ team.name | escape }}</span>
+      </div>
+      <span class="label label--small label--gray">{{ team.record | escape }}</span>
+      {% if team.status != 'ok' %}<span class="label">Feed unavailable</span>
+      {% elsif team.next %}
+        <span class="title title--small" data-clamp="1">{{ team.next.matchup | escape }}</span>
+        <span class="label label--small">{{ team.next.date_label | escape }} · {{ team.next.time_label | escape }}</span>
+        {% if team.next.state == 'in' %}<span class="title title--small">{{ team.next.score_label | escape }}</span>{% endif %}
+      {% else %}<span class="label label--small">No upcoming game</span>{% endif %}
+      {% if team.last %}<span class="label label--small label--gray">Last: {{ team.last.result | default: 'Final' }} · {{ team.last.score_label | escape }}</span>{% endif %}
+    </div>
+    {% else %}<span class="label label--gray">Team data unavailable · select Node and refresh</span>{% endfor %}
+  </div>
+
+  <div class="grid grid--cols-12 gap--medium w--full">
+    <div class="col--span-6 flex flex--col gap--small w--full">
+      <div class="flex flex--col gap--small outline outline--muted rounded--large p--3 w--full">
+      <div class="flex flex--row flex--between w--full"><span class="title">PGA Tour</span><span class="label label--small label--gray">{{ pga.state | default: 'Unavailable' | escape }}</span></div>
+      <span class="title title--small w--full text--left" data-clamp="2">{{ pga.name | default: 'Tournament data unavailable' | escape }}</span>
+      {% if pga.status == 'ok' %}
+        <table class="table table--small"><tbody>
+        {% for player in pga.leaders %}
+          <tr><td class="w--8"><span class="label label--gray">{{ player.position | escape }}</span></td><td><span class="title title--small">{{ player.name | escape }}</span></td><td class="w--12 text--right"><span class="title">{{ player.score | escape }}</span></td></tr>
+        {% else %}<tr><td><span class="label label--gray">Leaderboard not available yet</span></td></tr>{% endfor %}
+        </tbody></table>
+        
+      {% else %}<span class="label label--gray">PGA feed unavailable</span>{% endif %}
+      </div>
+      {% if pga.next %}
+      <div class="flex flex--col gap--small bg--gray-75 rounded--large p--3 w--full">
+        <span class="label label--small label--gray">NEXT TOURNAMENT</span>
+        <span class="title title--large w--full text--left">{{ pga.next.date | date: '%a, %b %-d' }}</span>
+        <span class="title title--small w--full text--left" data-clamp="2">{{ pga.next.name | escape }}</span>
+      </div>{% endif %}
+    </div>
+
+    <div class="col--span-6 flex flex--col gap--small w--full">
+      {% for league in fantasy %}
+      <div class="flex flex--col gap--small bg--gray-75 rounded--large p--3 w--full">
+        <div class="flex flex--row flex--between w--full"><span class="title">{{ league.name | escape }}</span><span class="label label--small label--gray">{% if league.week != nil %}Week {{ league.week }}{% else %}ESPN Fantasy{% endif %}</span></div>
+        {% if league.status == 'ok' %}
+          <div class="flex flex--row flex--between w--full"><span class="label label--small">{{ league.record | escape }}{% if league.rank != nil and league.rank > 0 %} · Seed {{ league.rank }}{% endif %}</span><span class="label label--small label--gray">{{ league.matchup.state | default: 'No matchup returned' | escape }}</span></div>
+          {% if league.matchup %}
+            <div class="flex flex--row gap--small flex--between w--full">
+              <div class="flex flex--col gap--xsmall stretch"><span class="title title--small w--full text--left" data-clamp="2">{{ league.team | escape }}</span><span class="value value--large">{% render "fantasy_score", value: league.matchup.my_score %}</span></div>
+              <span class="label label--gray">vs</span>
+              <div class="flex flex--col gap--xsmall stretch"><span class="title title--small w--full text--right" data-clamp="2">{{ league.matchup.opponent | escape }}</span><span class="value value--large w--full text--right">{% render "fantasy_score", value: league.matchup.opponent_score %}</span></div>
+            </div>
+            {% if league.matchup.my_projected != nil and league.matchup.opponent_projected != nil %}<span class="label label--small label--gray">Projected {{ league.matchup.my_projected | round: 1 }} – {{ league.matchup.opponent_projected | round: 1 }}</span>{% endif %}
+          {% endif %}
+          <span class="label label--small label--gray">{% if league.previous %}Last: {{ league.previous.result | default: 'Final' }} · {% render "fantasy_score", value: league.previous.my_score %} – {% render "fantasy_score", value: league.previous.opponent_score %}{% else %}No verified completed matchup{% endif %}</span>
+        {% elsif league.status == 'inactive' %}
+          <span class="label">Offseason / league inactive</span><span class="label label--small label--gray">No active matchup is confirmed.</span>
+        {% elsif league.status == 'needs_auth' %}
+          <span class="label">Connect ESPN to show your matchup</span><span class="label label--small label--gray">Enter this league’s ESPN S2 and SWID in settings.</span>
+        {% elsif league.status == 'auth_failed' %}
+          <span class="label">ESPN session expired or access denied</span><span class="label label--small label--gray">Update the cookies in plugin settings.</span>
+        {% else %}
+          <span class="label">Fantasy data unavailable</span><span class="label label--small label--gray">{{ league.status | replace: '_', ' ' | escape }} · Public sports remain available.</span>
+        {% endif %}
+      </div>
+      {% else %}<span class="label label--gray">Fantasy connection pending · select Node and refresh</span>{% endfor %}
+    </div>
+  </div>
+</div>
+<div class="title_bar"><span class="title">Sports Detail</span><span class="instance">ESPN · {{ season | default: 2026 }} Fantasy · Read-only · 15-minute refresh</span></div>

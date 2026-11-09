@@ -6,6 +6,7 @@
 | --- | --- |
 | Home Page: TRMNL → GitHub | Automatic GitHub Sync exports saves to root `src/`; `trmnl-sync[bot]` commits and matching live files were verified |
 | GitHub → Home Page | **Manual deployment**: use TRMNL's GitHub import or explicitly write the reviewed files through MCP |
+| Sports Detail ↔ GitHub | Manual capture/deployment of `views/sports/`; never export saved credentials |
 | Weather Detail ↔ GitHub | Manual capture/deployment of `views/weather/`; automatic sync is not verified |
 | Helper data sources ↔ GitHub | Manifests and sports transform were captured manually; automatic synchronization is not verified |
 | Tests/deployment from GitHub Actions | None: no `.github/workflows/` files exist |
@@ -174,3 +175,42 @@ Playlist item `901626` is visible immediately after Home. Preserve unrelated
 items and schedules. For rollback, restore reviewed prior view files and deploy
 them explicitly; to withdraw only the new view, hide that playlist item. Leave
 Home and its hidden weather helper intact. A Git revert alone does not deploy.
+
+## Sports Detail deployment and credentials
+
+Target `536256`; source/manifest are [views/sports/](../views/sports/).
+Map `full.liquid` / `shared.liquid` / `transform.js` to `markup_full` /
+`markup_shared` / `transform_js`. The reviewed `settings.yml` is partial;
+apply represented settings, preserve unknown live fields and saved form values.
+Do not enable GitHub Sync without verifying it excludes credential values.
+
+Tests:
+
+```sh
+node --check views/sports/transform.js
+node views/sports/test-transform.cjs
+NODE_PATH=/tmp/trmnl-test-deps/node_modules node views/sports/test-template.cjs
+```
+
+Use the LiquidJS installation instructions above for the template suite. Tests
+use synthetic private-league data and cover both credential pairs/isolation,
+missing/expired auth, current live versus final scores, projections, bye/inactive,
+missing fields, deduplication, date/DST, public team statuses, PGA, and escaping.
+Never save real league snapshots, cookies, or preview images in GitHub.
+
+Enter cookies directly in the TRMNL form: APEX ESPN S2/SWID; NOB ESPN S2; optional
+NOB SWID (blank reuses APEX SWID). Keep existing keynames when editing the form
+so saved values survive. NOB never borrows APEX S2. Change the season explicitly
+when needed. The existing secrets in the Sites app are unrelated to this setup.
+
+Write reviewed code, start polling refresh, await completion, inspect sanitized
+source statuses/schema, then preview X/full with both connected cards. A saved
+transform's inline MCP trial can fail while its actual refresh works; inspect
+the refresh job before diagnosing runtime failure. The current default runtime
+was verified; a Node selection was not necessary for this new plugin.
+
+Keep item `901764` visible after Weather Detail and preserve other playlist
+items. Read back all three source files, confirm GitHub contents, and record
+preview separately from physical-device verification. Roll back only affected
+Sports Detail files; hiding this item withdraws the screen without touching
+Home, Weather, helpers, or ESPN records. A Git revert alone does not deploy.

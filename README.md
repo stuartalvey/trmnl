@@ -37,6 +37,8 @@ does not transfer account authorization.
   basketball schedules from ESPN, with team logos and Eastern start times.
 - Daily NLT verse from DailyVerses.
 - **Today's Balance**: Stuart/Ali readiness scores and a normalized percentage donut beside the verse.
+- **Sports Detail**: five team cards, PGA leaderboard/next tournament, and direct
+  ESPN APEX/NOB fantasy matchups, live score snapshots/projections, and recent results.
 - Full-screen landscape layout using TRMNL framework **3.4.6**.
 
 Additional detail screens remain planned. See
@@ -47,6 +49,7 @@ Additional detail screens remain planned. See
 | Path | Purpose |
 | --- | --- |
 | [src/](src/) | Home Page Liquid templates and exported plugin settings |
+| [views/sports/](views/sports/) | Sports Detail templates, direct ESPN collector, tests, and credential-free manifest |
 | [views/weather/](views/weather/) | Standalone Weather Detail templates and reviewed polling settings |
 | [tests/](tests/) | Synthetic calendar merge, weather, and Oura balance tests; no personal data |
 | [.trmnlp.yml](.trmnlp.yml) | Optional development-preview configuration |
@@ -74,9 +77,10 @@ The sports and balance tests require Node.js 20+ and no installed packages:
 ```sh
 node data-sources/indiana-sports/test-transform.cjs
 node tests/balance.test.cjs
+node views/sports/test-transform.cjs
 ```
 
-Calendar and weather tests additionally need LiquidJS 10; see the commands in
+Calendar, weather, and Sports Detail template tests additionally need LiquidJS 10; see the commands in
 [DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 Optional local/cloud template preview uses [trmnlp](https://github.com/usetrmnl/trmnlp).
