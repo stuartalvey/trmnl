@@ -97,9 +97,12 @@
             {% if weather_index != nil %}
               {% assign code = weather.daily.weather_code[weather_index] %}
               {% capture condition %}{% case code %}{% when 0 %}Sunny{% when 1 %}Mostly sunny{% when 2 %}Partly cloudy{% when 3 %}Overcast{% when 45, 48 %}Fog{% when 51, 53, 55 %}Drizzle{% when 56, 57 %}Freezing drizzle{% when 61 %}Light rain{% when 63 %}Rain{% when 65 %}Heavy rain{% when 66, 67 %}Freezing rain{% when 71 %}Light snow{% when 73 %}Snow{% when 75 %}Heavy snow{% when 77 %}Snow grains{% when 80, 81, 82 %}Rain showers{% when 85, 86 %}Snow showers{% when 95 %}Thunderstorms{% when 96, 99 %}Storms / hail{% else %}Unavailable{% endcase %}{% endcapture %}
-              <div class="flex flex--col gap--xsmall w--full">
-                <span class="title title--small w--full text--left">H {% if weather.daily.temperature_2m_max[weather_index] != nil %}{{ weather.daily.temperature_2m_max[weather_index] | round }}°{% else %}—{% endif %} · L {% if weather.daily.temperature_2m_min[weather_index] != nil %}{{ weather.daily.temperature_2m_min[weather_index] | round }}°{% else %}—{% endif %}</span>
-                <span class="label w--full text--left">{{ condition | strip }}</span>
+              <div class="flex flex--row gap--small w--full">
+                {% render "weather_icon", code: code, description: condition %}
+                <div class="flex flex--col gap--xsmall">
+                  <span class="title title--small w--full text--left">H {% if weather.daily.temperature_2m_max[weather_index] != nil %}{{ weather.daily.temperature_2m_max[weather_index] | round }}°{% else %}—{% endif %}</span>
+                  <span class="label label--gray w--full text--left">L {% if weather.daily.temperature_2m_min[weather_index] != nil %}{{ weather.daily.temperature_2m_min[weather_index] | round }}°{% else %}—{% endif %}</span>
+                </div>
               </div>
             {% else %}
               <span class="label label--gray">Unavailable</span>
