@@ -12,7 +12,7 @@
 {% assign local_now = now_ts | plus: trmnl.user.utc_offset %}
 {% assign today = local_now | date: '%Y-%m-%d' %}
 
-<div class="layout layout--col layout--top gap--medium">
+<div class="layout layout--col layout--top gap--small">
   <div class="flex flex--row flex--between flex--center-y w--full">
     <div class="flex flex--col gap--xsmall">
       <span class="title title--large lg:title--xxlarge w--full text--left">Alvey Command Center</span>
@@ -46,7 +46,7 @@
             <span class="label">Stuart</span>
           </div>
           <span class="title title--large value--tnums" data-balance-stuart-percent>—</span>
-          <span class="label label--small label--gray">Readiness <span data-balance-stuart-score>—</span></span>
+          <span class="label label--small label--gray">Readiness: <span data-balance-stuart-score>—</span></span>
         </div>
         <svg class="w--20 h--20 no-shrink" viewBox="0 0 80 80" role="img" aria-label="Readiness balance" data-balance-chart>
           <circle class="text--gray-40" cx="40" cy="40" r="29" fill="none" stroke="currentColor" stroke-width="10"/>
@@ -59,7 +59,7 @@
             <span class="label">Ali</span>
           </div>
           <span class="title title--large value--tnums" data-balance-ali-percent>—</span>
-          <span class="label label--small label--gray">Readiness <span data-balance-ali-score>—</span></span>
+          <span class="label label--small label--gray">Readiness: <span data-balance-ali-score>—</span></span>
         </div>
       </div>
       <template data-balance-source="stuart">{{ oura_536089.markup_full | escape }}</template>
