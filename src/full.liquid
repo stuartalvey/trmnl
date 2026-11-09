@@ -3,6 +3,7 @@
   Use the Apple Calendar timestamps and its formatted times, preserving all-day flags.
 {% endcomment %}
 {% assign calendar = apple_calendar_535612 %}
+{% assign daily_verse = private_plugin_536052.merge_variables.verse.details %}
 {% assign events = calendar.events | sort: 'start_full' %}
 {% assign now_ts = trmnl.system.timestamp_utc | plus: 0 %}
 {% assign local_now = now_ts | plus: trmnl.user.utc_offset %}
@@ -21,9 +22,20 @@
 
 <div class="layout layout--col gap--large">
   <div class="flex flex--row flex--between flex--center-y w--full">
-    <span class="title title--large lg:title--xxlarge">Today &amp; ahead</span>
+    <span class="title title--large lg:title--xxlarge">Home Page</span>
     <span class="label label--large">{{ local_now | date: '%A, %B %-d' }}</span>
   </div>
+
+  {% if daily_verse.text != blank %}
+    <div class="flex flex--col gap--small w--full bg--gray-75 rounded--base p--3">
+      <div class="flex flex--row flex--between w--full">
+        <span class="label label--small">VERSE OF THE DAY</span>
+        <span class="label label--small">{{ daily_verse.reference | escape }} · {{ daily_verse.version | escape }}</span>
+      </div>
+      <span class="description description--large w--full text--left">{{ daily_verse.text | escape }}</span>
+      <span class="label label--small w--full text--left">OurManna.com</span>
+    </div>
+  {% endif %}
   {% if calendar == blank or calendar.events == nil %}
     <div class="flex flex--col flex--center-x flex--center-y gap--small stretch">
       <span class="title title--large">Calendar unavailable</span>
@@ -81,6 +93,6 @@
   {% endif %}
 </div>
 <div class="title_bar">
-  <span class="title">iCloud Calendar</span>
+  <span class="title">{{ trmnl.plugin_settings.instance_name | escape }}</span>
   <span class="instance">{{ event_count }} {% if event_count == 1 %}event{% else %}events{% endif %}</span>
 </div>
