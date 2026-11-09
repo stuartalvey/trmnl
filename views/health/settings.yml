@@ -1,0 +1,15 @@
+# Reviewed partial manifest; no health values or credentials.
+---
+id: 536354
+name: Health Detail
+strategy: plugin_merge
+refresh_interval: 15
+framework_version: 3.4.6
+dark_mode: 'no'
+no_screen_padding: 'no'
+custom_fields:
+  - keyname: step_goal
+    field_type: number
+    name: Daily step display goal
+    description: Adjustable reference line, not a personalized health recommendation.
+    default: 10000

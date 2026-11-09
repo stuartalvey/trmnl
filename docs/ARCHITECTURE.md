@@ -118,7 +118,7 @@ See [TRMNL's data-mode guidance](https://docs.trmnl.com/go/private-api/plugin-da
   translation label. Daily polling is not guaranteed to align with local midnight.
 - Sports has fixture tests; there is no automated full-screen, source-availability,
   or physical-device test suite. Local preview lacks live merge fixtures.
-- Separate Health and Markets/News detail screens remain planned.
+- A separate Markets/News detail screen remains planned.
 
 ## Today's Balance
 
@@ -303,3 +303,52 @@ finite fraction in [0,1] and converted to a percentage (one decimal maximum).
 Zero is valid; missing/out-of-range probabilities hide the row. Both values
 must be available; the other side is never inferred. Confirmed final/bye matchups
 omit probabilities. These are provider estimates, not guaranteed results.
+
+## Health Detail — first draft
+
+**Health Detail** `536354` is full-screen Plugin Merge, framework 3.4.6,
+light mode, normal padding, 15-minute render refresh. Playlist item
+`901897` follows Sports Detail. Source is [views/health/](../views/health/).
+The first draft does not wait for or claim Ali's Apple Health connection.
+
+Data flow:
+
+- Existing **Stu's Apple Health** `536212` webhook →
+  `private_plugin_536212.merge_variables` → movement panel. The existing
+  phone/export process is untouched. Its actual payload has metrics, trend
+  summaries, and `daily_history[]` records with local `date` and `m.step_count`,
+  `m.active_energy`, and `m.resting_heart_rate`. There are no hourly samples.
+- Existing Oura `536089` / `536097` rendered markup → escaped inert templates →
+  shared script parses numeric Readiness/Sleep/Activity labels → score gauges
+  before server image capture. Reuses Home's strict same-day/six-hour footer
+  freshness logic. Footer freshness is not proof of measurement date.
+- Protein Social's existing public GET endpoint
+  `https://proteinsocial.com/api/v1/public/workouts/stu` → new hourly polling
+  helper **Workout Consistency — Data** `536353` → compact eight-week
+  summaries → `private_plugin_536353.merge_variables` → heatmap and weekly bars.
+  Helper playlist item `901896` stays hidden. No Site changes,
+  credentials, login cookies, or new backend are needed. Standard User-Agent
+  header was required for the public feed; default Python requests returned 403.
+
+Movement shows today's record only when its local date matches today. Missing
+step days render dashes, never zero bars. The displayed goal is configurable,
+default **10,000**, shown as a dashed line. The solid-gray reference is the mean
+of available prior-date records, not a same-hour baseline; prior snapshots may
+not be finalized end-of-day totals. The feed currently has little stored history.
+**No hourly curve or historical average-by-time is implemented or synthesized.**
+Ali's Oura is active; her Apple Health is explicitly labeled not connected.
+
+The workout helper reads schema 1.0, requests local-date boundaries covering
+eight Monday–Sunday columns (including this week), paginates at 50 records for
+up to five pages, and deduplicates session IDs. It counts completed sessions
+by local start date, excludes future/partial/invalid records, and sums only
+known nonnegative durations. Multiple sessions can share a day; heatmap black
+means at least one logged session. Gray means none logged within a complete
+response, not no exercise. Outline means future/unknown. Pagination cap/failure
+marks partial/unavailable rather than implying complete zero coverage. Weekly
+bars count sessions, and current week is partial by calendar definition.
+
+Only code, public endpoint configuration, and synthetic test data are captured
+in GitHub. Runtime health payloads/screenshots remain private. Both new plugins
+are manually captured; automatic Sync is not configured/verified. Existing
+Home, Weather, Sports, Oura, and Apple Health definitions were not modified.

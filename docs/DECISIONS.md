@@ -214,3 +214,22 @@ actual ESPN model probabilities instead of deriving odds from projected scores.
 shared feeds and independent schedule fallbacks. Validate probabilities and
 preserve zero/missing distinctions. Verify both outer borders and the final
 fantasy result row fit above the footer in an X preview.
+
+## 2026-11-09 — Health Detail draft using available sources
+
+**Decision:** Add a Plugin Merge Health Detail with Stuart's daily movement,
+both Oura score panels, and an eight-week Protein Social workout heatmap and
+weekly bars. Use a separate hidden hourly workout normalization helper.
+
+**Reason:** The owner requested a visual first draft immediately, without waiting
+for Ali's Apple Health. The existing public Protein Social API was inspected
+and a fresh read verified; it needs no new backend or token.
+
+**Alternatives:** Wait for both phones or fabricate an hourly step baseline.
+Neither meets the request. The current Apple Health feed lacks intraday data,
+so show honest daily totals and a configurable 10,000-step reference goal.
+
+**Consequences:** Ali's Apple Health remains an explicit pending state. Same-hour
+step averages need a later detailed export/history collection workflow. Treat
+logged sessions separately from all exercise; preserve missing dates, partial
+coverage, Oura freshness, and health-data privacy. Use synthetic tests only.

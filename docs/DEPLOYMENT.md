@@ -219,3 +219,34 @@ Sports Detail enclosure checks: ensure PGA and Fantasy outer borders are both
 fully visible, the Fantasy Football heading is present, and NOB's previous
 result row stays above the footer. Collector tests also cover group standings,
 conference/division labeling, probability bounds, null values, and valid 0% odds.
+
+## Health Detail draft deployment
+
+Targets: Health Detail `536354`, Workout Consistency — Data
+`536353`. Manifests are partial; never replay saved secret values.
+
+- [views/health/full.liquid](../views/health/full.liquid) → Health `markup_full`.
+- [views/health/shared.liquid](../views/health/shared.liquid) → Health `markup_shared`.
+- [views/health/settings.yml](../views/health/settings.yml) → Plugin Merge,
+  framework/padding, 15-minute refresh, configurable `step_goal` form definition.
+- [data-sources/workout-consistency/transform.js](../data-sources/workout-consistency/transform.js)
+  → workout helper `transform_js`; its sibling settings record polling seed,
+  User-Agent, and hourly refresh. Set a new polling host before adding headers;
+  MCP rejects combined host/header changes. No auth header is used here.
+
+```sh
+node --check data-sources/workout-consistency/transform.js
+NODE_PATH=/tmp/trmnl-test-deps/node_modules node views/health/test-health.cjs
+```
+
+Use the LiquidJS 10 install instructions above. Tests use synthetic records and
+markup: duplicate/completed/future sessions, local dates/DST, partial coverage,
+pagination limits and failures, Oura stale/zero values, and missing-day display.
+
+Deploy dependencies first, refresh/poll the workout job, verify compact status
+and eight-week shape, then inspect an X/full Health preview. Verify all panels,
+weekday labels, legends, and footer fit. Keep helper `901896`
+hidden and Health `901897` visible after Sports. Capture code manually;
+never commit live health data or previews. A successful preview does not verify
+a physical screen. Roll back these new files/playlist entries independently of
+existing source plugins; do not reset the phone's webhook data.

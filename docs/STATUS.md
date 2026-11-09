@@ -1,6 +1,6 @@
 # Current project status
 
-Last compared **2026-11-09**, after Sports Detail enclosure/standings refinement. Starting documentation
+Last compared **2026-11-09**, after the first Health Detail draft. Starting documentation
 baseline: [c0bd596](https://github.com/stuartalvey/trmnl/commit/c0bd596a98d87734c0f547cb3fcc8ca6c4ef6649).
 See this file's latest commit for the implementation handoff.
 
@@ -31,10 +31,18 @@ See this file's latest commit for the implementation handoff.
   Both fantasy leagues authenticated and returned valid matchups; separate S2 fields.
   Source: `views/sports/`. No Sites dependency; cookies remain in TRMNL.
 
+- **Health Detail — first draft** `536354`, item `901897`
+  after Sports: Stuart's daily steps/goal/reference chart, active energy/resting
+  HR, both Oura readiness/sleep/activity gauges, and eight-week Protein Social
+  workout heatmap/weekly counts. Hidden workout helper `536353`
+  (item `901896`) polls hourly. Source: `views/health/` and
+  `data-sources/workout-consistency/`.
+
 ## Active priorities and pending work
 
-- Iterate on Home Page appearance with the owner. Separate
-  Health and Markets/News detail screens remain planned.
+- Iterate on Home Page appearance with the owner. Markets/News detail remains planned.
+- Health next: connect Ali's own Apple Health feed and obtain hourly steps/history
+  for today-versus-usual-time curves. Neither blocks the deployed first draft.
 - Verify on physical TRMNL X when available; server preview is the current visual check.
 
 ## Deployment and synchronization
@@ -60,6 +68,16 @@ See this file's latest commit for the implementation handoff.
   unrelated BTC entry, and three hidden helper entries were left intact.
 
 ## Validation and known limitations
+
+- Health draft: live source namespaces inspected, workout API/read helper verified,
+  X/full preview checked. Synthetic health/workout/Liquid tests pass. Goal defaults
+  to 10,000 and is editable; missing days are dashes. Prior-day average uses only
+  existing records, not a same-time baseline. No hourly curve is implemented.
+- Ali's Apple Health remains unconnected; both Oura panels work independently.
+  Oura freshness uses snapshot footer time, not measurement date. Workout charts
+  describe logged completed sessions, not all physical activity.
+- Health view and workout helper manually captured in GitHub; no automatic sync
+  claim. Other existing dashboard/source definitions were left intact.
 
 - Sports Detail transform and synthetic Liquid suites pass, including independent
   S2 routing, live/final fields, null/zero, expiry, byes/inactive, schema validation,

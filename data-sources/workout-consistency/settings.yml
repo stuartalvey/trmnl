@@ -1,0 +1,10 @@
+# Public read-only feed. No personal session payloads belong in GitHub.
+---
+id: 536353
+name: Workout Consistency — Data
+strategy: polling
+polling_verb: get
+polling_url: 'https://proteinsocial.com/api/v1/public/workouts/stu?limit=1&status=completed'
+polling_headers: 'User-Agent: Mozilla/5.0'
+refresh_interval: 60
+framework_version: 3.4.6
