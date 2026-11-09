@@ -1,0 +1,16 @@
+# Hidden ESPN schedule source for Home Page (535610).
+# Playlist item 901518 stays hidden; Home Page reads private_plugin_536071.merge_variables.
+# Serverless must be set to Node in TRMNL's browser editor.
+# transform.js fetches the five team schedules in parallel and returns only 7 local days.
+# This small polling seed avoids downloading the full schedules before the VM runs.
+# Men's basketball: Purdue and Butler. Times: America/Indiana/Indianapolis (DST-aware).
+# Test with: node data-sources/indiana-sports/test-transform.cjs
+---
+id: 536071
+name: Indiana Sports — Data
+strategy: polling
+polling_verb: get
+polling_url: https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/11
+refresh_interval: 60
+framework_version: 3.4.6
+serverless_language: node
