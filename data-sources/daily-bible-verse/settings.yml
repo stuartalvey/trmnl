@@ -1,12 +1,12 @@
 # Hidden data source for Home Page (plugin setting 535610).
 # Playlist item 901495 stays hidden; Plugin Merge reads this source.
-# Source variables: private_plugin_536052.merge_variables.verse.details
-# The provider supplies a daily verse and its translation; no API key is required.
+# Source variables: private_plugin_536052.merge_variables.rss.channel.item
+# DailyVerses supplies the NLT verse of the day as the first RSS item; no API key is required.
 ---
 id: 536052
 name: Daily Bible Verse — Data
 strategy: polling
 polling_verb: get
-polling_url: https://beta.ourmanna.com/api/v1/get?format=json&order=daily
+polling_url: https://dailyverses.net/en/nlt-rss.xml
 refresh_interval: 1440
 framework_version: 3.4.6
