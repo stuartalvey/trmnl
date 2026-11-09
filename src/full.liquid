@@ -87,7 +87,7 @@
     <thead>
       <tr>
         <th class="w--24"><span class="label label--gray">DAY</span></th>
-        <th><span class="label label--gray">FAMILY · S = Stu · A = Ali</span></th>
+        <th><span class="label label--gray">FAMILY · S = Stu · A = Ali · H = Holiday</span></th>
         <th class="w--64"><span class="label label--gray">GAMES</span></th>
         <th class="w--36"><span class="label label--gray">WEATHER</span></th>
         <th class="w--16"><span class="label label--gray">PRECIP.</span></th>
@@ -143,10 +143,12 @@
                     {% assign seen_keys = seen_keys | append: event_key %}
                     {% assign owner = 'S' %}
                     {% if event_key != blank and ali_keys contains event_key %}{% assign owner = 'A' %}{% if stu_keys contains event_key %}{% assign owner = 'S+A' %}{% endif %}{% elsif event_key == blank %}{% if ali_events contains event %}{% assign owner = 'A' %}{% endif %}{% endif %}
+                    {% assign source_calendar = event.calname | strip | downcase %}
+                    {% if source_calendar == 'us holidays' %}{% assign owner = 'H' %}{% endif %}
                     {% assign day_events = day_events | plus: 1 %}
                     <div class="flex flex--row gap--small w--full">
                       <span class="label w--24 text--left">{% if event.all_day %}All day{% elsif event_day < day %}Continues{% else %}{{ event.start | escape }}{% endif %}</span>
-                      <span class="label label--small label--gray w--8 text--center" title="{% if owner == 'S' %}Stuart calendar{% elsif owner == 'A' %}Ali calendar{% else %}Both calendars{% endif %}">{{ owner }}</span>
+                      <span class="label label--small label--gray w--8 text--center" title="{% if owner == 'H' %}Holiday{% elsif owner == 'S' %}Stuart calendar{% elsif owner == 'A' %}Ali calendar{% else %}Both calendars{% endif %}">{{ owner }}</span>
                       <span class="title title--small text--left stretch" data-clamp="1">{{ event.summary | default: 'Untitled event' | escape }}</span>
                     </div>
                   {% endif %}
