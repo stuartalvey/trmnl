@@ -1,0 +1,16 @@
+# Hidden hourly weather source for Home Page (plugin setting 535610).
+# Playlist item 901506 remains hidden while Plugin Merge reads its data.
+# Source namespace: private_plugin_536062.merge_variables
+# Noblesville, Indiana city center: 40.0456,-86.0086.
+# Daily dates use America/Indiana/Indianapolis; temperatures are Fahrenheit.
+# 14 forecast days are fetched; Home Page displays a rolling 7-day agenda.
+# precipitation_probability_max is the daily chance of precipitation, including snow.
+# Weather data: Open-Meteo, CC BY 4.0 (https://open-meteo.com/).
+---
+id: 536062
+name: Noblesville Weather — Data
+strategy: polling
+polling_verb: get
+polling_url: 'https://api.open-meteo.com/v1/forecast?latitude=40.0456&longitude=-86.0086&current=temperature_2m,is_day,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=fahrenheit&timezone=America%2FIndiana%2FIndianapolis&forecast_days=14'
+refresh_interval: 60
+framework_version: 3.4.6
