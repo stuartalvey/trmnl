@@ -1,12 +1,12 @@
 ---
-strategy: polling
+strategy: plugin_merge
 no_screen_padding: 'no'
 dark_mode: 'no'
 static_data: ''
 polling_verb: get
 framework_version: 3.4.6
 serverless_language: ''
-refresh_interval_floor: ''
+refresh_interval_floor: '5'
 polling_url: ''
 polling_headers: ''
 polling_body: ''
@@ -14,5 +14,5 @@ id: 535610
 oauth_enabled: 'false'
 oauth_pkce_enabled: 'no'
 name: Codex
-description:
-refresh_interval:
+description: ''
+refresh_interval: 15
