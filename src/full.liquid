@@ -11,7 +11,7 @@
 {% assign local_now = now_ts | plus: trmnl.user.utc_offset %}
 {% assign today = local_now | date: '%Y-%m-%d' %}
 
-<div class="layout layout--col gap--medium">
+<div class="layout layout--col layout--top gap--medium">
   <div class="flex flex--row flex--between flex--center-y w--full">
     <div class="flex flex--col gap--xsmall">
       <span class="title title--large lg:title--xxlarge w--full text--left">Alvey Command Center</span>
@@ -33,7 +33,7 @@
   <table class="table table--base" data-table-limit="true" data-table-max-height="auto">
     <thead>
       <tr>
-        <th class="w--24"><span class="label label--gray">DAY</span></th>
+        <th class="w--32"><span class="label label--gray">DAY</span></th>
         <th><span class="label label--gray">SCHEDULE</span></th>
         <th class="w--44"><span class="label label--gray">FORECAST</span></th>
         <th class="w--20"><span class="label label--gray">PRECIP.</span></th>
@@ -98,7 +98,7 @@
               {% assign code = weather.daily.weather_code[weather_index] %}
               {% capture condition %}{% case code %}{% when 0 %}Sunny{% when 1 %}Mostly sunny{% when 2 %}Partly cloudy{% when 3 %}Overcast{% when 45, 48 %}Fog{% when 51, 53, 55 %}Drizzle{% when 56, 57 %}Freezing drizzle{% when 61 %}Light rain{% when 63 %}Rain{% when 65 %}Heavy rain{% when 66, 67 %}Freezing rain{% when 71 %}Light snow{% when 73 %}Snow{% when 75 %}Heavy snow{% when 77 %}Snow grains{% when 80, 81, 82 %}Rain showers{% when 85, 86 %}Snow showers{% when 95 %}Thunderstorms{% when 96, 99 %}Storms / hail{% else %}Unavailable{% endcase %}{% endcapture %}
               <div class="flex flex--col gap--xsmall w--full">
-                <span class="title title--small w--full text--left">H {{ weather.daily.temperature_2m_max[weather_index] | round }}° · L {{ weather.daily.temperature_2m_min[weather_index] | round }}°</span>
+                <span class="title title--small w--full text--left">H {% if weather.daily.temperature_2m_max[weather_index] != nil %}{{ weather.daily.temperature_2m_max[weather_index] | round }}°{% else %}—{% endif %} · L {% if weather.daily.temperature_2m_min[weather_index] != nil %}{{ weather.daily.temperature_2m_min[weather_index] | round }}°{% else %}—{% endif %}</span>
                 <span class="label w--full text--left">{{ condition | strip }}</span>
               </div>
             {% else %}
