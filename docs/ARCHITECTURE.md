@@ -186,18 +186,31 @@ available directly at the template root. No transform, Node mode, API key, or
 client-side JavaScript is needed. Units: °F, mph, inches; city-center coordinates
 and `America/Indiana/Indianapolis` match Home. Settings record the exact query.
 
-The layout shows current conditions/feels-like/high/low; wind/gusts, humidity,
-sunrise/sunset, and daily max UV; eight checkpoints every three forecast hours;
-and seven daily forecasts. Hourly/current clear skies use moon icons at night.
-Precipitation bars show probability, not quantity. Precipitation includes rain
+The primary visual is a seven-day high/low temperature curve with day icons,
+point labels, and a separate shaded daily precipitation-probability band.
+Inspired by [Weather Curve 500572](https://trmnl.com/recipes/500572); this is an
+independent implementation using our existing Open-Meteo integration. Original
+Liquid/SVG chart code uses horizontal cubic control points between adjacent
+samples, keeping each segment between its endpoint values. Highs are hollow
+black points; lows are filled gray points. A minimum 10°F temperature range
+avoids division by zero and exaggerating flat forecasts. Missing values break
+paths instead of connecting across gaps; percentages are not precipitation amounts.
+
+Four compact cards show today's sunrise/sunset, **current-hour estimated UV**,
+and the latest current wind/gusts/direction and relative humidity. UV comes from
+`hourly.uv_index` for the local hour containing render time, never daily max UV
+or a future hour. Missing current-hour UV is unavailable. UV categories use
+<3 Low, <6 Moderate, <8 High, <11 Very high, otherwise Extreme. Wind directions
+are eight compass sectors describing where the wind comes from. Current
+conditions and feels-like appear in the header. Precipitation includes rain
 and snow; this is not a radar/nowcast or weather-alert service.
 
-Starting at the first local hourly timestamp at or after render time, scan the
-next 24 samples for probability ≥40%. Display its time (Tomorrow when needed),
-or Low chance ahead only when all 24 probabilities exist and remain below 40%.
-Missing coverage reports Forecast incomplete. This threshold is a design choice,
-not a promise that precipitation starts then. Eight display samples use offsets
-0,3,…,21; they summarize, rather than display, every hour in the window.
+The compact 24-hour precipitation summary remains: starting at the first local
+hourly timestamp at or after render time, scan 24 samples for probability ≥40%.
+Show its time, or a below-40% message only when all 24 probabilities exist.
+Missing coverage reports timing unavailable. This is not an onset guarantee.
+The former hourly checkpoint and daily tile sections were replaced by the
+curve at the owner's request.
 
 Local ISO timestamps are already provided by Open-Meteo. Render clock uses
 TRMNL's user offset; daily lookup uses local dates rather than assuming index 0.

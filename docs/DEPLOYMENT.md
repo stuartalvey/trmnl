@@ -57,9 +57,9 @@ NODE_PATH=/tmp/trmnl-test-deps/node_modules node tests/calendar.test.cjs
 NODE_PATH=/tmp/trmnl-test-deps/node_modules node tests/weather.test.cjs
 ```
 
-Weather tests execute full/shared Liquid with synthetic forecasts: 24-hour
-precipitation threshold/window, eight checkpoints, seven days, night icons,
-zero values, stale and missing-data states.
+Weather tests execute full/shared Liquid with synthetic forecasts: seven-day temperature/precipitation paths, gap handling, flat/negative forecasts,
+current-hour UV selection, 24-hour precipitation threshold/window, zero values,
+and stale/missing-data states.
 
 Calendar tests cover matching, individual/shared labels, cancellations, all-day and
 multi-day boundaries, and missing feeds. LiquidJS preserves input time zones;
@@ -164,7 +164,9 @@ Target **536164**, never Home **535610**. Files:
 Inspect live files and current GitHub first. Run the weather Liquid suite, write
 changed files/settings through MCP, refresh polling and await its job, inspect
 root current/hourly/daily fields, then preview `v2` / `markup_full`. Confirm all
-seven daily cards and their precipitation percentages fit above the title bar.
+seven day labels, both temperature curves, precipitation shading/percentages,
+and all four current-condition cards fit above the title bar. Verify that UV
+uses the current hourly estimate rather than the daily maximum.
 Read back live files and explicitly capture changes here: Home's automatic root
 export does not establish synchronization for this separate plugin.
 

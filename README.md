@@ -31,7 +31,8 @@ does not transfer account authorization.
   compact S / A / S+A labels (H for the synced holiday calendar), and all-day/multi-day handling.
 - Noblesville, Indiana forecasts from Open-Meteo.
 - **Weather Detail**: current/feels-like temperature, precipitation timing,
-  wind/gusts, humidity, sunrise/sunset, UV, 24-hour checkpoints, and seven-day outlook.
+  seven-day high/low curves and precipitation shading, plus current-hour UV,
+  wind/gusts, humidity, and sunrise/sunset cards.
 - Pacers, Colts, Purdue football, Purdue men's basketball, and Butler men's
   basketball schedules from ESPN, with team logos and Eastern start times.
 - Daily NLT verse from DailyVerses.

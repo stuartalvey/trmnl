@@ -153,3 +153,22 @@ Home Page. Show next precipitation probability ≥40% over 24 hourly samples,
 explicit incomplete/stale states, eight three-hour checkpoints, and seven days.
 No radar, alerts, or exact precipitation onset claim. Validate Liquid with
 synthetic data and inspect a full X preview before completion.
+
+## 2026-11-09 — Curve-first Weather Detail and current conditions cards
+
+**Decision:** Replace the hourly checkpoint/daily tile layout with a seven-day
+high/low curve, precipitation shading, and four cards for sunrise/sunset,
+current-hour estimated UV, current wind, and current humidity.
+
+**Reason:** The owner requested a more visual design like Weather Curve recipe
+500572, retaining these four useful metrics for the current time window.
+
+**Alternatives:** Installing the reference as a separate plugin or retaining the
+existing tile layout. We inspected its seven-day design and wrote an independent
+Liquid/SVG implementation within Weather Detail; no copied recipe code or
+additional playlist entry is needed.
+
+**Consequences:** Add hourly UV to the polling query; never substitute daily
+maximum UV for current UV. Gap missing chart values, handle flat/negative
+forecasts, retain the 24-hour precipitation summary and stale-source warning,
+and continue manual GitHub capture. Home Page and playlist order stay intact.

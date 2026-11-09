@@ -32,3 +32,55 @@
 
 {% template weather_label %}{% case code %}{% when 0 %}Clear{% when 1 %}Mostly clear{% when 2 %}Partly cloudy{% when 3 %}Cloudy{% when 45,48 %}Fog{% when 51,53,55 %}Drizzle{% when 56,57 %}Freezing drizzle{% when 61,63,65 %}Rain{% when 66,67 %}Freezing rain{% when 71,73,75,77,85,86 %}Snow{% when 80,81,82 %}Showers{% when 95,96,99 %}Thunderstorms{% else %}Unavailable{% endcase %}{% endtemplate %}
 {% template metric %}{% if value != nil %}{{ value | round: precision | default: 0 }}{{ unit }}{% else %}—{% endif %}{% endtemplate %}
+
+{% template weather_curve %}
+{% assign count = 0 %}{% assign maximum = nil %}{% assign minimum = nil %}
+{% for day in daily.time %}{% if day >= today and count < 7 %}
+{% assign i = forloop.index0 %}{% assign count = count | plus: 1 %}
+{% if daily.temperature_2m_max[i] != nil %}{% if maximum == nil or daily.temperature_2m_max[i] > maximum %}{% assign maximum = daily.temperature_2m_max[i] %}{% endif %}{% endif %}
+{% if daily.temperature_2m_min[i] != nil %}{% if minimum == nil or daily.temperature_2m_min[i] < minimum %}{% assign minimum = daily.temperature_2m_min[i] %}{% endif %}{% endif %}
+{% endif %}{% endfor %}
+{% if maximum != nil and minimum != nil %}
+{% assign range = maximum | minus: minimum | at_least: 10 %}
+{% assign center = maximum | plus: minimum | divided_by: 2.0 %}
+{% assign scale_top = range | divided_by: 2.0 | plus: center %}
+<svg class="w--full h--80" viewBox="0 0 1000 300" preserveAspectRatio="none" role="img" aria-label="Seven-day high and low temperature curves with daily precipitation chance">
+{% for separator in (1..6) %}{% assign x = separator | times: 142.857 %}
+<line x1="{{ x }}" y1="8" x2="{{ x }}" y2="260" stroke="#ddd" stroke-width="1"/>
+{% endfor %}
+<line x1="0" y1="205" x2="1000" y2="205" stroke="#aaa" stroke-dasharray="2 5"/>
+<line x1="0" y1="255" x2="1000" y2="255" stroke="#aaa"/>
+{% for series in (0..1) %}
+{% assign slot = 0 %}{% assign connected = false %}
+<path data-temperature-series="{{ series }}" d="{% for day in daily.time %}{% if day >= today and slot < 7 %}
+{% assign i = forloop.index0 %}{% assign x = slot | times: 142.857 | plus: 71.4285 %}
+{% if series == 0 %}{% assign temp = daily.temperature_2m_max[i] %}{% else %}{% assign temp = daily.temperature_2m_min[i] %}{% endif %}
+{% if temp != nil %}{% assign y = scale_top | minus: temp | times: 125.0 | divided_by: range | plus: 35 %}
+{% if connected %}{% assign mid = x | plus: prev_x | divided_by: 2.0 %}C {{ mid }},{{ prev_y }} {{ mid }},{{ y }} {{ x }},{{ y }}{% else %}M {{ x }},{{ y }}{% endif %}
+{% assign prev_x = x %}{% assign prev_y = y %}{% assign connected = true %}
+{% else %}{% assign connected = false %}{% endif %}{% assign slot = slot | plus: 1 %}
+{% endif %}{% endfor %}" fill="none" stroke="{% if series == 0 %}black{% else %}#777{% endif %}" stroke-width="{% if series == 0 %}3.5{% else %}2{% endif %}" stroke-linecap="round"/>
+{% endfor %}
+{% assign rain_slot = 0 %}{% assign rain_connected = false %}
+<path data-precipitation-area d="{% for day in daily.time %}{% if day >= today and rain_slot < 7 %}
+{% assign i = forloop.index0 %}{% assign x = rain_slot | times: 142.857 | plus: 71.4285 %}{% assign chance = daily.precipitation_probability_max[i] %}
+{% if chance != nil %}{% assign y = chance | at_least: 0 | at_most: 100 | times: -0.5 | plus: 255 %}
+{% if rain_connected %}{% assign mid = x | plus: rain_prev_x | divided_by: 2.0 %}C {{ mid }},{{ rain_prev_y }} {{ mid }},{{ y }} {{ x }},{{ y }}{% else %}M {{ x | minus: 71.4285 }},255 L {{ x | minus: 71.4285 }},{{ y }} L {{ x }},{{ y }}{% endif %}
+{% assign rain_connected = true %}{% assign rain_prev_x = x %}{% assign rain_prev_y = y %}
+{% assign next_i = i | plus: 1 %}{% if daily.precipitation_probability_max[next_i] == nil or rain_slot == 6 or forloop.last %}L {{ x | plus: 71.4285 }},{{ y }} L {{ x | plus: 71.4285 }},255 Z{% assign rain_connected = false %}{% endif %}
+{% endif %}{% assign rain_slot = rain_slot | plus: 1 %}{% endif %}{% endfor %}" fill="#aaa"/>
+{% assign slot = 0 %}
+{% for day in daily.time %}{% if day >= today and slot < 7 %}
+{% assign i = forloop.index0 %}{% assign x = slot | times: 142.857 | plus: 71.4285 %}
+{% for series in (0..1) %}
+{% if series == 0 %}{% assign temp = daily.temperature_2m_max[i] %}{% else %}{% assign temp = daily.temperature_2m_min[i] %}{% endif %}
+{% if temp != nil %}{% assign y = scale_top | minus: temp | times: 125.0 | divided_by: range | plus: 35 %}
+<circle data-temperature-point="{{ series }}" cx="{{ x }}" cy="{{ y }}" r="{% if series == 0 %}5{% else %}3.5{% endif %}" fill="{% if series == 0 %}white{% else %}#777{% endif %}" stroke="{% if series == 0 %}black{% else %}#777{% endif %}" stroke-width="2"/>
+<text x="{{ x }}" y="{% if series == 0 %}{{ y | minus: 13 }}{% else %}{{ y | plus: 25 }}{% endif %}" text-anchor="middle" font-family="sans-serif" font-size="{% if series == 0 %}23{% else %}20{% endif %}" font-weight="{% if series == 0 %}600{% else %}400{% endif %}" fill="{% if series == 0 %}black{% else %}#666{% endif %}">{{ temp | round }}°</text>
+{% endif %}{% endfor %}
+{% assign chance = daily.precipitation_probability_max[i] %}
+<text data-precipitation-day="{{ slot }}" x="{{ x }}" y="282" text-anchor="middle" font-family="sans-serif" font-size="19" fill="#666">{% if chance != nil %}{{ chance | round }}%{% else %}—{% endif %}</text>
+{% assign slot = slot | plus: 1 %}{% endif %}{% endfor %}
+</svg>
+{% else %}<span class="label label--gray">Temperature curve unavailable</span>{% endif %}
+{% endtemplate %}

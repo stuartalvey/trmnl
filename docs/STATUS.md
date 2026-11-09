@@ -1,6 +1,6 @@
 # Current project status
 
-Last compared **2026-11-09**, after adding Weather Detail. Starting documentation
+Last compared **2026-11-09**, after the Weather Detail curve redesign. Starting documentation
 baseline: [c0bd596](https://github.com/stuartalvey/trmnl/commit/c0bd596a98d87734c0f547cb3fcc8ca6c4ef6649).
 See this file's latest commit for the implementation handoff.
 
@@ -18,9 +18,10 @@ See this file's latest commit for the implementation handoff.
   `536097`. Home reads their rendered snapshots; no personal payload is committed.
 
 - **Weather Detail** `536164`, playlist item `901626` immediately after Home:
-  independent hourly Open-Meteo polling; current/feels-like/high/low, wind/gusts,
-  humidity, sunrise/sunset, UV, next precipitation chance, eight hourly checkpoints
-  over 24 hours, and a seven-day outlook. Source: `views/weather/`.
+  independent hourly Open-Meteo polling; seven-day high/low curves and precipitation
+  shading, current conditions header, 24-hour precipitation summary, and four
+  cards: sunrise/sunset, current-hour estimated UV, current wind/gusts/direction,
+  and current humidity. Source: `views/weather/`.
 
 ## Active priorities and pending work
 
@@ -34,7 +35,8 @@ See this file's latest commit for the implementation handoff.
   verified with both Oura and calendar accounts. Seven dates, verse, games, and
   weather remain visible. Shared calendar matches appear once; holiday source events use H.
 - Weather Detail deployed/configured; hourly polling succeeded and full X preview
-  verified, including night icons and all seven daily precipitation labels.
+  verified after the curve redesign, including all seven days, curve labels,
+  precipitation shading, and the four cards.
 - Matching runtime source, synthetic tests, and documentation captured in GitHub.
   Weather Detail is captured manually; automatic sync is not configured/verified.
 - TRMNL → GitHub export is automatic for Home Page; reverse deployment is manual.
@@ -48,8 +50,9 @@ See this file's latest commit for the implementation handoff.
 
 ## Validation and known limitations
 
-- Synthetic weather Liquid tests pass: eight slots/seven days, precipitation
-  threshold/window, night icons, zero values, stale and missing-data states.
+- Synthetic weather Liquid tests pass: seven-day curves, gaps in temperature
+  and precipitation, flat/negative temperatures, current-hour UV selection,
+  precipitation threshold/window, zero values, stale and missing-data states.
 - Home template and existing helper settings unchanged by Weather Detail work.
 - Synthetic calendar Liquid tests pass: shared and within-feed deduplication,
   distinct events, source and holiday labels, cancellation, date spans, and missing feeds.
