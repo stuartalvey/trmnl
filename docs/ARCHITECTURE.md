@@ -280,3 +280,26 @@ remain specific to that separate helper.
 The manifest is intentionally partial and includes only form definitions, never
 saved credential values. Automatic Sync is not configured/verified for this
 plugin; capture only reviewed source and settings manually.
+
+### Sports Detail standings, probabilities, and enclosure refinement
+
+The subtitle/date/refresh status sit to the right of the title. PGA Tour and
+Fantasy Football are equal-width enclosed section cards; PGA's leaderboard and
+next tournament share one outer border, and both fantasy matchups share a named
+outer card with nested league panels.
+
+The collector additionally fetches four public ESPN group-standings endpoints
+(one each for NBA, NFL, college football, and men's college basketball), shared
+between tracked teams where applicable. It uses each matching group's first
+`playoffSeed` statistic as the provider's conference position. This is explicitly
+**not an overall league rank**. Pacers/Colts also show the division position from
+schedule `standingSummary`; college cards show conference record instead of
+inventing divisions. Standings lookup failure falls back to the existing summary
+or an unavailable label without disabling schedule data. No rank is computed
+from record order or guessed tiebreaks.
+
+Active fantasy matchups show each side's ESPN `winProbability`, validated as a
+finite fraction in [0,1] and converted to a percentage (one decimal maximum).
+Zero is valid; missing/out-of-range probabilities hide the row. Both values
+must be available; the other side is never inferred. Confirmed final/bye matchups
+omit probabilities. These are provider estimates, not guaranteed results.

@@ -1,6 +1,6 @@
 # Current project status
 
-Last compared **2026-11-09**, after Sports Detail and direct fantasy integration. Starting documentation
+Last compared **2026-11-09**, after Sports Detail enclosure/standings refinement. Starting documentation
 baseline: [c0bd596](https://github.com/stuartalvey/trmnl/commit/c0bd596a98d87734c0f547cb3fcc8ca6c4ef6649).
 See this file's latest commit for the implementation handoff.
 
@@ -25,7 +25,9 @@ See this file's latest commit for the implementation handoff.
 
 - **Sports Detail** `536256`, playlist item `901764` after Weather Detail:
   five teams' next games/records/latest results, PGA leaderboard/next tournament,
-  APEX and NOB current matchup/live score snapshots/projections and previous results.
+  APEX and NOB current matchup/live score snapshots/projections, ESPN win chances,
+  and previous results. Team cards include conference/division positions where
+  applicable; PGA and Fantasy are symmetric enclosed sections.
   Both fantasy leagues authenticated and returned valid matchups; separate S2 fields.
   Source: `views/sports/`. No Sites dependency; cookies remain in TRMNL.
 
@@ -44,7 +46,7 @@ See this file's latest commit for the implementation handoff.
   verified after the curve redesign, including all seven days, curve labels,
   precipitation shading, and the four cards.
 - Sports Detail deployed/configured; direct public and both private ESPN sources
-  verified, X/full preview inspected with connected cards. Refresh interval 15 min;
+  verified, X/full preview inspected with connected, enclosed cards, standings, and win odds. Refresh interval 15 min;
   render updates periodically, not streaming. Source/settings captured manually.
 - Matching runtime source, synthetic tests, and documentation captured in GitHub.
   Weather Detail is captured manually; automatic sync is not configured/verified.

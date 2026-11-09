@@ -195,3 +195,22 @@ manual Node change; verify actual refresh jobs. No fantasy account mutations.
 PGA's next tournament has its own card. Match the simple grayscale visual style
 of Weather Detail, preserve long team names with clamping, and keep projections
 and previous results secondary to current scores.
+
+## 2026-11-09 — Symmetric enclosed sports sections and provider odds
+
+**Decision:** Move subtitle beside the title, enclose PGA leaderboard/next event
+in one card, and enclose the two nested league panels under Fantasy Football.
+Add provider conference/division standings and fantasy win probabilities.
+
+**Reason:** The owner requested less unused space, matching enclosures, a clear
+Fantasy header, standings in team cards, and win odds where available.
+
+**Alternatives:** Overall league ranks calculated from records would require
+unverified tiebreaks. Use accurately named ESPN conference positions plus known
+division summaries; college conferences get their conference record. Display
+actual ESPN model probabilities instead of deriving odds from projected scores.
+
+**Consequences:** Four additional public standings fetches per refresh, with
+shared feeds and independent schedule fallbacks. Validate probabilities and
+preserve zero/missing distinctions. Verify both outer borders and the final
+fantasy result row fit above the footer in an X preview.

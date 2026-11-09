@@ -214,3 +214,8 @@ items. Read back all three source files, confirm GitHub contents, and record
 preview separately from physical-device verification. Roll back only affected
 Sports Detail files; hiding this item withdraws the screen without touching
 Home, Weather, helpers, or ESPN records. A Git revert alone does not deploy.
+
+Sports Detail enclosure checks: ensure PGA and Fantasy outer borders are both
+fully visible, the Fantasy Football heading is present, and NOB's previous
+result row stays above the footer. Collector tests also cover group standings,
+conference/division labeling, probability bounds, null values, and valid 0% odds.

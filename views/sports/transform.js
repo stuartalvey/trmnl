@@ -81,7 +81,7 @@ function normalizeFantasy(feed,config,season) {
     const opponentScore=complete?(number(other?.totalPoints)??number(other?.totalPointsLive)):(number(other?.totalPointsLive)??number(other?.totalPoints));
     const result=complete&&other&&myScore!==null&&opponentScore!==null?(myScore>opponentScore?"W":myScore<opponentScore?"L":"T"):null;
     return {id:m.id,week:m.matchupPeriodId,opponent:other?text(opponent?.name||[opponent?.location,opponent?.nickname].filter(Boolean).join(" "),"Team "+other.teamId):"Bye",
-      my_score:myScore,opponent_score:opponentScore,my_projected:number(mine?.totalProjectedPointsLive)??number(mine?.totalProjectedPoints),opponent_projected:number(other?.totalProjectedPointsLive)??number(other?.totalProjectedPoints),
+      my_score:myScore,opponent_score:opponentScore,my_win_pct:!complete&&other?probability(mine?.winProbability):null,opponent_win_pct:!complete&&other?probability(other?.winProbability):null,my_projected:number(mine?.totalProjectedPointsLive)??number(mine?.totalProjectedPoints),opponent_projected:number(other?.totalProjectedPointsLive)??number(other?.totalProjectedPoints),
       state:!other?"Bye":complete?"Final":scheduled?"Scheduled":period===Number(m.matchupPeriodId)?"In progress":"Status unconfirmed",complete:!!complete,result};
   }
   const unique=new Map(matches.map(m=>[String(m.id),m]));
@@ -93,6 +93,31 @@ function normalizeFantasy(feed,config,season) {
   return {...base,status:feed.status?.isActive===false||period!==null&&period<=0?"inactive":period===null?"period_unknown":"ok",team:text(ours.name||[ours.location,ours.nickname].filter(Boolean).join(" "),"Team "+config.team_id),record:rec[0]!==null&&rec[1]!==null?rec.slice(0,rec[2]?3:2).map(text).join("-"):"—",
     rank:number(ours.playoffSeed??ours.rankCalculatedFinal),week:period,matchup:current?normalize(current):null,previous};
 }
+
+// ESPN group standings supply conference positions, not an overall league rank.
+function standingsFor(feed,source,summary){
+  let found=null;
+  function walk(group){
+    const entry=(group?.standings?.entries||[]).find(e=>String(e.team?.id)===source.id);
+    if(entry&&(!found||group.isConference))found={group,entry};
+    for(const child of group?.children||[])walk(child);
+  }
+  if(feed&&!feed.error)walk(feed);
+  const aliases={"Eastern Conference":"East","Western Conference":"West","American Football Conference":"AFC","National Football Conference":"NFC","Big Ten Conference":"Big Ten","Big East Conference":"Big East"};
+  let conference=null,division=null,conference_record=null;
+  if(found){
+    const stats=found.entry.stats||[];
+    const rank=number(stats.find(s=>s.name==="playoffSeed")?.value);
+    const label=aliases[found.group.name]||text(found.group.shortName||found.group.name,"").replace(/ Conference$/,"");
+    if(rank!==null&&rank>0)conference=label+" #"+rank;
+    conference_record=text(stats.find(s=>s.name==="vs. Conf.")?.displayValue,"")||null;
+  }
+  const match=String(summary||"").match(/^(\d+)(?:st|nd|rd|th) in (.+?)(?: Division)?$/i);
+  if(match&&["nba","nfl"].includes(source.league))division=match[2].replace(/^(AFC|NFC) /,"")+" #"+match[1];
+  return {conference,division,conference_record};
+}
+function probability(value){const n=number(value);return n!==null&&n>=0&&n<=1?Math.round(n*1000)/10:null;}
+
 async function fetchJson(url,headers={}){
   try{
     const response=await fetch(url,{method:"GET",headers:{Accept:"application/json",...headers},redirect:"error",signal:AbortSignal.timeout(4500)});
@@ -116,8 +141,10 @@ async function run(input){
       const auth=credentials(c);
       return auth.ok?fetchJson("https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/"+season+"/segments/0/leagues/"+c.id+"?view=mTeam&view=mMatchupScore&view=mSettings",{Cookie:"espn_s2="+auth.s2+"; SWID="+auth.swid}):Promise.resolve({error:"needs_auth"});
     })];
+  const leagueSources=[...new Map(TEAM_SOURCES.map(s=>[s.league,s])).values()];
+  jobs.push(...leagueSources.map(s=>fetchJson("https://site.api.espn.com/apis/v2/sports/"+s.sport+"/"+s.league+"/standings")));
   const feeds=await Promise.all(jobs);
-  const teams=TEAM_SOURCES.map((c,i)=>normalizeTeam(feeds[i],c,now)),pga=normalizePga(feeds[5],now);
+  const teams=TEAM_SOURCES.map((c,i)=>({...normalizeTeam(feeds[i],c,now),standings:standingsFor(feeds[8+leagueSources.findIndex(s=>s.league===c.league)],c,feeds[i]?.team?.standingSummary)})),pga=normalizePga(feeds[5],now);
   const fantasy=FANTASY_LEAGUES.map((c,i)=>normalizeFantasy(feeds[6+i],c,season));
   const statuses=[...teams.map(t=>t.status),pga.status,...fantasy.map(f=>f.status)];
   return {teams,pga,fantasy,updated_at:new Date(now).toISOString(),status:statuses.every(x=>x==="ok")?"ok":statuses.some(x=>x==="ok")?"partial":"unavailable",time_zone:SD_TZ,season};

@@ -38,7 +38,8 @@ does not transfer account authorization.
 - Daily NLT verse from DailyVerses.
 - **Today's Balance**: Stuart/Ali readiness scores and a normalized percentage donut beside the verse.
 - **Sports Detail**: five team cards, PGA leaderboard/next tournament, and direct
-  ESPN APEX/NOB fantasy matchups, live score snapshots/projections, and recent results.
+  ESPN APEX/NOB fantasy matchups, live score snapshots/projections, win chances,
+  and recent results; conference/division standings in the team cards.
 - Full-screen landscape layout using TRMNL framework **3.4.6**.
 
 Additional detail screens remain planned. See
