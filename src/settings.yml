@@ -13,6 +13,6 @@ polling_body: ''
 id: 535610
 oauth_enabled: 'false'
 oauth_pkce_enabled: 'no'
-name: Codex
+name: Home Page
 description: ''
 refresh_interval: 15
