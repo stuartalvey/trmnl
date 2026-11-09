@@ -110,3 +110,21 @@ Require current-day snapshot timestamps within six hours; show neutral/dashes
 for missing, stale, malformed, or combined-zero data. The snapshot footer does
 not prove the readiness measurement date. Keep raw scores visible, use synthetic
 tests only, and revisit the adapter if the provider changes its HTML contract.
+
+## 2026-11-09 — Merge both calendars with source labels
+
+**Decision:** Merge Stuart `535612` and Ali `536125` in the existing Family
+column, using small S / A / S+A labels and conservative matching by normalized
+title, start/end, all-day flag, and normalized location.
+
+**Reason:** The owner requested one combined calendar, shared-event deduplication,
+and an unobtrusive distinction between individual and shared items.
+
+**Alternatives:** Separate columns cost horizontal space. Color-only ownership
+would be unclear on grayscale. No stable event UID is exposed; fuzzy title/time
+matching risks removing genuinely different events.
+
+**Consequences:** Source membership is not attendance. Minor field differences
+can leave duplicates; distinct times/locations remain separate. No upstream
+calendar records or settings are changed. Preserve cancellation, multi-day,
+missing-source behavior, and verify the seven-day X preview.

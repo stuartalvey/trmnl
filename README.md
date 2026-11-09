@@ -27,7 +27,8 @@ does not transfer account authorization.
 
 - **Home Page**, headed **Alvey Command Center**: day/date, family events, games,
   weather icons, Fahrenheit highs/lows, and precipitation probability.
-- Native Apple Calendar integration, with all-day and multi-day event handling.
+- Stuart and Ali's Apple Calendars merged with shared-event deduplication,
+  compact S / A / S+A labels, and all-day/multi-day handling.
 - Noblesville, Indiana forecasts from Open-Meteo.
 - Pacers, Colts, Purdue football, Purdue men's basketball, and Butler men's
   basketball schedules from ESPN, with team logos and Eastern start times.
@@ -43,7 +44,7 @@ Additional detail screens remain planned. See
 | Path | Purpose |
 | --- | --- |
 | [src/](src/) | Home Page Liquid templates and exported plugin settings |
-| [tests/](tests/) | Synthetic Oura adapter and balance tests; no personal health data |
+| [tests/](tests/) | Synthetic calendar merge and Oura balance tests; no personal data |
 | [.trmnlp.yml](.trmnlp.yml) | Optional development-preview configuration |
 | [data-sources/](data-sources/) | Reviewed helper-plugin manifests and sports processing/tests |
 | [AGENTS.md](AGENTS.md) | Standing instructions shared by AI development environments |
@@ -64,12 +65,15 @@ TRMNL-to-GitHub Sync exports Home Page saves to this repository. GitHub-to-TRMNL
 deployment is manual, and helper-plugin changes must be captured explicitly.
 Follow [DEPLOYMENT.md](docs/DEPLOYMENT.md) in either environment.
 
-The offline tests require Node.js 20+ and no installed packages:
+The sports and balance tests require Node.js 20+ and no installed packages:
 
 ```sh
 node data-sources/indiana-sports/test-transform.cjs
 node tests/balance.test.cjs
 ```
+
+Calendar tests additionally need LiquidJS 10; see the commands in
+[DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 Optional local/cloud template preview uses [trmnlp](https://github.com/usetrmnl/trmnlp).
 The current preview config does not populate live Plugin Merge data; it is not a

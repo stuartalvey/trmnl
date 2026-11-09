@@ -47,6 +47,18 @@ For the Oura adapter/calculation, run `node tests/balance.test.cjs`. It executes
 the production shared script with synthetic HTML and a fixed clock, covering
 rounding, bounds, missing data, and snapshot freshness. Never add real scores.
 
+For calendar merging, test the production Liquid sections with synthetic events.
+LiquidJS 10 is a test-only dependency; install it in a temporary directory:
+
+```sh
+npm install --prefix /tmp/trmnl-test-deps liquidjs@10 --no-audit --no-fund
+NODE_PATH=/tmp/trmnl-test-deps/node_modules node tests/calendar.test.cjs
+```
+
+These tests cover matching, individual/shared labels, cancellations, all-day and
+multi-day boundaries, and missing feeds. LiquidJS preserves input time zones;
+TRMNL's actual renderer still needs an X preview. Never add personal events.
+
 For visual/data changes, inspect actual merge-variable schemas, verify real
 source availability, then inspect an X preview for every modified layout.
 Check seven local dates, busy days, NLT text, zero precipitation, missing-data
@@ -55,7 +67,7 @@ states, and game times/TBD labels. Never commit private preview data or images.
 Optional local/cloud template preview uses
 [trmnlp](https://github.com/usetrmnl/trmnlp) and the root [.trmnlp.yml](../.trmnlp.yml).
 That config watches `src/` and supplies empty overrides; it does not reproduce
-the native calendar and helper merge data. There is no RSpec suite; `tests/` contains dependency-free Node tests. Do not treat a fixture-only local preview as live verification.
+the native calendar and helper merge data. There is no RSpec suite; `tests/` contains Node tests (the calendar suite requires LiquidJS). Do not treat a fixture-only local preview as live verification.
 
 For documentation-only tasks, validate links/references and confirm runtime
 files are unchanged. Do not edit, refresh, or render the live dashboard just to

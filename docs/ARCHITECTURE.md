@@ -19,7 +19,7 @@ the latest screen.
 
 ```mermaid
 flowchart TD
-  Apple[iCloud Calendar] --> Native[Native Apple Calendar 535612]
+  Apple[Stuart and Ali iCloud Calendars] --> Native[Native Apple Calendar 535612 / 536125]
   Verse[DailyVerses NLT RSS] --> V[Polling helper 536052]
   Weather[Open-Meteo] --> W[Polling helper 536062]
   ESPN[Five ESPN team schedules] --> S[Node Serverless helper 536071]
@@ -43,21 +43,20 @@ flowchart TD
 | Plugin setting | Responsibility | Configured refresh | Repository definition |
 | --- | --- | --- | --- |
 | `535610` Home Page | Seven-day combined display | 15 min | [src/settings.yml](../src/settings.yml), [full.liquid](../src/full.liquid), [shared.liquid](../src/shared.liquid) |
-| `535612` Stu's iCal | Native Apple Calendar connection and parsed events | 30 min | Connection/credentials remain in TRMNL; no calendar payload is stored here |
+| `535612` Stu's iCal / `536125` Ali's iCal | Two native Apple Calendar connections and parsed events | 30 min | Connection/credentials remain in TRMNL; no calendar payload is stored here |
 | `536052` Daily Bible Verse — Data | First item of DailyVerses NLT RSS | 1440 min | [settings](../data-sources/daily-bible-verse/settings.yml) |
 | `536062` Noblesville Weather — Data | Open-Meteo current weather and 14 forecast days | 60 min | [settings](../data-sources/noblesville-weather/settings.yml) |
 | `536089` Stu's Oura / `536097` Ali's Oura | Account-specific rendered readiness snapshots | 60 min / provider default 60 min | Connections stay in TRMNL; adapter in shared.liquid |
 | `536071` Indiana Sports — Data | Compact five ESPN schedules into seven local days | 60 min | [settings](../data-sources/indiana-sports/settings.yml), [transform](../data-sources/indiana-sports/transform.js) |
 
 The three helper entries are hidden in the device playlist. They supply data
-rather than separate core screens. Native Apple Calendar and Home Page are
+rather than separate core screens. Native Apple Calendars and Home Page are
 visible. A Welcome screen and an unconfigured BTC recipe playlist entry also
 exist in the account; they are not implemented Command Center features and
 were left untouched.
 
-The native calendar uses the `app_password` provider, an app-specific password
-managed in TRMNL, 12-hour time, and the Noblesville time zone. Its current native
-layout is `default` and `include_past_events` is `no`. Do not copy its credentials
+Both native calendars use the `app_password` provider, an app-specific password
+managed in TRMNL, 12-hour time, and the Noblesville time zone. The inspected data uses the same local time zone. Do not copy its credentials
 or selected-calendar identifiers into this public repository.
 
 Helper manifests intentionally record selected settings, not complete account
@@ -71,7 +70,7 @@ portable IDs for another account.
 
 | Template alias | Actual namespace and fields |
 | --- | --- |
-| `calendar` | `apple_calendar_535612`; `events[]` includes `summary`, `start`, `start_full`, `end_full`, `all_day`, `status` |
+| `stu_calendar` / `ali_calendar` | `apple_calendar_535612` / `apple_calendar_536125`; `events[]` includes `summary`, `start`, `start_full`, `end_full`, `all_day`, `status` |
 | `daily_verse` | First `private_plugin_536052.merge_variables.rss.channel.item`; `title` is the reference and `description` is NLT text |
 | `weather` | `private_plugin_536062.merge_variables`; `current.temperature_2m` and parallel `daily` arrays for dates, WMO codes, highs/lows, precipitation probability |
 | `sports` | `private_plugin_536071.merge_variables`; `games[]` contains local `day`, `matchup`, `time_label`, `logo`, `state`; `status` is `ok`, `partial`, or `unavailable` |
@@ -141,3 +140,25 @@ percentages; individually fresh scores can still appear. The footer is snapshot
 freshness, **not a verified readiness measurement date**. Upstream markup or
 footer format changes can disable this adapter; inspect actual schemas before
 repairing it. Synthetic unit tests live in [tests/balance.test.cjs](../tests/balance.test.cjs).
+
+## Two-calendar merge
+
+The full Liquid template concatenates both native event arrays, sorts by
+`start_full`, and deduplicates each displayed day. With no event UID exposed,
+a match requires trimmed, case-insensitive title and location, identical timed
+start/end instants (epoch seconds), and the same all-day flag. All-day events
+use local start/end dates. Missing title/start/end disables deduplication for
+that record. Encoded, delimited keys prevent title/location delimiter collisions.
+Cancelled entries neither render nor contribute ownership.
+
+Small **S**, **A**, and **S+A** labels mean present in Stuart's calendar, Ali's
+calendar, or both. They indicate source membership, not confirmed attendance.
+Duplicates within a source also collapse. Different times, durations, locations,
+or all-day status remain separate; minor title differences beyond case/outer
+whitespace can leave intentional conservative duplicates. This only changes
+Home Page presentation; it does not modify either iCloud calendar.
+
+Existing all-day end-exclusive and multi-day rules remain. A missing source
+shows an explicit calendar-unavailable notice while retaining the other feed;
+empty healthy feeds show No events scheduled. Synthetic tests execute the actual
+marked Liquid sections in [calendar.test.cjs](../tests/calendar.test.cjs).
