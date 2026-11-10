@@ -9,6 +9,23 @@
  {% if entry.date == today %}{% assign today_record = entry %}{% endif %}
  {% if entry.m.step_count != nil %}{% if entry.m.step_count > chart_max %}{% assign chart_max = entry.m.step_count %}{% endif %}{% if entry.date < today %}{% assign prior_sum = prior_sum | plus: entry.m.step_count %}{% assign prior_count = prior_count | plus: 1 %}{% endif %}{% endif %}
 {% endfor %}
+{% comment %}Goal pacing shape: mean cumulative hourly step fractions of 31 complete Indianapolis-local days (2026-10-10 through 2026-11-09), de-duplicated Apple Health hourly totals. Only aggregate ratios saved, no health samples.{% endcomment %}
+{% assign pace_curve = '0,0.0065,0.0070,0.0075,0.0080,0.0083,0.0144,0.0217,0.0686,0.1404,0.1890,0.2521,0.3354,0.4044,0.4599,0.5310,0.6023,0.6481,0.7251,0.8003,0.8838,0.9425,0.9785,0.9931,1.0' | split: ',' %}
+{% assign current_hour = local_now | date: '%H' | plus: 0 %}
+{% assign current_minute = local_now | date: '%M' | plus: 0 %}
+{% assign elapsed_minutes = current_hour | times: 60 | plus: current_minute %}
+{% assign pace_prev = pace_curve[current_hour] | plus: 0 %}
+{% assign pace_next_idx = current_hour | plus: 1 %}
+{% assign pace_next = pace_curve[pace_next_idx] | plus: 0 %}
+{% assign pace_delta = pace_next | minus: pace_prev %}
+{% assign pace_fraction = pace_delta | times: current_minute | divided_by: 60.0 | plus: pace_prev %}
+{% assign target_now = goal | times: pace_fraction | round %}
+{% assign scale_max = goal %}
+{% if today_record.m.step_count > scale_max %}{% assign scale_max = today_record.m.step_count %}{% endif %}
+{% assign scale_max = scale_max | times: 1.1 %}
+{% assign goal_y = goal | times: 105.0 | divided_by: scale_max %}{% assign goal_y = 120 | minus: goal_y %}
+{% assign point_x = elapsed_minutes | times: 456.0 | divided_by: 1440 | plus: 40 %}
+{% assign point_y = today_record.m.step_count | times: 105.0 | divided_by: scale_max %}{% assign point_y = 120 | minus: point_y %}
 {% assign scale_max = chart_max | times: 1.15 %}
 {% assign goal_y = goal | times: 105.0 | divided_by: scale_max %}{% assign goal_y = 120 | minus: goal_y %}
 <div class="layout layout--col layout--top gap--medium" data-health-detail data-now="{{ now_ts }}" data-offset="{{ trmnl.user.utc_offset }}">
@@ -31,20 +48,23 @@
         <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">Daily average</span><span class="title title--medium">{% if prior_count > 0 %}{{ prior_sum | divided_by: prior_count | round }}{% else %}—{% endif %}</span></div>
         <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">Goal</span><span class="title title--medium">{{ goal }}</span></div>
       </div>
-      <svg class="w--full h--28" viewBox="0 0 520 150" preserveAspectRatio="none" role="img" aria-label="Daily step totals with prior-day average and daily goal">
-        <line x1="0" y1="{{ goal_y }}" x2="520" y2="{{ goal_y }}" stroke="black" stroke-width="1.5" stroke-dasharray="6 4"/>
-        {% if prior_count > 0 %}{% assign average = prior_sum | divided_by: prior_count %}{% assign average_y = average | times: 105.0 | divided_by: scale_max %}{% assign average_y = 120 | minus: average_y %}<line x1="0" y1="{{ average_y }}" x2="520" y2="{{ average_y }}" stroke="#888" stroke-width="2"/>{% endif %}
-        {% for i in (0..6) %}
-          {% assign back = 6 | minus: i | times: 86400 %}{% assign stamp = local_now | minus: back %}{% assign date = stamp | date: '%Y-%m-%d' %}
-          {% assign record = nil %}{% for entry in health.daily_history %}{% if entry.date == date %}{% assign record = entry %}{% endif %}{% endfor %}
-          {% assign x = i | times: 74 | plus: 37 %}
-          {% if record.m.step_count != nil %}{% assign h = record.m.step_count | times: 105.0 | divided_by: scale_max %}{% assign y = 120 | minus: h %}
-            <rect data-step-day="{{ date }}" x="{{ x | minus: 14 }}" y="{{ y }}" width="28" height="{{ h }}" rx="4" fill="{% if date == today %}black{% else %}#aaa{% endif %}"/>
-          {% else %}<text x="{{ x }}" y="117" text-anchor="middle" font-size="16" fill="#888">—</text>{% endif %}
-          <text x="{{ x }}" y="144" text-anchor="middle" font-size="13" fill="#666">{{ stamp | date: '%a' }}</text>
-        {% endfor %}
+
+      <div class="flex flex--row flex--between w--full">
+        <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">Today</span><span class="title title--medium">{% if today_record.m.step_count != nil %}{{ today_record.m.step_count | round }}{% else %}—{% endif %}</span></div>
+        <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">Goal pace by now</span><span class="title title--medium">{{ target_now }}</span></div>
+        <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">Daily goal</span><span class="title title--medium">{{ goal }}</span></div>
+      </div>
+      <svg class="w--full h--28" viewBox="0 0 520 150" preserveAspectRatio="none" role="img" aria-label="Personalized step goal pacing from Apple Health history with current-day snapshot at current time">
+        <line x1="40" y1="120" x2="496" y2="120" stroke="#aaa" stroke-width="1"/>
+        <line x1="40" y1="{{ goal_y }}" x2="496" y2="{{ goal_y }}" stroke="#888" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <polyline fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="{% for fraction in pace_curve %}{% assign cx = forloop.index0 | times: 19 | plus: 40 %}{% assign cy = goal | times: fraction | divided_by: scale_max | times: 105.0 %}{% assign cy = 120 | minus: cy %}{{ cx }},{{ cy }} {% endfor %}"/>
+        {% if today_record.m.step_count != nil %}
+          <line x1="{{ point_x }}" y1="10" x2="{{ point_x }}" y2="120" stroke="#aaa" stroke-width="1" stroke-dasharray="2 4"/>
+          <circle cx="{{ point_x }}" cy="{{ point_y }}" r="6" fill="black" stroke="white" stroke-width="2" data-current-step-point/>
+        {% endif %}
+        {% for hour in (0..4) %}{% assign hx = hour | times: 114 | plus: 40 %}<text x="{{ hx }}" y="140" font-size="12" fill="#666" text-anchor="middle">{% case hour %}{% when 0 %}12a{% when 1 %}6a{% when 2 %}12p{% when 3 %}6p{% when 4 %}12a{% endcase %}</text>{% endfor %}
       </svg>
-      <div class="flex flex--row flex--between w--full"><span class="label label--small label--gray">Dashed: goal · Gray: daily average</span><span class="label label--small label--gray">{% if prior_count > 0 %}{{ prior_count }} days of history{% else %}Average building history{% endif %}</span></div>
+      <div class="flex flex--row flex--between w--full"><span class="label label--small label--gray">Solid: personalized goal pace · Dashed: goal · Dot: today at {{ local_now | date: '%-I:%M %p' }}</span><span class="label label--small label--gray">{% if today_record.m.step_count != nil %}{% assign diff = today_record.m.step_count | minus: target_now %}{% if diff >= 0 %}{{ diff | round }} ahead{% else %}{{ diff | abs | round }} behind{% endif %}{% else %}Awaiting today's steps{% endif %}</span></div>
       <div class="flex flex--row flex--between flex--center-y bg--gray-75 rounded--large p--2 w--full">
         <span class="title title--small">Ali · <span data-ali-steps>—</span> steps</span>
         <div class="flex flex--col flex--right gap--xsmall"><span class="label label--small" data-ali-secondary>Awaiting current-day samples</span><span class="label label--small label--gray" data-ali-sync>Apple Health · synced samples</span></div>
