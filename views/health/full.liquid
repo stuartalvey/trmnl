@@ -26,20 +26,25 @@
           <span class="label label--small">Resting HR {% if today_record.m.resting_heart_rate != nil %}{{ today_record.m.resting_heart_rate | round }} bpm{% else %}—{% endif %}</span>
         </div>
       </div>
-      <svg class="w--full h--28" viewBox="0 0 520 150" preserveAspectRatio="none" role="img" aria-label="Last seven daily step totals and adjustable goal; missing days are dashes">
-        <line x1="0" y1="{{ goal_y }}" x2="520" y2="{{ goal_y }}" stroke="black" stroke-dasharray="4 4"/>
-        {% if prior_count > 0 %}{% assign average = prior_sum | divided_by: prior_count %}{% assign average_y = average | times: 105.0 | divided_by: scale_max %}{% assign average_y = 120 | minus: average_y %}<line x1="0" y1="{{ average_y }}" x2="520" y2="{{ average_y }}" stroke="#888" stroke-width="1.5"/>{% endif %}
+      <div class="flex flex--row flex--between w--full">
+        <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">Today</span><span class="title title--medium">{% if today_record.m.step_count != nil %}{{ today_record.m.step_count | round }}{% else %}—{% endif %}</span></div>
+        <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">Daily average</span><span class="title title--medium">{% if prior_count > 0 %}{{ prior_sum | divided_by: prior_count | round }}{% else %}—{% endif %}</span></div>
+        <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">Goal</span><span class="title title--medium">{{ goal }}</span></div>
+      </div>
+      <svg class="w--full h--28" viewBox="0 0 520 150" preserveAspectRatio="none" role="img" aria-label="Daily step totals with prior-day average and daily goal">
+        <line x1="0" y1="{{ goal_y }}" x2="520" y2="{{ goal_y }}" stroke="black" stroke-width="1.5" stroke-dasharray="6 4"/>
+        {% if prior_count > 0 %}{% assign average = prior_sum | divided_by: prior_count %}{% assign average_y = average | times: 105.0 | divided_by: scale_max %}{% assign average_y = 120 | minus: average_y %}<line x1="0" y1="{{ average_y }}" x2="520" y2="{{ average_y }}" stroke="#888" stroke-width="2"/>{% endif %}
         {% for i in (0..6) %}
           {% assign back = 6 | minus: i | times: 86400 %}{% assign stamp = local_now | minus: back %}{% assign date = stamp | date: '%Y-%m-%d' %}
           {% assign record = nil %}{% for entry in health.daily_history %}{% if entry.date == date %}{% assign record = entry %}{% endif %}{% endfor %}
           {% assign x = i | times: 74 | plus: 37 %}
           {% if record.m.step_count != nil %}{% assign h = record.m.step_count | times: 105.0 | divided_by: scale_max %}{% assign y = 120 | minus: h %}
-            <rect data-step-day="{{ date }}" x="{{ x | minus: 18 }}" y="{{ y }}" width="36" height="{{ h }}" rx="4" fill="{% if date == today %}black{% else %}#aaa{% endif %}"/>
+            <rect data-step-day="{{ date }}" x="{{ x | minus: 14 }}" y="{{ y }}" width="28" height="{{ h }}" rx="4" fill="{% if date == today %}black{% else %}#aaa{% endif %}"/>
           {% else %}<text x="{{ x }}" y="117" text-anchor="middle" font-size="16" fill="#888">—</text>{% endif %}
           <text x="{{ x }}" y="144" text-anchor="middle" font-size="13" fill="#666">{{ stamp | date: '%a' }}</text>
         {% endfor %}
       </svg>
-      <div class="flex flex--row flex--between w--full"><span class="label label--small label--gray">Dashed: goal · Solid gray: prior-day average</span><span class="label label--small label--gray">{% if prior_count > 0 %}{{ prior_count }} prior days{% else %}Building history{% endif %}</span></div>
+      <div class="flex flex--row flex--between w--full"><span class="label label--small label--gray">Dashed: goal · Gray: daily average</span><span class="label label--small label--gray">{% if prior_count > 0 %}{{ prior_count }} days of history{% else %}Average building history{% endif %}</span></div>
       <div class="flex flex--row flex--between flex--center-y bg--gray-75 rounded--large p--2 w--full">
         <span class="title title--small">Ali · <span data-ali-steps>—</span> steps</span>
         <div class="flex flex--col flex--right gap--xsmall"><span class="label label--small" data-ali-secondary>Awaiting current-day samples</span><span class="label label--small label--gray" data-ali-sync>Apple Health · synced samples</span></div>
@@ -58,7 +63,7 @@
   </div>
 
   <div class="flex flex--col gap--small outline outline--muted rounded--large p--3 w--full">
-    <div class="flex flex--row flex--between w--full"><span class="title">Workout consistency</span><span class="label label--small label--gray">Protein Social · 8 weeks · logged workouts</span></div>
+    <div class="flex flex--row flex--between w--full"><span class="title">Workout consistency</span><span class="label label--small label--gray">Protein Social · 8 weeks · full + partial count</span></div>
     {% if training.status == 'ok' or training.status == 'partial' %}
     <div class="grid grid--cols-12 gap--medium w--full">
       <div class="col--span-6 flex flex--col gap--small">
@@ -72,15 +77,15 @@
           {% for week in training.weeks %}
           <div class="flex flex--col gap--xsmall">
             {% for cell in week.cells %}
-            <div class="w--4 h--4 rounded--small {% if cell.count > 0 %}bg--black{% elsif cell.future %}outline outline--muted{% elsif cell.known %}bg--gray-75{% else %}outline outline--muted{% endif %}" title="{{ cell.date }} · {{ cell.count }} logged sessions"></div>
+            <div class="w--4 h--4 rounded--small {% if cell.full > 0 %}bg--black{% elsif cell.partial > 0 %}bg--gray-50 outline outline--black{% elsif cell.future %}outline outline--muted{% elsif cell.known %}bg--gray-75{% else %}outline outline--muted{% endif %}" title="{{ cell.date }} · {{ cell.count }} logged sessions"></div>
             {% endfor %}
           </div>{% endfor %}
         </div>
       </div>
       <div class="col--span-6 flex flex--col gap--small">
-        <span class="label label--small label--gray">COMPLETED SESSIONS BY WEEK</span>
+        <span class="label label--small label--gray">WORKOUT DAYS BY WEEK</span>
         {% assign max_week = 1 %}{% for week in training.weeks %}{% if week.count > max_week %}{% assign max_week = week.count %}{% endif %}{% endfor %}
-        <svg class="w--full h--40" viewBox="0 0 450 160" role="img" aria-label="Eight weekly totals of completed workouts">
+        <svg class="w--full h--40" viewBox="0 0 450 160" role="img" aria-label="Eight weekly totals of workout days including partials">
           {% for week in training.weeks %}{% assign x = forloop.index0 | times: 56 | plus: 28 %}{% assign h = week.count | times: 95.0 | divided_by: max_week %}{% assign y = 120 | minus: h %}
           <rect x="{{ x | minus: 16 }}" y="{{ y }}" width="32" height="{{ h }}" rx="4" fill="{% if forloop.last %}black{% else %}#aaa{% endif %}"/>
           <text x="{{ x }}" y="{{ y | minus: 6 }}" text-anchor="middle" font-size="15">{{ week.count }}</text>
@@ -89,8 +94,8 @@
         </svg>
       </div>
     </div>
-    <span class="label label--small label--gray w--full text--left">Black: workout logged · Gray: none logged · Outline: future / unknown{% if training.status == 'partial' %} · Feed incomplete{% endif %}</span>
+    <span class="label label--small label--gray w--full text--left">Black: complete · Mid-gray outline: partial · Light gray: none · Outline: future / unknown{% if training.status == 'partial' %} · Feed incomplete{% endif %}</span>
     {% else %}<span class="label label--gray">Workout history unavailable · Apple Health and Oura remain independent</span>{% endif %}
   </div>
 </div>
-<div class="title_bar"><span class="title">Health Detail · First draft</span><span class="instance">Apple Health · Oura · Protein Social · Snapshots · ET</span></div>
+<div class="title_bar"><span class="title">Health Detail · Daily movement + consistency</span><span class="instance">Apple Health · Oura · Protein Social · Snapshots · ET</span></div>
