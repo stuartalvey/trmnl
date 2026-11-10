@@ -110,3 +110,11 @@ See this file's latest commit for the implementation handoff.
   Source polling, Home refresh, and device wake schedules are independent.
 - See [ARCHITECTURE.md](ARCHITECTURE.md) and [DEPLOYMENT.md](DEPLOYMENT.md)
   before editing or deploying. Fetch current GitHub and live state first.
+
+## Ali Apple Health connection setup
+
+Ali's Apple Health `536547` was present but empty with Polling and no URL.
+Changed live strategy to **Webhook** and verified the setting. Companion on
+Ali's phone must refresh its plugin list, select this destination, and sync.
+Receipt of her health payload and binding it into Health Detail remain pending;
+no personal values or webhook URL are stored in GitHub.

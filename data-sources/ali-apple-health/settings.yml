@@ -1,0 +1,5 @@
+# Partial configuration only. Webhook URL and personal health payloads stay in TRMNL.
+---
+id: 536547
+name: Ali's Apple Health
+strategy: webhook
