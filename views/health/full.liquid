@@ -26,8 +26,6 @@
 {% assign goal_y = goal | times: 105.0 | divided_by: scale_max %}{% assign goal_y = 120 | minus: goal_y %}
 {% assign point_x = elapsed_minutes | times: 456.0 | divided_by: 1440 | plus: 40 %}
 {% assign point_y = today_record.m.step_count | times: 105.0 | divided_by: scale_max %}{% assign point_y = 120 | minus: point_y %}
-{% assign scale_max = chart_max | times: 1.15 %}
-{% assign goal_y = goal | times: 105.0 | divided_by: scale_max %}{% assign goal_y = 120 | minus: goal_y %}
 <div class="layout layout--col layout--top gap--medium" data-health-detail data-now="{{ now_ts }}" data-offset="{{ trmnl.user.utc_offset }}">
   <div class="flex flex--row flex--between flex--center-y w--full">
     <span class="title title--large lg:title--xxlarge">Alvey Health</span>
