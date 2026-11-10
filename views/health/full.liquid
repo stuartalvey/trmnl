@@ -52,9 +52,9 @@
         <path data-smooth-pace fill="none" stroke="black" stroke-width="3" stroke-linecap="round" d="M40 120" />
         {% if today_record.m.step_count != nil %}
           <line x1="{{ point_x }}" y1="10" x2="{{ point_x }}" y2="120" stroke="#aaa" stroke-width="1" stroke-dasharray="2 4"/>
-          <circle cx="{{ point_x }}" cy="{{ point_y }}" r="6" fill="black" stroke="white" stroke-width="2" data-current-step-point/>
+          <circle cx="{{ point_x }}" cy="{{ point_y }}" r="6" fill="black" stroke="white" stroke-width="2" data-current-step-point data-steps="{{ today_record.m.step_count }}"/>
         {% endif %}
-        <circle data-ali-step-point cx="{{ point_x }}" cy="120" r="6" fill="white" stroke="black" stroke-width="2.4" style="display:none"/>
+        <circle data-ali-step-point cx="{{ point_x }}" cy="120" r="6" fill="white" stroke="black" stroke-width="2.4" visibility="hidden"/>
         {% for hour in (0..4) %}{% assign hx = hour | times: 114 | plus: 40 %}<text x="{{ hx }}" y="140" font-size="12" fill="#666" text-anchor="middle">{% case hour %}{% when 0 %}12a{% when 1 %}6a{% when 2 %}12p{% when 3 %}6p{% when 4 %}12a{% endcase %}</text>{% endfor %}
       </svg>
       <div class="flex flex--row flex--between w--full"><span class="label label--small label--gray">Curve: fitted goal pace · Dashed: goal · ● Stuart · ○ Ali</span><span class="label label--small label--gray">{% if today_record.m.step_count != nil %}{% assign diff = today_record.m.step_count | minus: target_now %}{% if diff >= 0 %}{{ diff | round }} ahead{% else %}{{ diff | abs | round }} behind{% endif %}{% else %}Awaiting today's steps{% endif %}</span></div>
