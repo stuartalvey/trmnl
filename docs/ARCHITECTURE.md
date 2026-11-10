@@ -426,3 +426,7 @@ The size-limit repair was verified during this audit: Ali's processed variables
 contain `normalization_version: ali-health-v1`, compact metric/hour arrays, and
 no reminder content. Source state is healthy and the error count cleared. This
 confirms processing, not the physical phone's background sync cadence.
+
+### Personalized step-goal pacing (2026-11-10)
+
+The walking panel now uses a one-time normalized **hour-of-day** cumulative walking profile derived from Apple Health's server-aggregated, de-duplicated hourly `stepCount` totals for **31 complete Indianapolis-local days, 2026-10-10 through 2026-11-09**. Percentages at the end of each hour are averaged across days, then scaled to the configurable step goal. Only the 25 normalized pacing fractions are kept in `views/health/full.liquid`; raw personal hourly data remains out of GitHub. Today's current `step_count` is shown as a point at the current local clock time; the curve represents *personalized goal pace*, not observed intraday steps or an hourly average steps line. The dotted horizontal line is the daily goal. The point is the latest synced daily total, which may lag render time. Refreshing the calibration later requires re-running the analysis, not just a webhook refresh.
