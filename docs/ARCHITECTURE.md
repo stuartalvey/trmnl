@@ -359,7 +359,7 @@ Home, Weather, Sports, Oura, and Apple Health definitions were not modified.
 Ali's Apple Health `536547` uses Webhook. Its actual input differs from Stuart's
 already summarized feed: `health.metrics[]` supplies `metric_type`, `unit`,
 `value`, `start_date`, and `end_date`; `health.workouts[]` and `reminders[]`
-also arrived. **The source is preserved unchanged.** Health Detail escapes only
+also arrived. The source initially passed raw data through; the size-limit repair below now normalizes its render output. Health Detail escapes only
 the metric array as JSON in an inert template, then the shared script normalizes
 current Indianapolis-day samples before the server captures the screen. Neither
 reminders nor raw workout details are rendered or copied into the repository.
@@ -378,3 +378,24 @@ not reconciled; intervals crossing midnight are assigned to their start day,
 not apportioned. The schema now makes further intraday work possible, but no
 hourly reference baseline or Ali historical chart is claimed by this update.
 Oura remains separately timestamp-guarded, with Sync Oura for stale snapshots.
+
+### Ali source payload reduction
+
+With Serverless Node selected on `536547`, the new
+[data-sources/ali-apple-health/transform.js](../data-sources/ali-apple-health/transform.js)
+implements `run(input)`. It reduces the previously oversized raw export into
+`health.metrics[]` daily records for seven local dates, keeping the same fields
+that Health Detail's existing adapter consumes. Steps/energy are summed after
+exact-duplicate filtering; kJ becomes kcal; the latest resting-HR sample per day
+is retained. `health.step_hours[]` stores compact sums by local start-day/hour
+for future intraday work. No hourly reference chart is introduced here.
+
+Unknown metrics and reminder content are not included in render output. This
+changes the plugin's processed variables; it does not delete phone Health data.
+Intervals are assigned to their local start date; nonidentical overlapping
+sources are still not reconciled using Apple's source-priority algorithm.
+`normalization_version` plus explicit daily aggregation markers protect
+idempotence without mistaking a fresh raw webhook upload for processed data.
+Cached date formatters bound runtime/memory work. Synthetic tests assert a
+3,500-sample output stays under 30 KB. Fresh webhook validation remains required
+after installation because rendering old cached data still hit the size check.

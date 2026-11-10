@@ -128,3 +128,20 @@ removes exact duplicates, converts supported energy units, and preserves missing
 values. No raw payloads or reminder data are committed or displayed. Oura stale
 snapshot guards remain active; an old Oura snapshot can show Sync Oura even while
 Apple Health is connected.
+
+## Ali Apple Health size-limit repair
+
+Ali's raw Companion payload exceeded TRMNL's 100 KB rendering limit. Node was
+selected but no transform existed. Installed a Node transform under
+`data-sources/ali-apple-health/transform.js` that retains seven local days of
+compact step/energy/resting-HR records plus hourly step sums. Exact duplicate
+samples are removed, unsupported metrics/reminders are omitted from render
+output, and the Health Detail `health.metrics` contract is preserved.
+
+Synthetic tests pass, including 3,500 samples with output under 30 KB. Source
+and Node setting verified in TRMNL. Reset was requested, but refreshing the old
+stored raw payload still reports the historical size error; **a fresh Companion
+sync is required before end-to-end recovery can be confirmed**. No claim of a
+successful new upload or healthy source is made by this update. Existing Health
+Detail continues to use its last available data; raw personal payloads stay out
+of GitHub. Update this status after the new sync is verified.

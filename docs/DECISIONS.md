@@ -248,3 +248,21 @@ source or waiting for a full hourly chart implementation.
 and separate timestamps are required. This is not Apple's cross-device source
 reconciliation. No reminders or personal payloads are stored in GitHub; the
 intraday baseline remains future work.
+
+## 2026-11-09 — Compact Ali's Companion export in Node
+
+**Decision:** Add an explicit Node transform to Ali's webhook plugin, returning
+seven days of daily step/energy/latest resting-HR summaries and compact hourly
+step buckets, without unrelated metrics or reminders.
+
+**Reason:** The raw upload exceeded the rendering size limit. Selecting Node
+alone did not supply the missing `run(input)` transformation.
+
+**Alternatives:** Repeated health resets or dropping the connection would not
+address the payload size. Asking for a smaller phone export would lose useful
+history that the selected runtime can summarize.
+
+**Consequences:** Processed source schema becomes compact while preserving the
+Health Detail metric contract. Raw source pass-through is superseded. Synthetic
+size/bounds/privacy tests are required, and recovery must be confirmed using a
+fresh Companion upload rather than a health reset alone.

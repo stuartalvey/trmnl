@@ -3,3 +3,4 @@
 id: 536547
 name: Ali's Apple Health
 strategy: webhook
+serverless_language: node

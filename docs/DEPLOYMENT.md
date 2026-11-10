@@ -257,3 +257,18 @@ adapter; do not replace her source payload, webhook URL, or phone permissions.
 The existing health suite additionally tests raw sample bounds, duplicate samples,
 energy unit conversion, no-current-day/missing data, and genuine zero steps.
 Private data and screenshots must remain outside GitHub.
+
+### Ali Apple Health oversized-payload recovery
+
+Keep `536547` as Webhook with Serverless **Node**. Deploy
+[data-sources/ali-apple-health/transform.js](../data-sources/ali-apple-health/transform.js)
+as `transform_js`; do not paste a personal export into source or static data.
+Run `node data-sources/ali-apple-health/test-transform.cjs` before deployment.
+This transform preserves the display's compact `health.metrics` field contract.
+
+After saving, reset plugin health if necessary, then request one fresh sync from
+Ali's Companion. A force refresh of the old cached raw variables may still hit
+the 100 KB gate, so a reset alone is not proof of recovery. Verify
+`normalization_version: ali-health-v1`, bounded metric/hour arrays, source health,
+and a Health Detail X preview after the upload. Record whether upload verification
+is complete or pending. Never replay raw data or expose webhook credentials.
