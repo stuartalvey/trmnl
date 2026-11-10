@@ -41,7 +41,7 @@ See this file's latest commit for the implementation handoff.
 ## Active priorities and pending work
 
 - Iterate on Home Page appearance with the owner. Markets/News detail remains planned.
-- Health next: connect Ali's own Apple Health feed and obtain hourly steps/history
+- Health next: obtain validated hourly steps/history for both people
   for today-versus-usual-time curves. Neither blocks the deployed first draft.
 - Verify on physical TRMNL X when available; server preview is the current visual check.
 
@@ -73,7 +73,8 @@ See this file's latest commit for the implementation handoff.
   X/full preview checked. Synthetic health/workout/Liquid tests pass. Goal defaults
   to 10,000 and is editable; missing days are dashes. Prior-day average uses only
   existing records, not a same-time baseline. No hourly curve is implemented.
-- Ali's Apple Health remains unconnected; both Oura panels work independently.
+- Ali's Apple Health `536547` now receives Companion samples and feeds a
+  current-day movement summary in Health Detail; both Oura panels remain independent.
   Oura freshness uses snapshot footer time, not measurement date. Workout charts
   describe logged completed sessions, not all physical activity.
 - Health view and workout helper manually captured in GitHub; no automatic sync
@@ -116,5 +117,14 @@ See this file's latest commit for the implementation handoff.
 Ali's Apple Health `536547` was present but empty with Polling and no URL.
 Changed live strategy to **Webhook** and verified the setting. Companion on
 Ali's phone must refresh its plugin list, select this destination, and sync.
-Receipt of her health payload and binding it into Health Detail remain pending;
+Her independent sync subsequently arrived with raw health metrics/workouts;
+Health Detail now binds current-day steps, energy, and latest resting HR when
+available. Synthetic adapter tests and an X preview pass.
 no personal values or webhook URL are stored in GitHub.
+
+Ali feed adapter: `private_plugin_536547.merge_variables.health.metrics` is
+parsed in the Health Detail shared script. It filters local current-day samples,
+removes exact duplicates, converts supported energy units, and preserves missing
+values. No raw payloads or reminder data are committed or displayed. Oura stale
+snapshot guards remain active; an old Oura snapshot can show Sync Oura even while
+Apple Health is connected.

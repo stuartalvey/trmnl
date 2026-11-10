@@ -233,3 +233,18 @@ so show honest daily totals and a configurable 10,000-step reference goal.
 step averages need a later detailed export/history collection workflow. Treat
 logged sessions separately from all exercise; preserve missing dates, partial
 coverage, Oura freshness, and health-data privacy. Use synthetic tests only.
+
+## 2026-11-09 — Bind Ali's independent Apple Health sync
+
+**Decision:** Keep Ali's new raw webhook payload intact and normalize selected
+current-day movement samples in Health Detail's shared script. Keep Stuart's
+existing summary feed and the Oura adapters independent.
+
+**Reason:** Ali successfully synced Companion, but her payload schema differs
+from Stuart's. A display adapter connects the new data without rewriting either
+source or waiting for a full hourly chart implementation.
+
+**Consequences:** Exact sample deduplication and unit validation, nullable fields,
+and separate timestamps are required. This is not Apple's cross-device source
+reconciliation. No reminders or personal payloads are stored in GitHub; the
+intraday baseline remains future work.

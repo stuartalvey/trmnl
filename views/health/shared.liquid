@@ -55,9 +55,37 @@
   }
   return {status:freshness.status,scores};
  }
- root.HealthDetail={oura};
+
+ function appleSummary(samples,nowMs){
+  const result={steps:null,energy:null,resting:null,last:null,status:"missing"};
+  if(!Array.isArray(samples))return result;
+  const day=v=>{const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/Indiana/Indianapolis",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(v));const g=k=>p.find(x=>x.type===k).value;return g("year")+"-"+g("month")+"-"+g("day");};
+  const today=day(nowMs),seen=new Set();let restingAt=-Infinity;
+  for(const sample of samples){
+   if(!sample||typeof sample.value!=="number"||!Number.isFinite(sample.value)||sample.value<0)continue;
+   const start=Date.parse(sample.start_date),end=Date.parse(sample.end_date);
+   if(!Number.isFinite(start)||!Number.isFinite(end)||end<start||end>nowMs+300000||day(start)!==today)continue;
+   const name=String(sample.metric_type||"").toLowerCase().replace(/[^a-z]/g,""),unit=String(sample.unit||"").toLowerCase();
+   const key=[name,unit,start,end,sample.value].join("|");if(seen.has(key))continue;seen.add(key);
+   if(/(?:stepcount|steps)$/.test(name)){result.steps=(result.steps??0)+sample.value;result.last=Math.max(result.last??0,end);}
+   else if(/activeenergy(?:burned)?$/.test(name)){
+    const value=unit==="kj"?sample.value/4.184:["kcal","cal","kilocalories"].includes(unit)?sample.value:null;
+    if(value!==null){result.energy=(result.energy??0)+value;result.last=Math.max(result.last??0,end);}
+   }else if(/restingheartrate$/.test(name)&&end>restingAt){result.resting=sample.value;restingAt=end;result.last=Math.max(result.last??0,end);}
+  }
+  result.status=result.last===null?"no_today":"ok";return result;
+ }
+
+ root.HealthDetail={oura,appleSummary};
  function render(){
   const page=document.querySelector("[data-health-detail]");if(!page)return;
+  const appleNode=page.querySelector('template[data-apple-source="ali"]');
+  let samples=null;try{samples=JSON.parse(appleNode?.content?.textContent||"null");}catch{}
+  const movement=appleSummary(samples,Number(page.dataset.now)*1000);
+  const set=(selector,value)=>{const node=page.querySelector(selector);if(node)node.textContent=value;};
+  set("[data-ali-steps]",movement.steps===null?"—":String(Math.round(movement.steps)));
+  set("[data-ali-secondary]",movement.status==="ok"?(movement.energy===null?"Energy —":Math.round(movement.energy)+" kcal")+" · RHR: "+(movement.resting===null?"—":Math.round(movement.resting)+" bpm"):"No current-day samples");
+  set("[data-ali-sync]",movement.last===null?"Apple Health · awaiting current-day data":"Apple Health · as of "+new Intl.DateTimeFormat("en-US",{timeZone:"America/Indiana/Indianapolis",hour:"numeric",minute:"2-digit"}).format(new Date(movement.last)));
   for(const person of ["stuart","ali"]){
    const source=page.querySelector('template[data-oura-source="'+person+'"]');
    const model=oura(source?.content?.textContent||"",Number(page.dataset.now),Number(page.dataset.offset));

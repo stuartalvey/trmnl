@@ -309,7 +309,7 @@ omit probabilities. These are provider estimates, not guaranteed results.
 **Health Detail** `536354` is full-screen Plugin Merge, framework 3.4.6,
 light mode, normal padding, 15-minute render refresh. Playlist item
 `901897` follows Sports Detail. Source is [views/health/](../views/health/).
-The first draft does not wait for or claim Ali's Apple Health connection.
+Ali's separate Apple Health webhook was connected after the initial draft.
 
 Data flow:
 
@@ -336,7 +336,8 @@ default **10,000**, shown as a dashed line. The solid-gray reference is the mean
 of available prior-date records, not a same-hour baseline; prior snapshots may
 not be finalized end-of-day totals. The feed currently has little stored history.
 **No hourly curve or historical average-by-time is implemented or synthesized.**
-Ali's Oura is active; her Apple Health is explicitly labeled not connected.
+Ali's Apple Health now shows a separate compact current-day summary alongside
+Stuart's movement chart. Oura freshness remains independent of Apple Health.
 
 The workout helper reads schema 1.0, requests local-date boundaries covering
 eight Monday–Sunday columns (including this week), paginates at 50 records for
@@ -352,3 +353,28 @@ Only code, public endpoint configuration, and synthetic test data are captured
 in GitHub. Runtime health payloads/screenshots remain private. Both new plugins
 are manually captured; automatic Sync is not configured/verified. Existing
 Home, Weather, Sports, Oura, and Apple Health definitions were not modified.
+
+### Ali's raw Companion feed
+
+Ali's Apple Health `536547` uses Webhook. Its actual input differs from Stuart's
+already summarized feed: `health.metrics[]` supplies `metric_type`, `unit`,
+`value`, `start_date`, and `end_date`; `health.workouts[]` and `reminders[]`
+also arrived. **The source is preserved unchanged.** Health Detail escapes only
+the metric array as JSON in an inert template, then the shared script normalizes
+current Indianapolis-day samples before the server captures the screen. Neither
+reminders nor raw workout details are rendered or copied into the repository.
+
+`appleSummary` accepts validated nonnegative numeric samples with valid start/end
+and no end timestamp over five minutes ahead, buckets by local start date, and
+removes exact duplicates by type/unit/start/end/value. Steps and active energy
+are summed; kJ is converted to kcal, unknown energy units are ignored. Resting
+heart rate uses the latest qualifying sample rather than a sum. Missing values
+stay null/dashes. Ali's own latest contributing sample timestamp is displayed;
+Stuart's separate source timestamp is explicitly named in the heading.
+
+These are synced-sample totals, not a claim to reproduce Apple's cross-device
+source-priority/deduplication algorithm. Nonidentical overlapping intervals are
+not reconciled; intervals crossing midnight are assigned to their start day,
+not apportioned. The schema now makes further intraday work possible, but no
+hourly reference baseline or Ali historical chart is claimed by this update.
+Oura remains separately timestamp-guarded, with Sync Oura for stale snapshots.

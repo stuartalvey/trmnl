@@ -40,9 +40,9 @@ does not transfer account authorization.
 - **Sports Detail**: five team cards, PGA leaderboard/next tournament, and direct
   ESPN APEX/NOB fantasy matchups, live score snapshots/projections, win chances,
   and recent results; conference/division standings in the team cards.
-- **Health Detail — first draft**: Stuart's daily movement/step goal chart,
+- **Health Detail — first draft**: Stuart's daily movement/step goal chart and Ali's synced movement summary,
   Stuart/Ali Oura gauges, and Protein Social workout heatmap/weekly totals.
-  Ali's Apple Health and hourly step comparisons remain pending.
+  Both Apple Health feeds are connected; hourly step comparisons remain pending.
 - Full-screen landscape layout using TRMNL framework **3.4.6**.
 
 Additional detail screens remain planned. See

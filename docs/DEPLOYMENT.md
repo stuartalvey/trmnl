@@ -250,3 +250,10 @@ hidden and Health `901897` visible after Sports. Capture code manually;
 never commit live health data or previews. A successful preview does not verify
 a physical screen. Roll back these new files/playlist entries independently of
 existing source plugins; do not reset the phone's webhook data.
+
+Ali's Health webhook `536547` is now bound to Health Detail through its existing
+Merge namespace. Deploy only Health full/shared templates for the raw-sample
+adapter; do not replace her source payload, webhook URL, or phone permissions.
+The existing health suite additionally tests raw sample bounds, duplicate samples,
+energy unit conversion, no-current-day/missing data, and genuine zero steps.
+Private data and screenshots must remain outside GitHub.

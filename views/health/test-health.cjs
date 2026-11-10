@@ -11,6 +11,13 @@ const snapshot=markup(90,"Readiness")+markup(0,"Sleep")+markup(80,"Activity")+"<
 let m=ctx.HealthDetail.oura(snapshot,now/1000,-18000);assert.equal(m.status,"fresh");assert.equal(m.scores.Sleep,0);assert.equal(m.scores.Activity,80);
 m=ctx.HealthDetail.oura(snapshot.replace("15 Jan","14 Jan"),now/1000,-18000);assert.equal(m.scores.Readiness,null);
 assert.equal(ctx.HealthDetail.oura("",now/1000,-18000).scores.Sleep,null);
+const sample=(type,value,unit="count",start="2026-01-15T14:00Z",end="2026-01-15T14:10Z")=>({metric_type:type,value,unit,start_date:start,end_date:end});
+let a=ctx.HealthDetail.appleSummary([sample("steps",0),sample("active_energy",41.84,"kJ"),sample("resting_heart_rate",50,"bpm")],now);
+assert.equal(a.steps,0);assert(Math.abs(a.energy-10)<.00001);assert.equal(a.resting,50);
+a=ctx.HealthDetail.appleSummary([sample("steps",100),sample("steps",100),sample("steps",25,"count","2026-01-15T14:10Z","2026-01-15T14:20Z")],now);assert.equal(a.steps,125);
+a=ctx.HealthDetail.appleSummary([sample("steps",100,"count","2026-01-14T14:00Z","2026-01-14T14:10Z")],now);assert.equal(a.status,"no_today");assert.equal(a.steps,null);
+a=ctx.HealthDetail.appleSummary([sample("steps",-1),sample("steps",NaN),sample("steps",10,"count","2026-01-15T16:00Z","2026-01-15T16:10Z")],now);assert.equal(a.steps,null);
+assert.equal(ctx.HealthDetail.appleSummary(null,now).status,"missing");
 (async()=>{
  ctx.fetch=async()=>({ok:true,json:async()=>({schema_version:"1.0",data:records,pagination:{next_cursor:null}})});
  out=await ctx.run({trmnl:{system:{timestamp_utc:now/1000}}});assert.equal(out.status,"ok");assert.equal(out.session_count,2);
@@ -23,7 +30,7 @@ assert.equal(ctx.HealthDetail.oura("",now/1000,-18000).scores.Sleep,null);
   const engine=new Liquid({root:tmp,extname:".liquid",preserveTimezones:true});
   const input={trmnl:{system:{timestamp_utc:now/1000},user:{utc_offset:-18000},plugin_settings:{custom_fields_values:{step_goal:10000}}},private_plugin_536212:{merge_variables:{daily_history:[{date:"2026-01-15",m:{step_count:0,active_energy:0,resting_heart_rate:50}}]}},private_plugin_536353:{merge_variables:ctx.summarize([],now,true)}};
   const html=await engine.parseAndRender(fs.readFileSync(path.join(__dirname,"full.liquid"),"utf8"),input);
-  assert.match(html,/>0<\/span>/);assert.equal((html.match(/data-step-day=/g)||[]).length,1);assert.match(html,/Building history/);assert.match(html,/not connected yet/);assert.doesNotMatch(html,/NaN|Infinity|undefined|Liquid error/);
+  assert.match(html,/>0<\/span>/);assert.equal((html.match(/data-step-day=/g)||[]).length,1);assert.match(html,/Building history/);assert.match(html,/data-ali-steps/);assert.doesNotMatch(html,/NaN|Infinity|undefined|Liquid error/);
   console.log("Passed: workout windows/deduplication/completion/missing coverage/DST/pagination/failure, Oura freshness/zero scores, and synthetic movement/missing-day rendering.");
  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 })().catch(e=>{console.error(e);process.exitCode=1;});
