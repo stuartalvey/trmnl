@@ -341,13 +341,10 @@ Stuart's movement chart. Oura freshness remains independent of Apple Health.
 
 The workout helper reads schema 1.0, requests local-date boundaries covering
 eight Monday–Sunday columns (including this week), paginates at 50 records for
-up to five pages, and deduplicates session IDs. It counts completed sessions
-by local start date, excludes future/partial/invalid records, and sums only
-known nonnegative durations. Multiple sessions can share a day; heatmap black
+up to five pages, and deduplicates session IDs. It now explicitly queries completed and partial statuses in separate paginated reads, since omission of the status filter defaults to completed-only. It counts both statuses equally as training days, excludes future/invalid records, and sums only known nonnegative plausible durations (up to 720 minutes). Multiple sessions can share a day; heatmap black
 means at least one logged session. Gray means none logged within a complete
 response, not no exercise. Outline means future/unknown. Pagination cap/failure
-marks partial/unavailable rather than implying complete zero coverage. Weekly
-bars count sessions, and current week is partial by calendar definition.
+marks partial/unavailable rather than implying complete zero coverage. Weekly bars count unique calendar workout days (not multiple sessions on the same day), and current week is partial by calendar definition.
 
 Only code, public endpoint configuration, and synthetic test data are captured
 in GitHub. Runtime health payloads/screenshots remain private. Both new plugins
@@ -430,3 +427,9 @@ confirms processing, not the physical phone's background sync cadence.
 ### Personalized step-goal pacing (2026-11-10)
 
 The walking panel now uses a one-time normalized **hour-of-day** cumulative walking profile derived from Apple Health's server-aggregated, de-duplicated hourly `stepCount` totals for **31 complete Indianapolis-local days, 2026-10-10 through 2026-11-09**. Percentages at the end of each hour are averaged across days, then scaled to the configurable step goal. Only the 25 normalized pacing fractions are kept in `views/health/full.liquid`; raw personal hourly data remains out of GitHub. Today's current `step_count` is shown as a point at the current local clock time; the curve represents *personalized goal pace*, not observed intraday steps or an hourly average steps line. The dotted horizontal line is the daily goal. The point is the latest synced daily total, which may lag render time. Refreshing the calibration later requires re-running the analysis, not just a webhook refresh.
+
+### Health Detail fixes — November 10, 2026
+
+- **Workout history:** The public Protein Social endpoint defaults to completed when status is omitted. The helper now queries completed and partial separately and counts each local workout date once. Verified live refresh: 10 sessions / 10 active days, 2 last week, 1 this week. Full and partial both count one day; visually distinguished only.
+- **Steps layout:** Taller chart with separate Stuart and Ali today-only snapshot dots, one shared goal reference, and Stuart's fitted pacing curve. Historical observations are labeled as last-known totals but never plotted as today. Removed duplicate metric rows. The Apple Health webhooks depend on fresh uploads from the phones; a TRMNL rerender does not fetch Apple Health.
+- **Oura:** The connected third-party TRMNL Oura markup has scores for readiness, sleep and activity but no step-count field. Do not substitute an Oura score for steps.
