@@ -84,6 +84,34 @@
   const movement=appleSummary(samples,Number(page.dataset.now)*1000);
   const set=(selector,value)=>{const node=page.querySelector(selector);if(node)node.textContent=value;};
   set("[data-ali-steps]",movement.steps===null?"—":String(Math.round(movement.steps)));
+  set("[data-ali-card-steps]",movement.steps===null?"—":String(Math.round(movement.steps)));
+  const chart=page.querySelector("[data-goal-chart]");
+  if(chart){
+    const scale=Number(chart.dataset.scale),goal=Number(chart.dataset.goal);
+    if(Number.isFinite(scale)&&scale>0&&Number.isFinite(goal)&&goal>0){
+      const logistic=t=>1/(1+Math.exp(-0.30586*(t-14.9835)));
+      const lo=logistic(0),hi=logistic(24);
+      const frac=t=>(logistic(t)-lo)/(hi-lo);
+      const y=t=>120-105*goal*frac(t)/scale;
+      const slope=t=>{const z=logistic(t);return -105*goal/scale*0.30586*z*(1-z)/(hi-lo);};
+      // Cubic Hermite segments for a continuously smooth fitted trend.
+      const d=["M40 120"];
+      for(let i=0;i<96;i++){
+        const t=i/4,x0=40+456*t/24,x1=40+456*(t+0.25)/24,dx=x1-x0;
+        d.push("C"+(x0+dx/3).toFixed(2)+","+(y(t)+slope(t)/12).toFixed(2)+" "+(x1-dx/3).toFixed(2)+","+(y(t+0.25)-slope(t+0.25)/12).toFixed(2)+" "+x1.toFixed(2)+","+y(t+0.25).toFixed(2));
+      }
+      const curve=chart.querySelector("[data-smooth-pace]");
+      if(curve)curve.setAttribute("d",d.join(" "));
+      const point=chart.querySelector("[data-ali-step-point]");
+      if(point&&movement.steps!==null){
+        const prior=chart.querySelector("[data-current-step-point]");
+        const cx=prior?Number(prior.getAttribute("cx")):40+456*(Number(page.dataset.now)%86400)/86400;
+        point.setAttribute("cx",String(cx));
+        point.setAttribute("cy",String(120-105*movement.steps/scale));
+        point.style.display="";
+      }
+    }
+  }
   set("[data-ali-secondary]",movement.status==="ok"?(movement.energy===null?"Energy —":Math.round(movement.energy)+" kcal")+" · RHR: "+(movement.resting===null?"—":Math.round(movement.resting)+" bpm"):"No current-day samples");
   set("[data-ali-sync]",movement.last===null?"Apple Health · awaiting current-day data":"Apple Health · as of "+new Intl.DateTimeFormat("en-US",{timeZone:"America/Indiana/Indianapolis",hour:"numeric",minute:"2-digit"}).format(new Date(movement.last)));
   for(const person of ["stuart","ali"]){
