@@ -9,8 +9,8 @@
  {% if entry.date == today %}{% assign today_record = entry %}{% endif %}
  {% if entry.m.step_count != nil %}{% if entry.m.step_count > chart_max %}{% assign chart_max = entry.m.step_count %}{% endif %}{% if entry.date < today %}{% assign prior_sum = prior_sum | plus: entry.m.step_count %}{% assign prior_count = prior_count | plus: 1 %}{% endif %}{% endif %}
 {% endfor %}
-{% comment %}Goal pacing shape: mean cumulative hourly step fractions of 31 complete Indianapolis-local days (2026-10-10 through 2026-11-09), de-duplicated Apple Health hourly totals. Only aggregate ratios saved, no health samples.{% endcomment %}
-{% assign pace_curve = '0,0.0065,0.0070,0.0075,0.0080,0.0083,0.0144,0.0217,0.0686,0.1404,0.1890,0.2521,0.3354,0.4044,0.4599,0.5310,0.6023,0.6481,0.7251,0.8003,0.8838,0.9425,0.9785,0.9931,1.0' | split: ',' %}
+{% comment %}Personalized smooth S-curve is a two-parameter normalized sigmoid least-squares fit to 31 daily cumulative Apple Health step curves (k=0.30586, midpoint=14.9835 hours). Aggregate fit only; not Ali-specific.{% endcomment %}
+{% assign pace_curve = '0,0.0038,0.0090,0.0159,0.0252,0.0376,0.0539,0.0752,0.1027,0.1377,0.1814,0.2345,0.2971,0.3684,0.4464,0.5280,0.6095,0.6873,0.7584,0.8207,0.8735,0.9168,0.9516,0.9789,1.0' | split: ',' %}
 {% assign current_hour = local_now | date: '%H' | plus: 0 %}
 {% assign current_minute = local_now | date: '%M' | plus: 0 %}
 {% assign elapsed_minutes = current_hour | times: 60 | plus: current_minute %}
@@ -42,29 +42,24 @@
         </div>
       </div>
       <div class="flex flex--row flex--between w--full">
-        <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">Today</span><span class="title title--medium">{% if today_record.m.step_count != nil %}{{ today_record.m.step_count | round }}{% else %}—{% endif %}</span></div>
-        <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">Daily average</span><span class="title title--medium">{% if prior_count > 0 %}{{ prior_sum | divided_by: prior_count | round }}{% else %}—{% endif %}</span></div>
-        <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">Goal</span><span class="title title--medium">{{ goal }}</span></div>
-      </div>
-
-      <div class="flex flex--row flex--between w--full">
-        <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">Today</span><span class="title title--medium">{% if today_record.m.step_count != nil %}{{ today_record.m.step_count | round }}{% else %}—{% endif %}</span></div>
-        <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">Goal pace by now</span><span class="title title--medium">{{ target_now }}</span></div>
+        <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">Stuart</span><span class="title title--medium">{% if today_record.m.step_count != nil %}{{ today_record.m.step_count | round }}{% else %}—{% endif %}</span></div>
+        <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">Ali</span><span class="title title--medium" data-ali-steps>—</span></div>
         <div class="flex flex--col gap--xsmall"><span class="label label--small label--gray">Daily goal</span><span class="title title--medium">{{ goal }}</span></div>
       </div>
-      <svg class="w--full h--28" viewBox="0 0 520 150" preserveAspectRatio="none" role="img" aria-label="Personalized step goal pacing from Apple Health history with current-day snapshot at current time">
+      <svg class="w--full h--28" viewBox="0 0 520 150" preserveAspectRatio="none" role="img" aria-label="Smooth personalized goal pace with Stuart and Ali step snapshots" data-goal-chart data-scale="{{ scale_max }}" data-goal="{{ goal }}">
         <line x1="40" y1="120" x2="496" y2="120" stroke="#aaa" stroke-width="1"/>
         <line x1="40" y1="{{ goal_y }}" x2="496" y2="{{ goal_y }}" stroke="#888" stroke-width="1.5" stroke-dasharray="5 4"/>
-        <polyline fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="{% for fraction in pace_curve %}{% assign cx = forloop.index0 | times: 19 | plus: 40 %}{% assign cy = goal | times: fraction | divided_by: scale_max | times: 105.0 %}{% assign cy = 120 | minus: cy %}{{ cx }},{{ cy }} {% endfor %}"/>
+        <path data-smooth-pace fill="none" stroke="black" stroke-width="3" stroke-linecap="round" d="M40 120" />
         {% if today_record.m.step_count != nil %}
           <line x1="{{ point_x }}" y1="10" x2="{{ point_x }}" y2="120" stroke="#aaa" stroke-width="1" stroke-dasharray="2 4"/>
           <circle cx="{{ point_x }}" cy="{{ point_y }}" r="6" fill="black" stroke="white" stroke-width="2" data-current-step-point/>
         {% endif %}
+        <circle data-ali-step-point cx="{{ point_x }}" cy="120" r="6" fill="white" stroke="black" stroke-width="2.4" style="display:none"/>
         {% for hour in (0..4) %}{% assign hx = hour | times: 114 | plus: 40 %}<text x="{{ hx }}" y="140" font-size="12" fill="#666" text-anchor="middle">{% case hour %}{% when 0 %}12a{% when 1 %}6a{% when 2 %}12p{% when 3 %}6p{% when 4 %}12a{% endcase %}</text>{% endfor %}
       </svg>
-      <div class="flex flex--row flex--between w--full"><span class="label label--small label--gray">Solid: personalized goal pace · Dashed: goal · Dot: today at {{ local_now | date: '%-I:%M %p' }}</span><span class="label label--small label--gray">{% if today_record.m.step_count != nil %}{% assign diff = today_record.m.step_count | minus: target_now %}{% if diff >= 0 %}{{ diff | round }} ahead{% else %}{{ diff | abs | round }} behind{% endif %}{% else %}Awaiting today's steps{% endif %}</span></div>
+      <div class="flex flex--row flex--between w--full"><span class="label label--small label--gray">Curve: fitted goal pace · Dashed: goal · ● Stuart · ○ Ali</span><span class="label label--small label--gray">{% if today_record.m.step_count != nil %}{% assign diff = today_record.m.step_count | minus: target_now %}{% if diff >= 0 %}{{ diff | round }} ahead{% else %}{{ diff | abs | round }} behind{% endif %}{% else %}Awaiting today's steps{% endif %}</span></div>
       <div class="flex flex--row flex--between flex--center-y bg--gray-75 rounded--large p--2 w--full">
-        <span class="title title--small">Ali · <span data-ali-steps>—</span> steps</span>
+        <span class="title title--small">Ali · <span data-ali-card-steps>—</span> steps</span>
         <div class="flex flex--col flex--right gap--xsmall"><span class="label label--small" data-ali-secondary>Awaiting current-day samples</span><span class="label label--small label--gray" data-ali-sync>Apple Health · synced samples</span></div>
       </div>
       <template data-apple-source="ali">{{ private_plugin_536547.merge_variables.health.metrics | json | escape }}</template>
