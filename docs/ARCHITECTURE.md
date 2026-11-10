@@ -52,10 +52,10 @@ flowchart TD
 | `536071` Indiana Sports — Data | Compact five ESPN schedules into seven local days | 60 min | [settings](../data-sources/indiana-sports/settings.yml), [transform](../data-sources/indiana-sports/transform.js) |
 
 The three helper entries are hidden in the device playlist. They supply data
-rather than separate core screens. Native Apple Calendars and Home Page are
-visible. A Welcome screen and an unconfigured BTC recipe playlist entry also
-exist in the account; they are not implemented Command Center features and
-were left untouched.
+rather than separate core screens. The restored native Apple Calendar entries are hidden sources. Home, Weather,
+Sports, and Health are the four visible core views; Welcome and Ali's Apple
+Health also remain visible as configured by the owner. The former unconfigured
+BTC playlist entry is absent and was not restored.
 
 Both native calendars use the `app_password` provider, an app-specific password
 managed in TRMNL, 12-hour time, and the Noblesville time zone. The inspected data uses the same local time zone. Do not copy its credentials
@@ -397,5 +397,32 @@ sources are still not reconciled using Apple's source-priority algorithm.
 `normalization_version` plus explicit daily aggregation markers protect
 idempotence without mistaking a fresh raw webhook upload for processed data.
 Cached date formatters bound runtime/memory work. Synthetic tests assert a
-3,500-sample output stays under 30 KB. Fresh webhook validation remains required
-after installation because rendering old cached data still hit the size check.
+3,500-sample output stays under 30 KB. Subsequent audit verified compact versioned output and healthy source state.
+After any future change, validate the actual processed payload and source health;
+if cached data continues to fail, obtain a fresh Companion upload.
+
+## Playlist dependency inventory after audit
+
+Device `75111` retains the four core views in order: Home `535610`, Weather
+`536164`, Sports `536256`, Health `536354`. Source-only dependencies should be
+**hidden**, not removed, so their refresh/playlist membership is retained.
+
+| Consumer | Required sources retained on device |
+| --- | --- |
+| Home | Stuart calendar `535612`, Ali calendar `536125`, verse `536052`, weather `536062`, sports `536071`, Oura `536089` / `536097` |
+| Weather Detail | Standalone polling; no helper dependency |
+| Sports Detail | Standalone direct ESPN polling; credentials remain in its form |
+| Health Detail | Stuart Health `536212`, Ali Health `536547`, Oura `536089` / `536097`, workout helper `536353` |
+
+Both calendar entries had been deleted and were restored hidden as items
+`902150` / `902151`. Their Merge namespaces were
+still present before restoration: absence from the playlist does not prove an
+immediate namespace/data disappearance. This audit restores the dependencies
+rather than relying on cached data or assuming complete loss. Ali's Health item
+remains visible as configured by the owner; other source entries are hidden.
+Welcome remains visible, while the removed unconfigured BTC entry stays absent.
+
+The size-limit repair was verified during this audit: Ali's processed variables
+contain `normalization_version: ali-health-v1`, compact metric/hour arrays, and
+no reminder content. Source state is healthy and the error count cleared. This
+confirms processing, not the physical phone's background sync cadence.

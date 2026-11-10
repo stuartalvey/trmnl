@@ -268,7 +268,25 @@ This transform preserves the display's compact `health.metrics` field contract.
 
 After saving, reset plugin health if necessary, then request one fresh sync from
 Ali's Companion. A force refresh of the old cached raw variables may still hit
-the 100 KB gate, so a reset alone is not proof of recovery. Verify
+the 100 KB gate, so a reset alone is not proof of recovery. A subsequent successful processing job
+was verified during the environment audit; another manual upload is not needed
+merely to clear the already resolved error. Verify
 `normalization_version: ali-health-v1`, bounded metric/hour arrays, source health,
 and a Health Detail X preview after the upload. Record whether upload verification
 is complete or pending. Never replay raw data or expose webhook credentials.
+
+## Recover a removed source playlist entry
+
+Inspect current membership before adding anything. Refer to the dependency
+inventory in ARCHITECTURE.md; restore an existing required **plugin setting**,
+not a new duplicate plugin or new credentials. Add missing sources to device
+`75111`, then hide their playlist items. Keep main views visible and preserve
+other order/schedules/visibility choices. Do not restore unrelated removed items.
+
+Re-read playlist membership, compare Merge namespaces and source status, and
+inspect affected previews. A healthy source or present namespace alone is not
+proof of current data. Refresh polling sources when stale; native phone data
+still requires Companion uploads. Source removal can leave cached Merge data
+available temporarily, so do not diagnose solely from a missing playlist entry.
+Check API rate limits during broad audits; this server allows 60 requests per
+60 seconds. Pause and resume rather than retrying rejected requests rapidly.

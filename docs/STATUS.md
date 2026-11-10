@@ -64,8 +64,9 @@ See this file's latest commit for the implementation handoff.
   (empty strings versus null). No detected functional template drift.
 - Device `75111`, model `v2`, landscape, 900-second wake, 4-bit render context;
   no physical screen/check-in verification established.
-- Oura entries remain visible in the playlist; existing Welcome, Calendars,
-  unrelated BTC entry, and three hidden helper entries were left intact.
+- Source visibility now follows the dependency inventory below: Oura and
+  calendar feeds are hidden; main views remain visible. No unrelated removed
+  playlist entries were restored.
 
 ## Validation and known limitations
 
@@ -131,17 +132,42 @@ Apple Health is connected.
 
 ## Ali Apple Health size-limit repair
 
-Ali's raw Companion payload exceeded TRMNL's 100 KB rendering limit. Node was
-selected but no transform existed. Installed a Node transform under
-`data-sources/ali-apple-health/transform.js` that retains seven local days of
-compact step/energy/resting-HR records plus hourly step sums. Exact duplicate
-samples are removed, unsupported metrics/reminders are omitted from render
-output, and the Health Detail `health.metrics` contract is preserved.
+Ali's raw Companion payload exceeded TRMNL's 100 KB rendering limit. The compact
+Node transform in `data-sources/ali-apple-health/transform.js` retains seven local
+days of selected daily metrics plus hourly step sums, preserves Health Detail's
+metric contract, and omits unrelated render data. Synthetic size/privacy tests pass.
 
-Synthetic tests pass, including 3,500 samples with output under 30 KB. Source
-and Node setting verified in TRMNL. Reset was requested, but refreshing the old
-stored raw payload still reports the historical size error; **a fresh Companion
-sync is required before end-to-end recovery can be confirmed**. No claim of a
-successful new upload or healthy source is made by this update. Existing Health
-Detail continues to use its last available data; raw personal payloads stay out
-of GitHub. Update this status after the new sync is verified.
+Initial attempts still reported the old oversized payload. During the subsequent
+environment audit, `normalization_version: ali-health-v1` was verified in live
+processed variables, arrays were compact, and source health was healthy with no
+error/count. Recovery is now verified; no fresh-upload claim is made because the
+audit cannot distinguish reprocessing from an independent phone upload. Continue
+normal Companion syncing for newer data; no phone Health data was deleted.
+
+## Playlist dependency audit
+
+Compared all 15 account plugins with device `75111`'s playlist. Both calendar
+instances had been removed; restored **Stu's iCal** `535612` as hidden item
+`902150` and **Ali's iCal** `536125` as hidden item
+`902151`. Their Home Merge namespaces were still present
+before restoration, so removal was not treated as proof of immediate data loss.
+Keep source-only dependencies hidden rather than deleting their playlist entries.
+
+The four main views remain visible in order: Home, Weather, Sports, Health.
+Welcome remains visible. Existing verse/weather/sports/Oura/Stuart Health/workout
+sources remain present and hidden. Ali Health remains visible as configured by
+the owner. The unrelated unconfigured BTC item is absent and was not restored.
+No other playlist settings, source credentials, or dashboard code were changed.
+
+Ali Health initially reported degraded, then its compacting Node transform
+processed successfully. Final inspection reports **all 15 plugin states healthy**,
+with no Ali Health error. Source health alone is not a freshness claim
+for private phone/Oura data. Physical display verification remains unavailable.
+
+Audit validation: all 12 versioned runtime template/transform files match live
+TRMNL exactly. Represented non-secret settings match the reviewed manifests.
+The workout helper's encrypted polling-header field is masked/omitted in export
+but reported set by the settings API; no header loss was inferred or overwritten.
+All four X/full previews rendered and were visually checked. Public polling
+feeds were explicitly refreshed after stale snapshots were observed; this does
+not force new phone Health uploads or establish measurement freshness.
