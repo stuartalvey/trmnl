@@ -87,8 +87,16 @@
   set("[data-ali-card-steps]",movement.steps===null?"—":String(Math.round(movement.steps)));
   const chart=page.querySelector("[data-goal-chart]");
   if(chart){
-    const scale=Number(chart.dataset.scale),goal=Number(chart.dataset.goal);
+    const scale=Math.max(Number(chart.dataset.scale),movement.steps===null?0:movement.steps*1.1),goal=Number(chart.dataset.goal);
     if(Number.isFinite(scale)&&scale>0&&Number.isFinite(goal)&&goal>0){
+      // Grow the y-axis when Ali is ahead of the current goal or Stuart's count.
+      const goalLine=chart.querySelector('line[stroke-dasharray="5 4"]');
+      if(goalLine)goalLine.setAttribute("y1",String(120-105*goal/scale)),goalLine.setAttribute("y2",String(120-105*goal/scale));
+      const stuPoint=chart.querySelector("[data-current-step-point]");
+      if(stuPoint){
+        const stuSteps=Number(stuPoint.dataset.steps);
+        if(Number.isFinite(stuSteps))stuPoint.setAttribute("cy",String(120-105*stuSteps/scale));
+      }
       const logistic=t=>1/(1+Math.exp(-0.30586*(t-14.9835)));
       const lo=logistic(0),hi=logistic(24);
       const frac=t=>(logistic(t)-lo)/(hi-lo);
@@ -105,10 +113,11 @@
       const point=chart.querySelector("[data-ali-step-point]");
       if(point&&movement.steps!==null){
         const prior=chart.querySelector("[data-current-step-point]");
-        const cx=prior?Number(prior.getAttribute("cx")):40+456*(Number(page.dataset.now)%86400)/86400;
+        const localSeconds=(Number(page.dataset.now)+Number(page.dataset.offset))%86400;
+        const cx=prior?Number(prior.getAttribute("cx")):40+456*((localSeconds+86400)%86400)/86400;
         point.setAttribute("cx",String(cx));
         point.setAttribute("cy",String(120-105*movement.steps/scale));
-        point.style.display="";
+        point.setAttribute("visibility","visible");
       }
     }
   }
