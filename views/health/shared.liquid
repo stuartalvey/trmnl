@@ -57,23 +57,41 @@
  }
 
  function appleSummary(samples,nowMs){
-  const result={steps:null,energy:null,resting:null,last:null,status:"missing"};
+  const result={steps:null,energy:null,resting:null,last:null,lastSteps:null,recentDay:null,recentSteps:null,status:"missing"};
   if(!Array.isArray(samples))return result;
-  const day=v=>{const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/Indiana/Indianapolis",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(v));const g=k=>p.find(x=>x.type===k).value;return g("year")+"-"+g("month")+"-"+g("day");};
-  const today=day(nowMs),seen=new Set();let restingAt=-Infinity;
+  const day=v=>{
+    const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/Indiana/Indianapolis",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(v));
+    const g=k=>p.find(x=>x.type===k).value;
+    return g("year")+"-"+g("month")+"-"+g("day");
+  };
+  const today=day(nowMs),seen=new Set(),stepDays=new Map();
+  let restingAt=-Infinity;
   for(const sample of samples){
-   if(!sample||typeof sample.value!=="number"||!Number.isFinite(sample.value)||sample.value<0)continue;
-   const start=Date.parse(sample.start_date),end=Date.parse(sample.end_date);
-   if(!Number.isFinite(start)||!Number.isFinite(end)||end<start||end>nowMs+300000||day(start)!==today)continue;
-   const name=String(sample.metric_type||"").toLowerCase().replace(/[^a-z]/g,""),unit=String(sample.unit||"").toLowerCase();
-   const key=[name,unit,start,end,sample.value].join("|");if(seen.has(key))continue;seen.add(key);
-   if(/(?:stepcount|steps)$/.test(name)){result.steps=(result.steps??0)+sample.value;result.last=Math.max(result.last??0,end);}
-   else if(/activeenergy(?:burned)?$/.test(name)){
-    const value=unit==="kj"?sample.value/4.184:["kcal","cal","kilocalories"].includes(unit)?sample.value:null;
-    if(value!==null){result.energy=(result.energy??0)+value;result.last=Math.max(result.last??0,end);}
-   }else if(/restingheartrate$/.test(name)&&end>restingAt){result.resting=sample.value;restingAt=end;result.last=Math.max(result.last??0,end);}
+    if(!sample||typeof sample.value!=="number"||!Number.isFinite(sample.value)||sample.value<0)continue;
+    const start=Date.parse(sample.start_date),end=Date.parse(sample.end_date);
+    if(!Number.isFinite(start)||!Number.isFinite(end)||end<start||end>nowMs+300000)continue;
+    const date=day(start);
+    const name=String(sample.metric_type||"").toLowerCase().replace(/[^a-z]/g,""),unit=String(sample.unit||"").toLowerCase();
+    const key=[name,unit,start,end,sample.value].join("|");
+    if(seen.has(key))continue;seen.add(key);
+    if(/(?:stepcount|steps)$/.test(name)){
+      const record=stepDays.get(date)||{count:0,last:0};
+      record.count+=sample.value;record.last=Math.max(record.last,end);stepDays.set(date,record);
+      if(date===today){result.steps=(result.steps??0)+sample.value;result.lastSteps=Math.max(result.lastSteps??0,end);result.last=Math.max(result.last??0,end);}
+    }else if(date===today&&/activeenergy(?:burned)?$/.test(name)){
+      const value=unit==="kj"?sample.value/4.184:["kcal","cal","kilocalories"].includes(unit)?sample.value:null;
+      if(value!==null){result.energy=(result.energy??0)+value;result.last=Math.max(result.last??0,end);}
+    }else if(date===today&&/restingheartrate$/.test(name)&&end>restingAt){
+      result.resting=sample.value;restingAt=end;result.last=Math.max(result.last??0,end);
+    }
   }
-  result.status=result.last===null?"no_today":"ok";return result;
+  const dates=[...stepDays.keys()].sort();
+  if(dates.length){
+    result.recentDay=dates[dates.length-1];
+    result.recentSteps=stepDays.get(result.recentDay).count;
+  }
+  result.status=result.last===null?"no_today":"ok";
+  return result;
  }
 
  root.HealthDetail={oura,appleSummary};
@@ -81,29 +99,38 @@
   const page=document.querySelector("[data-health-detail]");if(!page)return;
   const appleNode=page.querySelector('template[data-apple-source="ali"]');
   let samples=null;try{samples=JSON.parse(appleNode?.content?.textContent||"null");}catch{}
-  const movement=appleSummary(samples,Number(page.dataset.now)*1000);
+  const nowMs=Number(page.dataset.now)*1000;
+  const movement=appleSummary(samples,nowMs);
   const set=(selector,value)=>{const node=page.querySelector(selector);if(node)node.textContent=value;};
-  set("[data-ali-steps]",movement.steps===null?"—":String(Math.round(movement.steps)));
-  set("[data-ali-card-steps]",movement.steps===null?"—":String(Math.round(movement.steps)));
+  set("[data-ali-steps]",movement.steps===null?"—":Math.round(movement.steps).toLocaleString("en-US"));
+  const fmtTime=ms=>new Intl.DateTimeFormat("en-US",{timeZone:"America/Indiana/Indianapolis",hour:"numeric",minute:"2-digit"}).format(new Date(ms));
+  if(movement.steps!==null){
+    set("[data-ali-sync]","Today · as of "+fmtTime(movement.lastSteps));
+    set("[data-ali-secondary]",movement.energy===null?"Ali: steps synced":"Ali: "+Math.round(movement.energy)+" active kcal");
+  }else if(movement.recentDay!==null){
+    const p=movement.recentDay.split("-").map(Number);
+    const label=new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",timeZone:"UTC"}).format(new Date(Date.UTC(p[0],p[1]-1,p[2])));
+    set("[data-ali-sync]","Last "+label+": "+Math.round(movement.recentSteps).toLocaleString("en-US"));
+    set("[data-ali-secondary]","Ali's steps not synced today");
+  }else{
+    set("[data-ali-sync]","Awaiting Apple Health steps");
+    set("[data-ali-secondary]","Ali's steps not synced today");
+  }
   const chart=page.querySelector("[data-goal-chart]");
   if(chart){
-    const scale=Math.max(Number(chart.dataset.scale),movement.steps===null?0:movement.steps*1.1),goal=Number(chart.dataset.goal);
+    const scale=Math.max(Number(chart.dataset.scale),movement.steps===null?0:movement.steps*1.1);
+    const goal=Number(chart.dataset.goal),bottom=176,height=146;
     if(Number.isFinite(scale)&&scale>0&&Number.isFinite(goal)&&goal>0){
-      // Grow the y-axis when Ali is ahead of the current goal or Stuart's count.
-      const goalLine=chart.querySelector('line[stroke-dasharray="5 4"]');
-      if(goalLine)goalLine.setAttribute("y1",String(120-105*goal/scale)),goalLine.setAttribute("y2",String(120-105*goal/scale));
+      const goalLine=chart.querySelector("[data-goal-line]");
+      if(goalLine){const y=bottom-height*goal/scale;goalLine.setAttribute("y1",String(y));goalLine.setAttribute("y2",String(y));}
       const stuPoint=chart.querySelector("[data-current-step-point]");
-      if(stuPoint){
-        const stuSteps=Number(stuPoint.dataset.steps);
-        if(Number.isFinite(stuSteps))stuPoint.setAttribute("cy",String(120-105*stuSteps/scale));
-      }
+      if(stuPoint){const stu=Number(stuPoint.dataset.steps);if(Number.isFinite(stu))stuPoint.setAttribute("cy",String(bottom-height*stu/scale));}
       const logistic=t=>1/(1+Math.exp(-0.30586*(t-14.9835)));
       const lo=logistic(0),hi=logistic(24);
       const frac=t=>(logistic(t)-lo)/(hi-lo);
-      const y=t=>120-105*goal*frac(t)/scale;
-      const slope=t=>{const z=logistic(t);return -105*goal/scale*0.30586*z*(1-z)/(hi-lo);};
-      // Cubic Hermite segments for a continuously smooth fitted trend.
-      const d=["M40 120"];
+      const y=t=>bottom-height*goal*frac(t)/scale;
+      const slope=t=>{const z=logistic(t);return -height*goal/scale*0.30586*z*(1-z)/(hi-lo);};
+      const d=["M40 "+bottom];
       for(let i=0;i<96;i++){
         const t=i/4,x0=40+456*t/24,x1=40+456*(t+0.25)/24,dx=x1-x0;
         d.push("C"+(x0+dx/3).toFixed(2)+","+(y(t)+slope(t)/12).toFixed(2)+" "+(x1-dx/3).toFixed(2)+","+(y(t+0.25)-slope(t+0.25)/12).toFixed(2)+" "+x1.toFixed(2)+","+y(t+0.25).toFixed(2));
@@ -111,18 +138,16 @@
       const curve=chart.querySelector("[data-smooth-pace]");
       if(curve)curve.setAttribute("d",d.join(" "));
       const point=chart.querySelector("[data-ali-step-point]");
-      if(point&&movement.steps!==null){
-        const prior=chart.querySelector("[data-current-step-point]");
-        const localSeconds=(Number(page.dataset.now)+Number(page.dataset.offset))%86400;
-        const cx=prior?Number(prior.getAttribute("cx")):40+456*((localSeconds+86400)%86400)/86400;
+      if(point&&movement.steps!==null&&movement.lastSteps!==null){
+        const localMs=movement.lastSteps+Number(page.dataset.offset)*1000;
+        const dayMs=((localMs%86400000)+86400000)%86400000;
+        const cx=40+456*dayMs/86400000;
         point.setAttribute("cx",String(cx));
-        point.setAttribute("cy",String(120-105*movement.steps/scale));
+        point.setAttribute("cy",String(bottom-height*movement.steps/scale));
         point.setAttribute("visibility","visible");
       }
     }
   }
-  set("[data-ali-secondary]",movement.status==="ok"?(movement.energy===null?"Energy —":Math.round(movement.energy)+" kcal")+" · RHR: "+(movement.resting===null?"—":Math.round(movement.resting)+" bpm"):"No current-day samples");
-  set("[data-ali-sync]",movement.last===null?"Apple Health · awaiting current-day data":"Apple Health · as of "+new Intl.DateTimeFormat("en-US",{timeZone:"America/Indiana/Indianapolis",hour:"numeric",minute:"2-digit"}).format(new Date(movement.last)));
   for(const person of ["stuart","ali"]){
    const source=page.querySelector('template[data-oura-source="'+person+'"]');
    const model=oura(source?.content?.textContent||"",Number(page.dataset.now),Number(page.dataset.offset));
