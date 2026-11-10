@@ -30,7 +30,7 @@ assert.equal(ctx.HealthDetail.appleSummary(null,now).status,"missing");
   const engine=new Liquid({root:tmp,extname:".liquid",preserveTimezones:true});
   const input={trmnl:{system:{timestamp_utc:now/1000},user:{utc_offset:-18000},plugin_settings:{custom_fields_values:{step_goal:10000}}},private_plugin_536212:{merge_variables:{daily_history:[{date:"2026-01-15",m:{step_count:0,active_energy:0,resting_heart_rate:50}}]}},private_plugin_536353:{merge_variables:ctx.summarize([],now,true)}};
   const html=await engine.parseAndRender(fs.readFileSync(path.join(__dirname,"full.liquid"),"utf8"),input);
-  assert.match(html,/>0<\/span>/);assert.equal((html.match(/data-step-day=/g)||[]).length,1);assert.match(html,/Building history/);assert.match(html,/data-ali-steps/);assert.doesNotMatch(html,/NaN|Infinity|undefined|Liquid error/);
+  assert.match(html,/>0<\/span>/);assert.match(html,/data-current-step-point/);assert.match(html,/personalized goal pace/);assert.match(html,/data-ali-steps/);assert.doesNotMatch(html,/NaN|Infinity|undefined|Liquid error/);
   console.log("Passed: workout windows/deduplication/completion/missing coverage/DST/pagination/failure, Oura freshness/zero scores, and synthetic movement/missing-day rendering.");
  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 })().catch(e=>{console.error(e);process.exitCode=1;});
