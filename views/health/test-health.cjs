@@ -15,14 +15,16 @@ const sample=(type,value,unit="count",start="2026-01-15T14:00Z",end="2026-01-15T
 let a=ctx.HealthDetail.appleSummary([sample("steps",0),sample("active_energy",41.84,"kJ"),sample("resting_heart_rate",50,"bpm")],now);
 assert.equal(a.steps,0);assert(Math.abs(a.energy-10)<.00001);assert.equal(a.resting,50);
 a=ctx.HealthDetail.appleSummary([sample("steps",100),sample("steps",100),sample("steps",25,"count","2026-01-15T14:10Z","2026-01-15T14:20Z")],now);assert.equal(a.steps,125);
-a=ctx.HealthDetail.appleSummary([sample("steps",100,"count","2026-01-14T14:00Z","2026-01-14T14:10Z")],now);assert.equal(a.status,"no_today");assert.equal(a.steps,null);
+a=ctx.HealthDetail.appleSummary([sample("steps",100,"count","2026-01-14T14:00Z","2026-01-14T14:10Z")],now);assert.equal(a.status,"no_today");assert.equal(a.steps,null);assert.equal(a.recentSteps,100);
 a=ctx.HealthDetail.appleSummary([sample("steps",-1),sample("steps",NaN),sample("steps",10,"count","2026-01-15T16:00Z","2026-01-15T16:10Z")],now);assert.equal(a.steps,null);
 assert.equal(ctx.HealthDetail.appleSummary(null,now).status,"missing");
 (async()=>{
- ctx.fetch=async()=>({ok:true,json:async()=>({schema_version:"1.0",data:records,pagination:{next_cursor:null}})});
- out=await ctx.run({trmnl:{system:{timestamp_utc:now/1000}}});assert.equal(out.status,"ok");assert.equal(out.session_count,2);
+ ctx.fetch=async url=>({ok:true,json:async()=>({schema_version:"1.0",data:records.filter(r=>r.status===(url.includes("status=partial")?"partial":"completed")),pagination:{next_cursor:null}})});
+ out=await ctx.run({trmnl:{system:{timestamp_utc:now/1000}}});assert.equal(out.status,"ok");assert.equal(out.session_count,3);
  let calls=0;ctx.fetch=async()=>{calls++;return {ok:true,json:async()=>({schema_version:"1.0",data:[],pagination:{next_cursor:"same-cursor"}})}};
- out=await ctx.run({trmnl:{system:{timestamp_utc:now/1000}}});assert.equal(out.status,"partial");assert.equal(calls,5);
+ out=await ctx.run({trmnl:{system:{timestamp_utc:now/1000}}});assert.equal(out.status,"partial");assert.equal(calls,10);
+ ctx.fetch=async url=>url.includes("status=partial")?{ok:false}:{ok:true,json:async()=>({schema_version:"1.0",data:records.filter(r=>r.status==="completed"),pagination:{next_cursor:null}})};
+ out=await ctx.run({trmnl:{system:{timestamp_utc:now/1000}}});assert.equal(out.status,"partial");assert.equal(out.session_count,2);
  ctx.fetch=async()=>({ok:false});out=await ctx.run({trmnl:{system:{timestamp_utc:now/1000}}});assert.equal(out.status,"unavailable");
  const {Liquid}=require("liquidjs"),tmp=fs.mkdtempSync(path.join(os.tmpdir(),"health-template-"));
  try{
