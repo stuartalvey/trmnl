@@ -1,5 +1,16 @@
 # Current project status
 
+## News & Markets Detail — first implementation (2026-11-10)
+
+- New private TRMNL instance **537634** created, framework 3.4.6, Node Serverless polling with a small Coinbase JSON seed, 30-minute refresh; initially NOT in playlist while validating preview.
+- Source tracked in `views/news-markets/` on feature branch `feature/news-markets`, separate from Home, Weather, Sports, and Health.
+- Live refresh succeeded: S&P 500 and LLY quotes from Yahoo Chart (daily change using previous close, **not** chart-range starting close); Bitcoin from CoinGecko (24-hour percentage); Hamilton County October 2026 report from Indiana REALTORS; four FRED keyless CSV series including mortgage rate and listing stats; BBC and Google News RSS.
+- IAR county report supplies **median SOLD price**, current inventory, sold units, days to pending, and months of supply, distinguished from FRED/Realtor.com **median LISTING price** and listing-based metrics. Freddie Mac 30-year rate is a national weekly survey, not an individualized mortgage quote.
+- The Node data collector ran successfully in TRMNL and returned all four FRED series, IAR data, all three quotes, and news; corrected Yahoo daily-change baseline and filtered unrelated politics from real-estate headlines. Synthetic collector checks run in an in-memory harness; a standalone Node test script is versioned.
+- A `v2` full-screen server preview was requested but remained pending as of the last check; **do not claim visual or physical-device verification yet**.
+- The live instance was configured independently; no other plugin or playlist was modified as part of initial implementation. Remaining work: obtain X preview, visually inspect/clipping, validate repeat refresh and source resilience, then make visible after Home/Weather/Sports/Health and merge feature branch to canonical main. No private portfolio data/credentials are involved.
+
+
 Last compared **2026-11-09**, after the first Health Detail draft. Starting documentation
 baseline: [c0bd596](https://github.com/stuartalvey/trmnl/commit/c0bd596a98d87734c0f547cb3fcc8ca6c4ef6649).
 See this file's latest commit for the implementation handoff.
