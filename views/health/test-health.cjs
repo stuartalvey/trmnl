@@ -2,7 +2,11 @@
 const fs=require("node:fs"),path=require("node:path"),vm=require("node:vm"),assert=require("node:assert/strict"),os=require("node:os");
 const ctx={Intl,Date,Map,Set,AbortSignal,fetch:async()=>{throw Error("offline")}};vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(__dirname,"../../data-sources/workout-consistency/transform.js"),"utf8"),ctx);
 const now=Date.parse("2026-01-15T15:00Z"),records=[{id:"one",status:"completed",started_at:"2026-01-13T23:00Z",duration_minutes:30},{id:"one",status:"completed",started_at:"2026-01-13T23:00Z",duration_minutes:30},{id:"two",status:"partial",started_at:"2026-01-14T12:00Z"},{id:"three",status:"completed",started_at:"2026-01-16T12:00Z"},{id:"four",status:"completed",started_at:"2026-01-14T02:00Z",duration_minutes:null}];
-let out=ctx.summarize(records,now,true);assert.equal(out.session_count,3);assert.equal(out.active_days,2);assert.equal(out.this_week,2);assert.equal(out.minutes,30);assert.equal(out.weeks.length,8);assert(out.weeks.every(w=>w.cells.length===7));assert.equal(out.weeks[7].cells[1].count,2);assert.equal(out.weeks[7].cells[2].partial,1);assert(out.weeks[7].cells[6].future);
+let out=ctx.summarize(records,now,true);assert.equal(out.session_count,3);assert.equal(out.active_days,2);assert.equal(out.this_week,2);assert.equal(out.minutes,30);assert.equal(out.weeks.length,8);assert(out.weeks.every(w=>w.cells.length===7));assert.equal(out.weeks[7].cells[1].count,1);assert.equal(out.weeks[7].cells[2].count,1);assert(out.weeks[7].cells[6].future);
+const sameDate=[{id:"full",status:"completed",started_at:"2026-01-13T23:00Z"},{id:"partial",status:"partial",started_at:"2026-01-13T23:30Z"}];
+out=ctx.summarize(sameDate,now,true);assert.equal(out.session_count,2);assert.equal(out.active_days,1);assert.equal(out.weeks[7].cells[1].count,1);
+const fullOnly=ctx.summarize([sameDate[0]],now,true),partialOnly=ctx.summarize([{...sameDate[1],id:"p"}],now,true);
+assert.equal(fullOnly.active_days,partialOnly.active_days);assert.equal(fullOnly.this_week,partialOnly.this_week);
 out=ctx.summarize([],now,false);assert.equal(out.status,"partial");assert(out.weeks.every(w=>w.cells.every(c=>!c.known)));
 assert.equal(ctx.localDay("2026-11-01T05:30:00Z"),"2026-11-01");assert.equal(ctx.localDay("2026-11-01T06:30:00Z"),"2026-11-01");
 const shared=fs.readFileSync(path.join(__dirname,"shared.liquid"),"utf8"),script=shared.split("/* HealthDetail:start */")[1].split("/* HealthDetail:end */")[0];vm.runInContext(script,ctx);
