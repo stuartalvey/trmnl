@@ -31,7 +31,7 @@ function pct(n){return NUM(n)===null?"—":(n>0?"+":"")+n.toFixed(2)+"%";}
 function spark(rows){const v=(rows||[]).filter(x=>NUM(x)!==null).slice(-42);if(v.length<2)return "";const lo=Math.min(...v),hi=Math.max(...v),den=hi===lo?1:hi-lo;return v.map((p,i)=>(i*114/(v.length-1)).toFixed(1)+","+(34-(p-lo)/den*30).toFixed(1)).join(" ");}
 function quote(data,label){
   const row=data?.chart?.result?.[0],m=row?.meta;
-  const price=NUM(m?.regularMarketPrice),prev=NUM(m?.chartPreviousClose??m?.previousClose);
+  const price=NUM(m?.regularMarketPrice);const closes=(row?.indicators?.quote?.[0]?.close||[]).map(NUM).filter(x=>x!==null);const prev=NUM(m?.previousClose)??(closes.length>=2?closes[closes.length-2]:null);
   if(!row||price===null||prev===null||prev<=0)return {label,status:"unavailable",price:null,price_str:"—",change:null,change_str:"—",spark:"",trend:[]};
   const v=row?.indicators?.quote?.[0]?.close||[];
   const trend=v.map(NUM).filter(x=>x!==null).slice(-10);const change=100*(price/prev-1);
@@ -49,7 +49,7 @@ function dec(s){return String(s||"").replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g,"$1")
   const hex=/^&#x/i.test(ent),n=parseInt(ent.slice(hex?3:2,-1),hex?16:10);
   return n>0&&n<0x110000?String.fromCodePoint(n):" ";
 }).replace(/<[^>]*>/g,"").replace(/\s+/g," ").trim();}
-function rss(raw,now){
+function rss(raw,now,defaultSource="News"){
   if(typeof raw!=="string")return [];
   const items=[...raw.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item>/gi)].slice(0,16);
   return items.map(match=>{
@@ -57,9 +57,9 @@ function rss(raw,now){
     const field=k=>dec(item.match(new RegExp("<"+k+"(?:\\s[^>]*)?>([\\s\\S]*?)<\\/"+k+">","i"))?.[1]);
     const date=Date.parse(field("pubDate")||field("dc:date"));
     let title=field("title"),source=field("source");
-    if(!source&&title.includes(" - ")){const at=title.lastIndexOf(" - ");source=title.slice(at+3);title=title.slice(0,at);}
+    if(title.includes(" - ")){const at=title.lastIndexOf(" - "),suffix=title.slice(at+3);if(!source||suffix.toLowerCase()===source.toLowerCase()){source=source||suffix;title=title.slice(0,at);}}
     if(!title||title.length<12||!Number.isFinite(date)||date>now+3600000||date<now-5*86400000)return null;
-    return {title:safe(title).slice(0,145),source:safe(source||"News").slice(0,40),date:new Date(date).toISOString()};
+    return {title:safe(title).slice(0,145),source:safe(source||defaultSource).slice(0,40),date:new Date(date).toISOString()};
   }).filter(Boolean);
 }
 function shortlist(lists,max=2){
@@ -107,7 +107,7 @@ async function run(input){
     "https://feeds.bbci.co.uk/news/world/rss.xml",
     "https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml",
     gnews('"Eli Lilly" when:4d'),
-    gnews('"Hamilton County" Indiana real estate OR housing when:7d'),
+    gnews('"Hamilton County" Indiana (housing OR "real estate" OR mortgage OR homes) when:10d'),
     gnews('US mortgage housing market when:4d')
   ];
   const [spx,lly,btc,iar,...remaining]=await Promise.all([
@@ -119,7 +119,7 @@ async function run(input){
   const econ={};
   for(let i=0;i<fred.length;i++)econ[fred[i]]=historical(observations(fredRaw[i],fred[i]));
   const housing=parseIar(iar),mortgage=econ.MORTGAGE30US;
-  const headlines=newsRaw.map(raw=>rss(raw,now));
+  const headlines=newsRaw.map((raw,i)=>rss(raw,now,i<2?"BBC":"News"));
   return {
     updated_at:new Date(now).toISOString(),
     markets:[quote(spx,"S&P 500"),quote(lly,"Eli Lilly"),bitcoin(btc)],
@@ -132,7 +132,7 @@ async function run(input){
     news:[
       {name:"WORLD & U.S.",items:shortlist([headlines[0],headlines[1]])},
       {name:"ELI LILLY",items:shortlist([headlines[2]])},
-      {name:"REAL ESTATE",items:shortlist([headlines[3],headlines[4]])}
+      {name:"REAL ESTATE",items:shortlist([headlines[3].filter(item=>/\b(hous(?:e|es|ing)|homes?|mortgage|real estate|realtor|listings?|properties|property|rentals?|homebuilding|construction|sales market)\b/i.test(item.title)),headlines[4]])}
     ],
     source_status:{stock:!!spx&&!!lly,crypto:!!btc,iar:!!housing,fred:fredRaw.filter(Boolean).length,news:newsRaw.filter(Boolean).length},
     timezone:TZ
