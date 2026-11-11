@@ -85,40 +85,64 @@
     </div>
   </div>
 
-  <div class="flex flex--col gap--small outline outline--muted rounded--large p--3 w--full">
-    <div class="flex flex--row flex--between w--full"><span class="title">Workout consistency</span><span class="label label--small label--gray">Protein Social · 8 weeks · full + partial count</span></div>
+  <div class="flex flex--col gap--medium outline outline--muted rounded--large p--3 w--full">
+    <div class="flex flex--row flex--between flex--center-y w--full">
+      <span class="title">Workout consistency</span>
+      <span class="label label--small label--gray">Protein Social · 8-week training record</span>
+    </div>
     {% if training.status == 'ok' or training.status == 'partial' %}
-    <div class="grid grid--cols-12 gap--medium w--full">
-      <div class="col--span-6 flex flex--col gap--medium">
-        <div class="flex flex--row gap--medium flex--center-y w--full">
-          <div class="flex flex--col gap--xsmall"><span class="value value--medium">{{ training.this_week }}</span><span class="label label--small label--gray">This week</span></div>
-          <div class="flex flex--col gap--xsmall"><span class="value value--medium">{{ training.last_week }}</span><span class="label label--small label--gray">Last week</span></div>
-          <div class="flex flex--col gap--xsmall"><span class="value value--medium">{{ training.active_days }}</span><span class="label label--small label--gray">Active days / 8 wk</span></div>
-        </div>
-        <div class="flex flex--row gap--xsmall flex--center-x w--full mt--2">
-          <div class="flex flex--col gap--xsmall">{% assign weekdays = 'M,T,W,T,F,S,S' | split: ',' %}{% for letter in weekdays %}<div class="w--4 h--4 flex flex--center-x flex--center-y"><span class="label label--small label--gray">{{ letter }}</span></div>{% endfor %}</div>
+    <div class="flex flex--row gap--xlarge flex--center-y w--full">
+      <div class="flex flex--col gap--xsmall">
+        <span class="value value--medium">{{ training.this_week }}</span>
+        <span class="label label--small label--gray">Workout days this week</span>
+      </div>
+      <div class="flex flex--col gap--xsmall">
+        <span class="value value--medium">{{ training.last_week }}</span>
+        <span class="label label--small label--gray">Last week</span>
+      </div>
+      <div class="flex flex--col gap--xsmall">
+        <span class="value value--medium">{{ training.active_days }}</span>
+        <span class="label label--small label--gray">Training days · 8 weeks</span>
+      </div>
+    </div>
+    <div class="grid grid--cols-12 gap--large w--full">
+      <div class="col--span-5 flex flex--col gap--small">
+        <span class="label label--small label--gray">TRAINING CALENDAR</span>
+        <div class="flex flex--row gap--xsmall flex--center-x w--full">
+          <div class="flex flex--col gap--xsmall">
+            {% assign weekdays = 'M,T,W,T,F,S,S' | split: ',' %}
+            {% for letter in weekdays %}
+            <div class="w--4 h--4 flex flex--center-x flex--center-y"><span class="label label--small label--gray">{{ letter }}</span></div>
+            {% endfor %}
+          </div>
           {% for week in training.weeks %}
           <div class="flex flex--col gap--xsmall">
             {% for cell in week.cells %}
-            <div class="w--4 h--4 rounded--small {% if cell.full > 0 %}bg--black{% elsif cell.partial > 0 %}bg--gray-50 outline outline--black{% elsif cell.future %}outline outline--muted{% elsif cell.known %}bg--gray-75{% else %}outline outline--muted{% endif %}" title="{{ cell.date }} · {{ cell.count }} logged sessions"></div>
+            <div class="w--4 h--4 rounded--small {% if cell.count > 0 %}bg--black{% elsif cell.future or cell.known != true %}outline outline--muted{% else %}bg--gray-75{% endif %}" title="{{ cell.date }} · {% if cell.count > 0 %}Workout logged{% elsif cell.future %}Future{% elsif cell.known %}No workout logged{% else %}Data unavailable{% endif %}"></div>
             {% endfor %}
-          </div>{% endfor %}
+          </div>
+          {% endfor %}
         </div>
       </div>
-      <div class="col--span-6 flex flex--col gap--small">
-        <span class="label label--small label--gray">WORKOUT DAYS BY WEEK</span>
+      <div class="col--span-7 flex flex--col gap--small">
+        <span class="label label--small label--gray">WORKOUT DAYS PER WEEK</span>
         {% assign max_week = 1 %}{% for week in training.weeks %}{% if week.count > max_week %}{% assign max_week = week.count %}{% endif %}{% endfor %}
-        <svg class="w--full h--40" viewBox="0 0 450 160" role="img" aria-label="Eight weekly totals of workout days including partials">
-          {% for week in training.weeks %}{% assign x = forloop.index0 | times: 56 | plus: 28 %}{% assign h = week.count | times: 95.0 | divided_by: max_week %}{% assign y = 120 | minus: h %}
-          <rect x="{{ x | minus: 16 }}" y="{{ y }}" width="32" height="{{ h }}" rx="4" fill="{% if forloop.last %}black{% else %}#aaa{% endif %}"/>
-          <text x="{{ x }}" y="{{ y | minus: 6 }}" text-anchor="middle" font-size="15">{{ week.count }}</text>
-          <text x="{{ x }}" y="144" text-anchor="middle" font-size="11" fill="#666">{{ week.start | date: '%b %-d' }}</text>
+        <svg class="w--full h--36" viewBox="0 0 450 160" role="img" aria-label="Eight weekly totals of logged workout days; full and partial workouts count equally">
+          {% for week in training.weeks %}
+            {% assign x = forloop.index0 | times: 56 | plus: 28 %}
+            {% assign h = week.count | times: 94.0 | divided_by: max_week %}
+            {% assign y = 120 | minus: h %}
+            <rect x="{{ x | minus: 16 }}" y="{{ y }}" width="32" height="{{ h }}" rx="4" fill="{% if forloop.last %}black{% else %}#aaa{% endif %}"/>
+            <text x="{{ x }}" y="{{ y | minus: 6 }}" text-anchor="middle" font-size="15">{{ week.count }}</text>
+            <text x="{{ x }}" y="144" text-anchor="middle" font-size="11" fill="#666">{{ week.start | date: '%b %-d' }}</text>
           {% endfor %}
         </svg>
       </div>
     </div>
-    <span class="label label--small label--gray w--full text--left">Black: full · Outlined: partial · Gray: rest · Hollow: future / unknown{% if training.status == 'partial' %} · Feed incomplete{% endif %}</span>
-    {% else %}<span class="label label--gray">Workout history unavailable · Apple Health and Oura remain independent</span>{% endif %}
+    <span class="label label--small label--gray w--full">Black: workout day · Gray: no logged workout · Outline: future / unknown{% if training.status == 'partial' %} · Source data incomplete{% endif %}</span>
+    {% else %}
+    <span class="label label--gray">Workout history unavailable</span>
+    {% endif %}
   </div>
 </div>
 <div class="title_bar"><span class="title">Health Detail · Daily movement + consistency</span><span class="instance">Apple Health · Oura · Protein Social · Snapshots · ET</span></div>
