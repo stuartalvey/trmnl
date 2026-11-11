@@ -2,6 +2,8 @@
 
 ## 2026-11-11 — News relocated under its corresponding market section
 
+- Merged into canonical GitHub main through [PR #3](https://github.com/stuartalvey/trmnl/pull/3), squash commit `9553fde`; main `full.liquid` matches the live TRMNL markup. Playlist item 903384 remains visible at row 4 (fifth screen), plugin healthy. Live playlist preview now reports updated version `v=1794401706` after the render.
+
 - Reorganized `News & Markets Detail` `537634` from three sections into **two**: Financial Markets followed by World/U.S. and Lilly news bands, then Hamilton County Real Estate followed by a Real Estate News band.
 - Each news article now receives a full-width row (10/12 grid for headline, 2/12 for source/date), instead of a 1/3-width news card. The separate `The Briefing` section was removed.
 - The 3 financial cards, 4 equal real estate cards, previous-close/24h percent changes, 12-month market charts, IAR MoM/YoY and 12-month local charts were preserved. No changes to the data collector, sources or other screens.
