@@ -110,7 +110,7 @@
           </div>
         </div>
       </div>
-      {% assign max_week = 4 %}
+      {% assign max_week = 1 %}
       {% for week in training.weeks %}{% if week.count > max_week %}{% assign max_week = week.count %}{% endif %}{% endfor %}
       <svg class="w--full h--44" viewBox="0 0 860 178" preserveAspectRatio="none" role="img" aria-label="Weekly count of workout days. Completed and partial workouts count equally.">
         <line x1="30" y1="137" x2="830" y2="137" stroke="#999" stroke-width="1"/>
