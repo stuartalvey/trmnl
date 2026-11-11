@@ -278,3 +278,11 @@ fresh Companion upload rather than a health reset alone.
 **Consequences:** Quotes are not guaranteed real-time; 30-minute screen refresh and provider timestamps are distinct. Never confuse the IAR median sold price with Realtor.com/FRED listing price. Use source-specific date/metric labels. Failed sources remain unavailable instead of fabricated. A GitHub feature branch can be merged only after review; a TRMNL preview is separate from physical screen verification.
 
 **Implementation verification, 2026-11-10:** Live sources returned all three quotes, four FRED datasets, the IAR county report, and categorized RSS headlines. The first X preview overflowed vertically, so card typography and spacing were reduced. The second X preview fit all sections, and the new screen was made visible as playlist item 903384. Physical-device confirmation is still outstanding.
+
+## 2026-11-10 — Equal real estate cards and longer history
+
+**Decision:** Replace the unequal hero/2×2 real-estate section with four equal-width cards: median sold price, days to pending, inventory, and 30-year fixed mortgage. Display IAR's MoM and YoY values for county cards; show 4-week and 1-year mortgage rate deltas in percentage points. Use source-matched rolling year sparklines, independent from the current daily/24h financial changes.
+
+**Reason:** Owner identified unused space and preferred four equally prominent metrics; long-term trend conveys context without replacing current market movement. Headlines previously truncated at two lines.
+
+**Consequences:** Collector fetches up to twelve archived IAR reports for matching actual county figures; missing historical months are labelled. Separate one-year weekly Yahoo chart requests improve market sparklines but add external calls; maintain fallback when unavailable. Preview and test after changes. Headline clamp raised to four lines; ePaper layout remains bounded.
