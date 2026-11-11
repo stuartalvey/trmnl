@@ -28,20 +28,29 @@ function historical(rows){
 }
 function money(n,digits=0){return NUM(n)===null?"—":"$"+Number(n).toLocaleString("en-US",{minimumFractionDigits:digits,maximumFractionDigits:digits});}
 function pct(n){return NUM(n)===null?"—":(n>0?"+":"")+n.toFixed(2)+"%";}
-function spark(rows){const v=(rows||[]).filter(x=>NUM(x)!==null).slice(-42);if(v.length<2)return "";const lo=Math.min(...v),hi=Math.max(...v),den=hi===lo?1:hi-lo;return v.map((p,i)=>(i*114/(v.length-1)).toFixed(1)+","+(34-(p-lo)/den*30).toFixed(1)).join(" ");}
-function quote(data,label){
+function spark(rows){const v=(rows||[]).filter(x=>NUM(x)!==null).slice(-55);if(v.length<2)return "";const lo=Math.min(...v),hi=Math.max(...v),den=hi===lo?1:hi-lo;return v.map((p,i)=>(i*114/(v.length-1)).toFixed(1)+","+(34-(p-lo)/den*30).toFixed(1)).join(" ");}
+function chartPrices(data){
+  const row=data?.chart?.result?.[0];
+  return Array.isArray(row?.indicators?.quote?.[0]?.close)?row.indicators.quote[0].close.map(NUM).filter(v=>v!==null&&v>0):[];
+}
+function trendDisplay(data, fallback, min=26){
+  const points=chartPrices(data);
+  return points.length>=min?{spark:spark(points),label:"12M trend"}:fallback;
+}
+function quote(data,label,history){
   const row=data?.chart?.result?.[0],m=row?.meta;
   const price=NUM(m?.regularMarketPrice);const closes=(row?.indicators?.quote?.[0]?.close||[]).map(NUM).filter(x=>x!==null);const prev=NUM(m?.previousClose)??(closes.length>=2?closes[closes.length-2]:null);
   if(!row||price===null||prev===null||prev<=0)return {label,status:"unavailable",price:null,price_str:"—",change:null,change_str:"—",spark:"",trend:[]};
   const v=row?.indicators?.quote?.[0]?.close||[];
-  const trend=v.map(NUM).filter(x=>x!==null).slice(-10);const change=100*(price/prev-1);
-  return {label,status:"ok",price,price_str:label==="S&P 500"?price.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}):money(price,2),change,change_str:pct(change),spark:spark(trend),trend,date:m?.regularMarketTime?new Date(m.regularMarketTime*1000).toISOString():null,source:"Yahoo Finance (delayed)"};
+  const trend=v.map(NUM).filter(x=>x!==null).slice(-10),historyData=trendDisplay(history,{spark:spark(trend),label:"Recent trend"});const change=100*(price/prev-1);
+  return {label,status:"ok",price,price_str:label==="S&P 500"?price.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}):money(price,2),change,change_str:pct(change),spark:historyData.spark,trend_label:historyData.label,trend,date:m?.regularMarketTime?new Date(m.regularMarketTime*1000).toISOString():null,source:"Yahoo Finance (delayed)"};
 }
-function bitcoin(data){
+function bitcoin(data,history){
   const row=Array.isArray(data)?data.find(x=>x?.id==="bitcoin"):null;
   const price=NUM(row?.current_price),change=NUM(row?.price_change_percentage_24h);
   const trend=(row?.sparkline_in_7d?.price||[]).map(NUM).filter(x=>x!==null);
-  return {label:"Bitcoin",status:price===null?"unavailable":"ok",price,price_str:money(price,0),change,change_str:pct(change),spark:spark(trend),trend:[],date:row?.last_updated??null,source:"CoinGecko",change_label:"24h"};
+  const historyData=trendDisplay(history,{spark:spark(trend),label:"7D trend"});
+  return {label:"Bitcoin",status:price===null?"unavailable":"ok",price,price_str:money(price,0),change,change_str:pct(change),spark:historyData.spark,trend_label:historyData.label,trend:[],date:row?.last_updated??null,source:"CoinGecko",change_label:"24h"};
 }
 function dec(s){return String(s||"").replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g,"$1").replace(/&(?:amp|quot|apos|lt|gt|nbsp);|&#(?:x[0-9a-f]+|\d+);/gi,ent=>{
   const map={"&amp;":"&","&quot;":'"',"&apos;":"'","&lt;":"<","&gt;":">","&nbsp;":" "};
@@ -97,11 +106,74 @@ function periodUrl(now){
   const publication=stamp;
   return "https://data.indianarealtors.com/viewreport/2/all/18057/"+publication.getUTCFullYear()+"/"+String(publication.getUTCMonth()+1).padStart(2,"0")+"/07/";
 }
+
+function priorReportUrls(now,count=12){
+  const current=periodUrl(now),m=current.match(/\/(\d{4})\/(\d{2})\/07\/$/);
+  if(!m)return [];
+  return Array.from({length:count},(_,i)=>{
+    const pub=new Date(Date.UTC(Number(m[1]),Number(m[2])-1-i,7));
+    const month=new Date(Date.UTC(pub.getUTCFullYear(),pub.getUTCMonth()-1,1));
+    return {url:"https://data.indianarealtors.com/viewreport/2/all/18057/"+pub.getUTCFullYear()+"/"+String(pub.getUTCMonth()+1).padStart(2,"0")+"/07/",
+      period:MONTHS[month.getUTCMonth()]+" "+month.getUTCFullYear()};
+  });
+}
+function monthlyCounty(raws,urls){
+  return urls.map((item,i)=>{
+    const parsed=parseIar(raws[i]);
+    return parsed?.sold?.period===item.period?parsed:null;
+  }).reverse();
+}
+function propertyHistory(reports,key){
+  const values=reports.map(r=>r?.[key]?.value??null);
+  const count=values.filter(x=>NUM(x)!==null).length;
+  return {spark:count>=8?spark(values):"",history_count:count,trend_label:count===12?"12M · Indiana REALTORS":count>=8?count+"/12 mo · IAR":"History unavailable"};
+}
+function fixedRateHistory(rows){
+  const last=rows.at(-1),lastMs=last?Date.parse(last.date):NaN;
+  if(!Number.isFinite(lastMs))return {spark:"",history_count:0,trend_label:"12M history unavailable",month:null,year:null};
+  const range=rows.filter(r=>Date.parse(r.date)>=lastMs-366*86400000&&Date.parse(r.date)<=lastMs);
+  const nearest=days=>{
+    const target=lastMs-days*86400000;
+    let chosen=null,best=Infinity;
+    for(const r of rows){const gap=Math.abs(Date.parse(r.date)-target);if(gap<best){best=gap;chosen=r}}
+    return best<=9*86400000?chosen:null;
+  };
+  const month=nearest(28),year=nearest(364);
+  return {spark:range.length>=40?spark(range.map(r=>r.value)):"",history_count:range.length,
+    trend_label:range.length>=40?"12M · Freddie Mac":"History unavailable",
+    month:month?last.value-month.value:null,year:year?last.value-year.value:null};
+}
+function signedChange(value,unit="%"){
+  if(NUM(value)===null)return "—";
+  const precision=unit==="pp"?2:0;
+  const n=Number(value),rounded=n.toFixed(precision);
+  return (n>0?"+":"")+rounded+unit;
+}
+function realEstateCards(report,reports,rate,rateRows){
+  const map=[
+    {key:"sold",title:"MEDIAN SOLD PRICE",unit:"$",subtitle:"Median closed sale price"},
+    {key:"days",title:"DAYS TO PENDING",unit:"days",subtitle:"Listing to accepted offer"},
+    {key:"inventory",title:"INVENTORY",unit:"homes",subtitle:"Average available listings"}
+  ];
+  const cards=map.map(d=>{
+    const cur=report?.[d.key],trend=propertyHistory(reports,d.key);
+    return {key:d.key,title:d.title,value:cur?.value??null,display:cur?(d.unit==="$"?"$"+cur.display:cur.display):"—",
+      change_short:"MoM "+signedChange(cur?.mom),change_long:"YoY "+signedChange(cur?.yoy),source:"Indiana REALTORS",
+      subtitle:d.subtitle,period:cur?.period??"County data",...trend};
+  });
+  const hist=fixedRateHistory(rateRows);
+  cards.push({key:"mortgage",title:"30-YR MORTGAGE",value:rate.value,display:rate.value===null?"—":rate.value.toFixed(2)+"%",
+    change_short:"4W "+signedChange(hist.month,"pp"),change_long:"1Y "+signedChange(hist.year,"pp"),source:"Freddie Mac · FRED",
+    subtitle:"National fixed-rate survey",period:rate.date??"Weekly data",spark:hist.spark,history_count:hist.history_count,trend_label:hist.trend_label});
+  return cards;
+}
+
 async function run(input){
   const now=NUM(input?.trmnl?.system?.timestamp_utc)!==null?Number(input.trmnl.system.timestamp_utc)*1000:Date.now();
   const fred=["MORTGAGE30US","MEDLISPRI18057","ACTLISCOU18057","MEDDAYONMAR18057"];
   const fredJobs=fred.map(id=>get("https://fred.stlouisfed.org/graph/fredgraph.csv?id="+id+"&cosd=2024-01-01","text"));
-  const yurl=s=>"https://query1.finance.yahoo.com/v8/finance/chart/"+encodeURIComponent(s)+"?range=10d&interval=1d";
+  const yurl=(s,range="10d",interval="1d")=>"https://query1.finance.yahoo.com/v8/finance/chart/"+encodeURIComponent(s)+"?range="+range+"&interval="+interval;
+  const historyUrls=priorReportUrls(now,12);
   const gnews=(q)=>"https://news.google.com/rss/search?q="+encodeURIComponent(q)+"&hl=en-US&gl=US&ceid=US:en";
   const queries=[
     "https://feeds.bbci.co.uk/news/world/rss.xml",
@@ -110,23 +182,32 @@ async function run(input){
     gnews('"Hamilton County" Indiana (housing OR "real estate" OR mortgage OR homes) when:10d'),
     gnews('US mortgage housing market when:4d')
   ];
-  const [spx,lly,btc,iar,...remaining]=await Promise.all([
+  const [spx,lly,btc,iar,spxHistory,llyHistory,btcHistory,...remaining]=await Promise.all([
     get(yurl("^GSPC")),get(yurl("LLY")),
     get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin&price_change_percentage=24h&sparkline=true"),
-    get(periodUrl(now),"text"),...fredJobs,...queries.map(url=>get(url,"text"))
+    get(periodUrl(now),"text"),
+    get(yurl("^GSPC","1y","1wk")),get(yurl("LLY","1y","1wk")),get(yurl("BTC-USD","1y","1wk")),
+    ...fredJobs,...queries.map(url=>get(url,"text")),...historyUrls.slice(1).map(x=>get(x.url,"text"))
   ]);
-  const fredRaw=remaining.slice(0,fred.length),newsRaw=remaining.slice(fred.length);
+  const fredRaw=remaining.slice(0,fred.length),newsRaw=remaining.slice(fred.length,fred.length+queries.length);
+  const historyRaw=[iar,...remaining.slice(fred.length+queries.length)];
   const econ={};
   for(let i=0;i<fred.length;i++)econ[fred[i]]=historical(observations(fredRaw[i],fred[i]));
   const housing=parseIar(iar),mortgage=econ.MORTGAGE30US;
+  const countyHistory=monthlyCounty(historyRaw,historyUrls);
+  const rateRows=observations(fredRaw[0],fred[0]);
+  const rateHistory=fixedRateHistory(rateRows);
   const headlines=newsRaw.map((raw,i)=>rss(raw,now,i<2?"BBC":"News"));
   return {
     updated_at:new Date(now).toISOString(),
-    markets:[quote(spx,"S&P 500"),quote(lly,"Eli Lilly"),bitcoin(btc)],
+    markets:[quote(spx,"S&P 500",spxHistory),quote(lly,"Eli Lilly",llyHistory),bitcoin(btc,btcHistory)],
     housing:{
-      report:housing,listing:econ.MEDLISPRI18057,listing_spark:spark(econ.MEDLISPRI18057.trend),active:econ.ACTLISCOU18057,
+      cards:realEstateCards(housing,countyHistory,mortgage,rateRows),
+      report:housing,county_history_count:countyHistory.filter(Boolean).length,
+      listing:econ.MEDLISPRI18057,listing_spark:spark(econ.MEDLISPRI18057.trend),active:econ.ACTLISCOU18057,
       listing_days:econ.MEDDAYONMAR18057,
-      mortgage:{...mortgage,change_points:mortgage.value!==null&&mortgage.previous!==null?mortgage.value-mortgage.previous:null},
+      mortgage:{...mortgage,change_points:mortgage.value!==null&&mortgage.previous!==null?mortgage.value-mortgage.previous:null,
+        four_week_points:rateHistory.month,year_points:rateHistory.year},
       status:housing||econ.MEDLISPRI18057.value!==null?"ok":"unavailable"
     },
     news:[
@@ -134,7 +215,8 @@ async function run(input){
       {name:"ELI LILLY",items:shortlist([headlines[2]])},
       {name:"REAL ESTATE",items:shortlist([headlines[3].filter(item=>/\b(hous(?:e|es|ing)|homes?|mortgage|real estate|realtor|listings?|properties|property|rentals?|homebuilding|construction|sales market)\b/i.test(item.title)).slice(0,1),headlines[4].slice(0,1),headlines[3].filter(item=>/\b(hous(?:e|es|ing)|homes?|mortgage|real estate|realtor|listings?|properties|property|rentals?|homebuilding|construction|sales market)\b/i.test(item.title)).slice(1),headlines[4].slice(1)])}
     ],
-    source_status:{stock:!!spx&&!!lly,crypto:!!btc,iar:!!housing,fred:fredRaw.filter(Boolean).length,news:newsRaw.filter(Boolean).length},
+    source_status:{stock:!!spx&&!!lly,crypto:!!btc,iar:!!housing,iar_history:countyHistory.filter(Boolean).length,
+      fred:fredRaw.filter(Boolean).length,news:newsRaw.filter(Boolean).length},
     timezone:TZ
   };
 }
