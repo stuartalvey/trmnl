@@ -37,6 +37,7 @@ does not transfer account authorization.
   basketball schedules from ESPN, with team logos and Eastern start times.
 - Daily NLT verse from DailyVerses.
 - **Today's Balance**: Stuart/Ali readiness scores and a normalized percentage donut beside the verse.
+- **News & Markets Detail**: S&P 500, LLY, Bitcoin, Hamilton County sold-price/inventory/momentum metrics, FRED mortgage rates, and world/Lilly/housing news. Public-source collector and X preview pending verification.
 - **Sports Detail**: five team cards, PGA leaderboard/next tournament, and direct
   ESPN APEX/NOB fantasy matchups, live score snapshots/projections, win chances,
   and recent results; conference/division standings in the team cards.
@@ -54,6 +55,7 @@ Additional detail screens remain planned. See
 | --- | --- |
 | [src/](src/) | Home Page Liquid templates and exported plugin settings |
 | [views/sports/](views/sports/) | Sports Detail templates, direct ESPN collector, tests, and credential-free manifest |
+| [views/news-markets/](views/news-markets/) | Standalone Markets & News templates, public-data collector, and synthetic tests |
 | [views/health/](views/health/) | Health Detail templates and synthetic tests |
 | [views/weather/](views/weather/) | Standalone Weather Detail templates and reviewed polling settings |
 | [tests/](tests/) | Synthetic calendar merge, weather, and Oura balance tests; no personal data |
