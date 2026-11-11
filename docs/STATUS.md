@@ -3,12 +3,12 @@
 ## News & Markets Detail — first implementation (2026-11-10)
 
 - New private TRMNL instance **537634** created, framework 3.4.6, Node Serverless polling with a small Coinbase JSON seed, 30-minute refresh; playlist item **903384** visible as fifth screen after Health; full X preview validated.
-- Source tracked in `views/news-markets/` on feature branch `feature/news-markets`, separate from Home, Weather, Sports, and Health.
+- Source tracked in `views/news-markets/` on canonical `main` (merged PR #1, commit `df7e8cc`), separate from Home, Weather, Sports, and Health.
 - Live refresh succeeded: S&P 500 and LLY quotes from Yahoo Chart (daily change using previous close, **not** chart-range starting close); Bitcoin from CoinGecko (24-hour percentage); Hamilton County October 2026 report from Indiana REALTORS; four FRED keyless CSV series including mortgage rate and listing stats; BBC and Google News RSS.
 - IAR county report supplies **median SOLD price**, current inventory, sold units, days to pending, and months of supply, distinguished from FRED/Realtor.com **median LISTING price** and listing-based metrics. Freddie Mac 30-year rate is a national weekly survey, not an individualized mortgage quote.
 - The Node data collector ran successfully in TRMNL and returned all four FRED series, IAR data, all three quotes, and news; corrected Yahoo daily-change baseline and filtered unrelated politics from real-estate headlines. Synthetic collector checks run in an in-memory harness; a standalone Node test script is versioned. In-memory synthetic validations completed successfully.
 - A `v2` full-screen server preview **completed successfully**, revealing initial clipping/quote overlap; the markup was compressed and a second preview confirmed the full news region, all metrics, and the footer fit in 4-bit preview. Physical-device verification remains unavailable.
-- The live instance was configured independently and the new playlist item was activated. Other plugin source files and playlist visibility were not modified. A successful repeat live refresh returned all four FRED series, IAR local data, all three quotes, and categorized news. Remaining: physical-device check, long-term source reliability, and (after branch merge) canonical main verification. No private portfolio data/credentials are involved.
+- The live instance was configured independently and the new playlist item was activated. Other plugin source files and playlist visibility were not modified. A successful repeat live refresh returned all four FRED series, IAR local data, all three quotes, and categorized news. Canonical `main` transform was re-fetched and confirmed identical to the live TRMNL transform after merge. Remaining: physical-device check and long-term source reliability monitoring. No private portfolio data/credentials are involved.
 
 
 Last compared **2026-11-10**, after News & Markets Detail deployment. Starting documentation
