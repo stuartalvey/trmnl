@@ -1,5 +1,12 @@
 # Current project status
 
+## 2026-11-11 — News & Markets playlist visibility repair
+
+- Investigated owner report that Markets screen was not visible in TRMNL. Live plugin `537634` existed, was marked healthy and visible, and `transform.js`, `full.liquid` and `shared.liquid` matched GitHub canonical `main` byte-for-byte.
+- Playlist item `903384` had anomalous `row_order=1073741831`. Reordered the complete device `75111` playlist, preserving hidden source dependencies, so the five visible entries now have row orders 0–4 (Home, Weather, Sports, Health, Markets). Confirmed Markets `row_order=4`, `visible=true`, and `state=healthy` in a fresh MCP readback.
+- Forced live polling refresh completed successfully, followed by an X-model preview render reporting completion. The device timeline reports **never_seen**, with no recorded hardware check-ins. This does NOT prove physical display; the owner should verify device account/connection when the unit is online. No dashboard code or other screen contents changed.
+
+
 ## 2026-11-10 — Four equal real estate cards and annual trends
 
 - Update merged to canonical `main` via [PR #2](https://github.com/stuartalvey/trmnl/pull/2), squash commit `5b189244`. Latest `main` transform and full Liquid match the healthy live TRMNL instance exactly; playlist remains Home, Weather, Sports, Health, Markets. Physical ePaper display not verified.
