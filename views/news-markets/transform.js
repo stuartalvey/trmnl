@@ -24,7 +24,7 @@ function historical(rows){
   const latest=rows.at(-1)||null,prev=rows.at(-2)||null;
   const prior=latest?rows.find(x=>x.date===String(Number(latest.date.slice(0,4))-1)+latest.date.slice(4)):null;
   const yoy=latest&&prior&&prior.value!==0?100*(latest.value/prior.value-1):null;
-  return {value:latest?.value??null,date:latest?.date??null,previous:prev?.value??null,yoy,trend:rows.slice(-12).map(x=>x.value)};
+  return {value:latest?.value??null,display:latest?latest.value.toLocaleString("en-US",{maximumFractionDigits:0}):"—",date:latest?.date??null,previous:prev?.value??null,yoy,trend:rows.slice(-12).map(x=>x.value)};
 }
 function money(n,digits=0){return NUM(n)===null?"—":"$"+Number(n).toLocaleString("en-US",{minimumFractionDigits:digits,maximumFractionDigits:digits});}
 function pct(n){return NUM(n)===null?"—":(n>0?"+":"")+n.toFixed(2)+"%";}
@@ -35,7 +35,7 @@ function quote(data,label){
   if(!row||price===null||prev===null||prev<=0)return {label,status:"unavailable",price:null,price_str:"—",change:null,change_str:"—",spark:"",trend:[]};
   const v=row?.indicators?.quote?.[0]?.close||[];
   const trend=v.map(NUM).filter(x=>x!==null).slice(-10);const change=100*(price/prev-1);
-  return {label,status:"ok",price,price_str:money(price,2),change,change_str:pct(change),spark:spark(trend),trend,date:m?.regularMarketTime?new Date(m.regularMarketTime*1000).toISOString():null,source:"Yahoo Finance (delayed)"};
+  return {label,status:"ok",price,price_str:label==="S&P 500"?price.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}):money(price,2),change,change_str:pct(change),spark:spark(trend),trend,date:m?.regularMarketTime?new Date(m.regularMarketTime*1000).toISOString():null,source:"Yahoo Finance (delayed)"};
 }
 function bitcoin(data){
   const row=Array.isArray(data)?data.find(x=>x?.id==="bitcoin"):null;
@@ -79,7 +79,7 @@ function iarValue(plain,label){
   const snippet=plain.slice(at+label.length,at+650);
   const pattern=/\b((?:January|February|March|April|May|June|July|August|September|October|November|December)\s+20\d{2})\s+(\$?[\d,]+(?:\.\d+)?%?)\s+Expected range[\s\S]{0,150}?Month-over-month\s+([+\-]?\d+%)\s+Typical change[\s\S]{0,100}?Year-over-year\s+([+\-]?\d+%)/i;
   const m=snippet.match(pattern);
-  return m?{period:m[1],value:NUM(m[2].replace(/[$,%]/g,"")),mom:NUM(m[3].replace("%","")),yoy:NUM(m[4].replace("%",""))}:null;
+  return m?{period:m[1],value:NUM(m[2].replace(/[$,%]/g,"")),display:NUM(m[2].replace(/[$,%]/g,"")).toLocaleString("en-US",{maximumFractionDigits:1}),mom:NUM(m[3].replace("%","")),yoy:NUM(m[4].replace("%",""))}:null;
 }
 function parseIar(html){
   if(!html||!String(html).includes("Monthly Market Report"))return null;
@@ -130,9 +130,9 @@ async function run(input){
       status:housing||econ.MEDLISPRI18057.value!==null?"ok":"unavailable"
     },
     news:[
-      {name:"WORLD & U.S.",items:shortlist([headlines[0],headlines[1]])},
+      {name:"WORLD & U.S.",items:shortlist([headlines[0].slice(0,1),headlines[1].slice(0,1),headlines[0].slice(1),headlines[1].slice(1)])},
       {name:"ELI LILLY",items:shortlist([headlines[2]])},
-      {name:"REAL ESTATE",items:shortlist([headlines[3].filter(item=>/\b(hous(?:e|es|ing)|homes?|mortgage|real estate|realtor|listings?|properties|property|rentals?|homebuilding|construction|sales market)\b/i.test(item.title)),headlines[4]])}
+      {name:"REAL ESTATE",items:shortlist([headlines[3].filter(item=>/\b(hous(?:e|es|ing)|homes?|mortgage|real estate|realtor|listings?|properties|property|rentals?|homebuilding|construction|sales market)\b/i.test(item.title)).slice(0,1),headlines[4].slice(0,1),headlines[3].filter(item=>/\b(hous(?:e|es|ing)|homes?|mortgage|real estate|realtor|listings?|properties|property|rentals?|homebuilding|construction|sales market)\b/i.test(item.title)).slice(1),headlines[4].slice(1)])}
     ],
     source_status:{stock:!!spx&&!!lly,crypto:!!btc,iar:!!housing,fred:fredRaw.filter(Boolean).length,news:newsRaw.filter(Boolean).length},
     timezone:TZ
