@@ -123,7 +123,7 @@
           <text x="{{ x }}" y="159" text-anchor="middle" font-size="16" fill="#666">{{ week.start | date: '%b %-d' }}</text>
         {% endfor %}
       </svg>
-      <span class="label label--small label--gray w--full">Each day with a logged workout counts once. Completed and partial sessions count identically.{% if training.status == 'partial' %} · History may be incomplete{% endif %}</span>
+      <span class="label label--small label--gray w--full">One workout day per calendar date with any logged training session.{% if training.status == 'partial' %} · History may be incomplete{% endif %}</span>
     {% else %}
       <span class="label label--gray">Workout history unavailable</span>
     {% endif %}
