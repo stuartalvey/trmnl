@@ -290,3 +290,13 @@ still requires Companion uploads. Source removal can leave cached Merge data
 available temporarily, so do not diagnose solely from a missing playlist entry.
 Check API rate limits during broad audits; this server allows 60 requests per
 60 seconds. Pause and resume rather than retrying rejected requests rapidly.
+
+## News & Markets Detail deployment / rollback
+
+Review `views/news-markets/{transform.js,full.liquid,shared.liquid,settings.yml}` and compare against TRMNL instance **537634**. Keep the 30-minute polling schedule, Node Serverless runtime, Coinbase seed URL, framework 3.4.6, and GET-only fixed-provider fetches. No auth or private financial account integration is required. Do not replace any other plugin instance.
+
+Run `node views/news-markets/test-transform.cjs` in an environment with Node 20+, then refresh 537634; inspect merge variables for `markets`, `housing`, `news`, each source health, and non-zero or null handling. In particular, verify that Yahoo quotes use *previous trading close*, the S&P value is **index points**, the county report is **median sold price** while FRED listing-price charts are asking prices, mortgage rates are national weekly surveys, and real-estate headlines contain housing-relevant terms. Validate a `v2` `markup_full` preview for clipping, readable headline lengths, and 4-bit contrast. Only after successful visual validation add it as the fifth visible playlist item after Health; do not remove or reorder hidden dependencies. A pending preview is not verification.
+
+TRMNL-to-GitHub auto-sync is **not configured/verified** for this view. Record live writes manually in this path and update status. A GitHub commit alone does not deploy. Roll back just this plugin's reviewed files and visibility; leave existing four dashboard views intact. Upstream HTML, unofficial Yahoo Chart, FRED keyless CSV, and Google News RSS may change independently.
+
+**2026-11-10 validation:** News & Markets instance 537634 successfully refreshed from the real providers with no missing required data; the second `v2/markup_full` server preview was visually checked after fixing initial vertical overflow and price collision. Device playlist item 903384 is visible as the fifth main screen; physical-device display is not yet confirmed.
