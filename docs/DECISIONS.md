@@ -266,3 +266,13 @@ history that the selected runtime can summarize.
 Health Detail metric contract. Raw source pass-through is superseded. Synthetic
 size/bounds/privacy tests are required, and recovery must be confirmed using a
 fresh Companion upload rather than a health reset alone.
+
+## 2026-11-10 — Personal markets / local housing / briefing screen
+
+**Decision:** Build a standalone fifth ePaper view, **Alvey Market Intelligence**, with three market tiles (S&P 500 points, LLY USD, BTC USD/24h), Hamilton County real estate statistics and mortgage rates, and three categories of curated news (world/U.S., Eli Lilly, real estate). No personal portfolio value, balances, or identifying financial data.
+
+**Rationale:** Owner requested a screen pertinent to both their investments and their spouse's real-estate work. Free public data can power the display without exposing connected accounts.
+
+**Source selection:** Reviewed native TRMNL Stock Price and several stock/Bitcoin/news recipes; they either lack index support, need keys, render standalone graphics, or don't provide the requested combined composition. Chose a single Node Serverless collector that fetches Yahoo Chart quotes, CoinGecko BTC, public Indiana REALTORS report, FRED CSV (monthly Realtor.com county listing metrics plus weekly Freddie Mac rates), and BBC/Google RSS. FRED was specifically suggested by the owner. This avoids paid API keys and extra visible playlist entries, at the cost of tracking upstream format changes.
+
+**Consequences:** Quotes are not guaranteed real-time; 30-minute screen refresh and provider timestamps are distinct. Never confuse the IAR median sold price with Realtor.com/FRED listing price. Use source-specific date/metric labels. Failed sources remain unavailable instead of fabricated. A GitHub feature branch can be merged only after review; a TRMNL preview is separate from physical screen verification.
