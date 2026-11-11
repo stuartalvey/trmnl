@@ -9,7 +9,8 @@ const shared=fs.readFileSync(path.join(__dirname,"shared.liquid"),"utf8"),script
 const markup=(score,label)=>'<span class="value">'+score+'</span><span class="label">'+label+'</span>';
 const snapshot=markup(90,"Readiness")+markup(0,"Sleep")+markup(80,"Activity")+"<span>Last updated: 15 Jan 09:45</span>";
 let m=ctx.HealthDetail.oura(snapshot,now/1000,-18000);assert.equal(m.status,"fresh");assert.equal(m.scores.Sleep,0);assert.equal(m.scores.Activity,80);
-m=ctx.HealthDetail.oura(snapshot.replace("15 Jan","14 Jan"),now/1000,-18000);assert.equal(m.scores.Readiness,null);
+m=ctx.HealthDetail.oura(snapshot.replace("15 Jan","14 Jan"),now/1000,-18000);assert.equal(m.status,"stale");assert.equal(m.scores.Readiness,90);assert.equal(m.timestamp,"14 Jan 09:45");
+m=ctx.HealthDetail.oura(snapshot.replace("09:45","02:00"),now/1000,-18000);assert.equal(m.status,"stale");assert.equal(m.scores.Sleep,0);
 assert.equal(ctx.HealthDetail.oura("",now/1000,-18000).scores.Sleep,null);
 const sample=(type,value,unit="count",start="2026-01-15T14:00Z",end="2026-01-15T14:10Z")=>({metric_type:type,value,unit,start_date:start,end_date:end});
 let a=ctx.HealthDetail.appleSummary([sample("steps",0),sample("active_energy",41.84,"kJ"),sample("resting_heart_rate",50,"bpm")],now);
