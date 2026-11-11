@@ -1,17 +1,17 @@
-// Protein Social completed and partial workout-day summaries. No personal payloads in source.
+// Protein Social workout-day summaries. Completed and partial records represent identical training days. No personal payloads in source.
 const ZONE="America/Indiana/Indianapolis";
 function localDay(value){const p=new Intl.DateTimeFormat("en-US",{timeZone:ZONE,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(value));const g=k=>p.find(x=>x.type===k).value;return g("year")+"-"+g("month")+"-"+g("day");}
 function addDay(day,n){const [y,m,d]=day.split("-").map(Number);return new Date(Date.UTC(y,m-1,d+n)).toISOString().slice(0,10);}
 function summarize(records,now,complete=true){
  const today=localDay(now),weekday=(new Date(today+"T12:00Z").getUTCDay()+6)%7,monday=addDay(today,-weekday),start=addDay(monday,-49);
- const seen=new Set(),byDay=new Map();let duration=0,knownDuration=0;
+ const seen=new Set(),byDay=new Set();let duration=0,knownDuration=0;
  for(const r of records){
   if(!r||!r.id||seen.has(String(r.id))||!["completed","partial"].includes(r.status)||!Number.isFinite(Date.parse(r.started_at)))continue;
   const day=localDay(r.started_at);if(day<start||day>today)continue;seen.add(String(r.id));
-  const current=byDay.get(day)||{count:0,full:0,partial:0};current.count++;current[r.status==="completed"?"full":"partial"]++;byDay.set(day,current);
+  byDay.add(day);
   const minutes=r.duration_minutes;if(typeof minutes==="number"&&Number.isFinite(minutes)&&minutes>=0&&minutes<=720){duration+=minutes;knownDuration++;}
  }
- const weeks=Array.from({length:8},(_,w)=>{const cells=Array.from({length:7},(_,d)=>{const date=addDay(start,w*7+d);const sessions=byDay.get(date)||{count:0,full:0,partial:0};return {date,count:sessions.count,full:sessions.full,partial:sessions.partial,future:date>today,known:complete||byDay.has(date)};});return{start:addDay(start,w*7),cells,count:cells.reduce((n,c)=>n+(c.count>0?1:0),0),partial_days:cells.filter(c=>c.partial>0&&!c.full).length};});
+ const weeks=Array.from({length:8},(_,w)=>{const cells=Array.from({length:7},(_,d)=>{const date=addDay(start,w*7+d);return {date,count:byDay.has(date)?1:0,future:date>today,known:complete||byDay.has(date)};});return{start:addDay(start,w*7),cells,count:cells.reduce((n,c)=>n+c.count,0)};});
  return{status:complete?"ok":"partial",start,end:today,weeks,session_count:seen.size,active_days:byDay.size,this_week:weeks[7].count,last_week:weeks[6].count,minutes:Math.round(duration),duration_records:knownDuration,updated_at:new Date(now).toISOString()};
 }
 async function run(input){
