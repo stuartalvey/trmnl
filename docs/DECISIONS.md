@@ -286,3 +286,11 @@ fresh Companion upload rather than a health reset alone.
 **Reason:** Owner identified unused space and preferred four equally prominent metrics; long-term trend conveys context without replacing current market movement. Headlines previously truncated at two lines.
 
 **Consequences:** Collector fetches up to twelve archived IAR reports for matching actual county figures; missing historical months are labelled. Separate one-year weekly Yahoo chart requests improve market sparklines but add external calls; maintain fallback when unavailable. Preview and test after changes. Headline clamp raised to four lines; ePaper layout remains bounded.
+
+## 2026-11-11 — Contextual headlines within two main sections
+
+**Decision:** Remove the standalone three-column `The Briefing` section; put World/U.S. and Eli Lilly news directly below Financial Markets, and Real Estate news directly below the four Hamilton County cards. Headlines now use wide horizontal rows with right-side publisher/date.
+
+**Reason:** User reported substantial bottom whitespace and wanted headlines to span the screen and stay adjacent to their corresponding market data.
+
+**Consequences:** Exactly two information sections; existing source schema, financial markets, IAR metric card selection and calculations remain unchanged. The latest TRMNL X preview fits all article titles, sources and footer; physical-screen receipt remains unverified.
