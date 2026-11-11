@@ -1,5 +1,12 @@
 # Current project status
 
+## 2026-11-11 — Private-plugin thumbnail stale despite current source
+
+- Owner's Safari screenshot of private-plugin page shows old hero-card layout, labelled refreshed ~9 hours earlier. Live TRMNL instance 537634 has **current** four-equal-card markup in `getPluginSettingFiles` and `readMarkup`; full/shared/Node files match GitHub `main`. Live playlist has 537634 visible in row 4.
+- MCP `startRefresh` completed with success and valid current four-card source variables, including 11/12 county report history. Re-saving identical `markup_full` and plugin refresh interval 30 did not update the public preview URL version; playlist thumbnail remains `v=1794365923` from the older image. Preview jobs are separate from the persistent plugin-settings image.
+- The account's device `75111` still has `last_ping_at=null` and timeline `never_seen` with no recorded check-ins, so physical device delivery remains unverified. TRMNL Help Center states that private plugin settings have a **Force Refresh** action to regenerate the screen; a Safari page reload alone does not invoke backend screen generation. User must try the web UI Force Refresh and confirm the refreshed timestamp. Do not claim this cached image has updated until verified.
+
+
 ## 2026-11-11 — News & Markets playlist visibility repair
 
 - Investigated owner report that Markets screen was not visible in TRMNL. Live plugin `537634` existed, was marked healthy and visible, and `transform.js`, `full.liquid` and `shared.liquid` matched GitHub canonical `main` byte-for-byte.
