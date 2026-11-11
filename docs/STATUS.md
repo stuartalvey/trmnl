@@ -2,16 +2,16 @@
 
 ## News & Markets Detail — first implementation (2026-11-10)
 
-- New private TRMNL instance **537634** created, framework 3.4.6, Node Serverless polling with a small Coinbase JSON seed, 30-minute refresh; initially NOT in playlist while validating preview.
+- New private TRMNL instance **537634** created, framework 3.4.6, Node Serverless polling with a small Coinbase JSON seed, 30-minute refresh; playlist item **903384** visible as fifth screen after Health; full X preview validated.
 - Source tracked in `views/news-markets/` on feature branch `feature/news-markets`, separate from Home, Weather, Sports, and Health.
 - Live refresh succeeded: S&P 500 and LLY quotes from Yahoo Chart (daily change using previous close, **not** chart-range starting close); Bitcoin from CoinGecko (24-hour percentage); Hamilton County October 2026 report from Indiana REALTORS; four FRED keyless CSV series including mortgage rate and listing stats; BBC and Google News RSS.
 - IAR county report supplies **median SOLD price**, current inventory, sold units, days to pending, and months of supply, distinguished from FRED/Realtor.com **median LISTING price** and listing-based metrics. Freddie Mac 30-year rate is a national weekly survey, not an individualized mortgage quote.
-- The Node data collector ran successfully in TRMNL and returned all four FRED series, IAR data, all three quotes, and news; corrected Yahoo daily-change baseline and filtered unrelated politics from real-estate headlines. Synthetic collector checks run in an in-memory harness; a standalone Node test script is versioned.
-- A `v2` full-screen server preview was requested but remained pending as of the last check; **do not claim visual or physical-device verification yet**.
-- The live instance was configured independently; no other plugin or playlist was modified as part of initial implementation. Remaining work: obtain X preview, visually inspect/clipping, validate repeat refresh and source resilience, then make visible after Home/Weather/Sports/Health and merge feature branch to canonical main. No private portfolio data/credentials are involved.
+- The Node data collector ran successfully in TRMNL and returned all four FRED series, IAR data, all three quotes, and news; corrected Yahoo daily-change baseline and filtered unrelated politics from real-estate headlines. Synthetic collector checks run in an in-memory harness; a standalone Node test script is versioned. In-memory synthetic validations completed successfully.
+- A `v2` full-screen server preview **completed successfully**, revealing initial clipping/quote overlap; the markup was compressed and a second preview confirmed the full news region, all metrics, and the footer fit in 4-bit preview. Physical-device verification remains unavailable.
+- The live instance was configured independently and the new playlist item was activated. Other plugin source files and playlist visibility were not modified. A successful repeat live refresh returned all four FRED series, IAR local data, all three quotes, and categorized news. Remaining: physical-device check, long-term source reliability, and (after branch merge) canonical main verification. No private portfolio data/credentials are involved.
 
 
-Last compared **2026-11-09**, after the first Health Detail draft. Starting documentation
+Last compared **2026-11-10**, after News & Markets Detail deployment. Starting documentation
 baseline: [c0bd596](https://github.com/stuartalvey/trmnl/commit/c0bd596a98d87734c0f547cb3fcc8ca6c4ef6649).
 See this file's latest commit for the implementation handoff.
 
@@ -51,7 +51,7 @@ See this file's latest commit for the implementation handoff.
 
 ## Active priorities and pending work
 
-- Iterate on Home Page appearance with the owner. Markets/News detail remains planned.
+- Iterate on Home Page appearance with the owner. Markets/News detail deployed; iterate on its appearance/feeds after physical-device feedback.
 - Health next: obtain validated hourly steps/history for both people
   for today-versus-usual-time curves. Neither blocks the deployed first draft.
 - Verify on physical TRMNL X when available; server preview is the current visual check.
@@ -164,7 +164,7 @@ instances had been removed; restored **Stu's iCal** `535612` as hidden item
 before restoration, so removal was not treated as proof of immediate data loss.
 Keep source-only dependencies hidden rather than deleting their playlist entries.
 
-The four main views remain visible in order: Home, Weather, Sports, Health.
+The five main views remain visible in order: Home, Weather, Sports, Health, News & Markets.
 Welcome remains visible. Existing verse/weather/sports/Oura/Stuart Health/workout
 sources remain present and hidden. Ali Health remains visible as configured by
 the owner. The unrelated unconfigured BTC item is absent and was not restored.
