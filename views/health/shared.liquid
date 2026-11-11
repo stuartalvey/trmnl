@@ -49,11 +49,13 @@
 
  function oura(markup,now,offset){
   const freshness=parseSnapshot(markup,now,offset),scores={Readiness:null,Sleep:null,Activity:null};
-  if(freshness.status==="fresh"){
+  // Keep valid, dated scores after freshness expires, but visually mark them stale.
+  const timestamp=typeof markup==="string"?markup.match(/Last\s+updated:\s*(\d{1,2}\s+[A-Za-z]{3,9}\s+\d{1,2}:\d{2}(?:\s*(?:AM|PM))?)/i)?.[1]||null:null;
+  if(freshness.status==="fresh"||freshness.status==="stale"){
    const re=/<span\b[^>]*class=["'][^"']*\bvalue\b[^"']*["'][^>]*>\s*(\d{1,3})\s*<\/span>\s*<span\b[^>]*>\s*(Readiness|Sleep|Activity)\s*<\/span>/gi;
    for(const m of markup.matchAll(re)){const n=Number(m[1]),name=Object.keys(scores).find(k=>k.toLowerCase()===m[2].toLowerCase());if(n>=0&&n<=100)scores[name]=n;}
   }
-  return {status:freshness.status,scores};
+  return {status:freshness.status,scores,timestamp};
  }
 
  function appleSummary(samples,nowMs){
@@ -152,11 +154,15 @@
    const source=page.querySelector('template[data-oura-source="'+person+'"]');
    const model=oura(source?.content?.textContent||"",Number(page.dataset.now),Number(page.dataset.offset));
    const panel=page.querySelector('[data-person="'+person+'"]');if(!panel)continue;
-   panel.querySelector("[data-oura-status]").textContent=model.status==="fresh"?"Current snapshot":"Sync Oura";
+   const outdated=model.status==="stale";
+   panel.querySelector("[data-oura-status]").textContent=model.status==="fresh"?"Current snapshot":outdated&&model.timestamp?"Stale · "+model.timestamp:"Sync Oura";
    for(const name of Object.keys(model.scores)){
     const gauge=panel.querySelector('[data-score="'+name+'"]'),n=model.scores[name];if(!gauge)continue;
-    gauge.querySelector("[data-number]").textContent=n===null?"—":String(n);
-    gauge.querySelector("[data-arc]").setAttribute("stroke-dasharray",n===null?"0 100":n+" "+(100-n));
+    const value=gauge.querySelector("[data-number]"),arc=gauge.querySelector("[data-arc]");
+    value.textContent=n===null?"—":String(n);
+    value.setAttribute("fill",outdated?"#888":"black");
+    arc.setAttribute("stroke",outdated?"#999":"black");
+    arc.setAttribute("stroke-dasharray",n===null?"0 100":n+" "+(100-n));
    }
   }
  }
