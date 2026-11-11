@@ -1,0 +1,2 @@
+{% template signed_change %}{% if val == nil %}—{% elsif val > 0 %}+{{ val | round: 1 }}%{% else %}{{ val | round: 1 }}%{% endif %}{% endtemplate %}
+{% template signed_points %}{% if val == nil %}—{% elsif val > 0 %}+{{ val | round: 2 }}{% else %}{{ val | round: 2 }}{% endif %}{% endtemplate %}
