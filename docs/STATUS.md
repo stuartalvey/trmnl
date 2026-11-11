@@ -1,5 +1,13 @@
 # Current project status
 
+## 2026-11-11 — News relocated under its corresponding market section
+
+- Reorganized `News & Markets Detail` `537634` from three sections into **two**: Financial Markets followed by World/U.S. and Lilly news bands, then Hamilton County Real Estate followed by a Real Estate News band.
+- Each news article now receives a full-width row (10/12 grid for headline, 2/12 for source/date), instead of a 1/3-width news card. The separate `The Briefing` section was removed.
+- The 3 financial cards, 4 equal real estate cards, previous-close/24h percent changes, 12-month market charts, IAR MoM/YoY and 12-month local charts were preserved. No changes to the data collector, sources or other screens.
+- Deployed `markup_full` directly through TRMNL, forced source refresh (success, live source statuses: IAR, 4 FRED series, all 3 market feeds and 5 news feeds). TRMNL X `v2/markup_full` preview completed successfully and was inspected visually: all six headlines, cards and footer fit without clipping. Hardware display remains unverified; the private-plugin settings thumbnail may not update until its own Force Refresh.
+
+
 ## 2026-11-11 — Private-plugin thumbnail stale despite current source
 
 - Owner's Safari screenshot of private-plugin page shows old hero-card layout, labelled refreshed ~9 hours earlier. Live TRMNL instance 537634 has **current** four-equal-card markup in `getPluginSettingFiles` and `readMarkup`; full/shared/Node files match GitHub `main`. Live playlist has 537634 visible in row 4.

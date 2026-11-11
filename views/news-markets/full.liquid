@@ -24,6 +24,31 @@
     </div>
     {% endfor %}
   </div>
+  {% comment %}Financial market briefing: full-width headline rows immediately below market charts.{% endcomment %}
+  <div class="flex flex--col gap--small w--full">
+    {% for category in news %}
+      {% if category.name != 'REAL ESTATE' %}
+      <div class="flex flex--col gap--xsmall outline outline--muted rounded--large p--2 w--full">
+        <div class="flex flex--row flex--between flex--center-y w--full">
+          <span class="title title--small">{{ category.name | escape }}</span>
+          <span class="label label--small label--gray">Top headlines</span>
+        </div>
+        {% for item in category.items %}
+        <div class="grid grid--cols-12 gap--small w--full">
+          <div class="col--span-10">
+            <span class="label" data-clamp="2">{{ item.title | escape }}</span>
+          </div>
+          <div class="col--span-2 flex flex--col flex--right">
+            <span class="label label--small label--gray">{{ item.source | escape }} · {{ item.date | date: '%b %-d' }}</span>
+          </div>
+        </div>
+        {% else %}
+        <span class="label label--gray">No recent headlines available</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
   <div class="flex flex--row flex--between flex--center-y w--full"><span class="title">Hamilton County Real Estate</span><span class="label label--small label--gray">Indiana · Local monthly statistics · National rates</span></div>
   <div class="grid grid--cols-4 gap--small w--full">
     {% for card in housing.cards %}
@@ -49,15 +74,28 @@
       <span class="label label--gray">Waiting for real estate statistics</span>
     {% endfor %}
   </div>
-  <div class="flex flex--row flex--between flex--center-y w--full"><span class="title">The Briefing</span><span class="label label--small label--gray">Relevant developments · Three categories</span></div>
-  <div class="grid grid--cols-3 gap--medium w--full">
-    {% for category in news %}
-    <div class="flex flex--col gap--xsmall outline outline--muted rounded--large p--2">
-      <span class="title title--small">{{ category.name | escape }}</span>
-      {% for item in category.items %}<div class="flex flex--col gap--xsmall w--full"><span class="label label--small" data-clamp="4">{{ item.title | escape }}</span><span class="label label--small label--gray">{{ item.source | escape }} · {{ item.date | date: '%b %-d' }}</span></div>
-      {% else %}<span class="label label--gray">No recent headlines available</span>{% endfor %}
+  {% comment %}Housing headlines are part of the real-estate section, not a third dashboard section.{% endcomment %}
+  {% for category in news %}
+    {% if category.name == 'REAL ESTATE' %}
+    <div class="flex flex--col gap--xsmall outline outline--muted rounded--large p--2 w--full">
+      <div class="flex flex--row flex--between flex--center-y w--full">
+        <span class="title title--small">REAL ESTATE NEWS</span>
+        <span class="label label--small label--gray">Local &amp; national housing</span>
+      </div>
+      {% for item in category.items %}
+      <div class="grid grid--cols-12 gap--small w--full">
+        <div class="col--span-10">
+          <span class="label" data-clamp="2">{{ item.title | escape }}</span>
+        </div>
+        <div class="col--span-2 flex flex--col flex--right">
+          <span class="label label--small label--gray">{{ item.source | escape }} · {{ item.date | date: '%b %-d' }}</span>
+        </div>
+      </div>
+      {% else %}
+      <span class="label label--gray">No recent housing headlines available</span>
+      {% endfor %}
     </div>
-    {% endfor %}
-  </div>
+    {% endif %}
+  {% endfor %}
   <div class="flex flex--row flex--between w--full"><span class="label label--small label--gray">Housing: Indiana REALTORS · Mortgage: Freddie Mac / FRED · Quotes may be delayed</span><span class="label label--small label--gray">USD · Eastern time</span></div>
 </div>
