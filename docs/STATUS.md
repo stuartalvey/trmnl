@@ -1,5 +1,15 @@
 # Current project status
 
+## 2026-11-10 — Four equal real estate cards and annual trends
+
+- Live `News & Markets Detail` plugin `537634` redesigned with **four equal cards in a single row**: Hamilton County median sold price, days from listing to pending, average inventory, and national Freddie Mac 30-year fixed-rate survey. The former hero card and months-of-inventory card were removed from the display; their original collector fields remain available.
+- Each housing card displays the latest official value plus IAR-reported **MoM and YoY percentage changes** (do not derive these from rounded headline values), and a matching county-history sparkline from up to 12 monthly IAR archives. Historical HTML responses are date-validated, and partial coverage is labelled explicitly. Last live collector run returned **11/12 monthly archives**, so cards show `11/12 mo · IAR`, not false `12M` coverage.
+- Mortgage card uses the latest national **weekly** Freddie Mac/FRED rate, point differences versus about four weeks and one year earlier (`4W` and `1Y`), and about 12 months of observed weekly-rate history. These rate deltas are percentage **points**, not relative %.
+- Financial cards retain the correct **previous-trading-close** daily change (BTC 24h) while 12M sparklines use separate weekly Yahoo Chart histories for S&P 500, LLY, and BTC-USD. On source failure, each chart falls back to a correctly labelled shorter trend, never an invented annual chart.
+- News card titles now allow up to four lines at smaller text size. Latest `v2` full-screen preview was visually checked: all four equal cards, financial sparklines and both news headlines per category fit without headline clipping. No other screens changed.
+- Mock-source collector regression tests passed for all four card keys, annual history responses, previous-close changes, and missing data. Live refresh succeeded, with matching statuses. Physical ePaper-device display remains unverified.
+
+
 ## News & Markets Detail — first implementation (2026-11-10)
 
 - New private TRMNL instance **537634** created, framework 3.4.6, Node Serverless polling with a small Coinbase JSON seed, 30-minute refresh; playlist item **903384** visible as fifth screen after Health; full X preview validated.
