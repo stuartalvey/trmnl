@@ -462,3 +462,7 @@ The local display uses four **equal** metric cards (sold median, days to pending
 The mortgage's `4W` and `1Y` comparisons are *absolute percentage-point differences* from the observed weekly FRED series roughly 28 and 364 days earlier (at most nine-day date tolerance), not mortgage MoM/YoY relative percentages. The mortgage sparkline uses 12 months of weekly survey observations.
 
 News now allows up to four text lines per headline (two per category), with compact metadata; when content is too long, the existing framework still enforces overflow bounds. The full-screen X preview has been inspected.
+
+### Two-section news layout (2026-11-11)
+
+The `views/news-markets/full.liquid` layout now has exactly two major sections. Financial Markets places the existing 3 market cards first, followed by full-width, independently bounded World & U.S. and Eli Lilly article bands. Hamilton County Real Estate places the same four equal metric cards first and its own full-width Real Estate News band beneath. Each article uses a 12-column grid with 10 columns for the headline and 2 for source/date. This keeps the category context close to the numbers and reduces the former bottom whitespace and narrow-column clipping. The source contract `news[3]` and all other data remain unchanged; the template routes by the existing category `name` values. Missing items have source-specific unavailable text, not an empty statistic.
