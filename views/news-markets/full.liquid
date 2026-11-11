@@ -1,0 +1,67 @@
+{% assign now_ts = trmnl.system.timestamp_utc | plus: 0 %}
+{% assign local_now = now_ts | plus: trmnl.user.utc_offset %}
+{% assign updated_ts = updated_at | date: '%s' | plus: 0 %}
+{% assign age = now_ts | minus: updated_ts %}
+{% assign report = housing.report %}
+<div class="layout layout--col layout--top gap--medium">
+  <div class="flex flex--row flex--between flex--center-y w--full">
+    <span class="title title--large lg:title--xxlarge">Alvey Market Intelligence</span>
+    <div class="flex flex--col flex--right gap--xsmall">
+      <span class="label">{{ local_now | date: '%A, %B %-d' }} · Markets · Homes · News</span>
+      <span class="label label--small label--gray">{% if updated_at == nil %}Waiting for feeds{% elsif age > 3900 or age < -600 %}Data needs refresh{% else %}Fetched {{ updated_ts | plus: trmnl.user.utc_offset | date: '%-I:%M %p' }} ET{% endif %}</span>
+    </div>
+  </div>
+  <div class="flex flex--row flex--between flex--center-y w--full"><span class="title">Financial Markets</span><span class="label label--small label--gray">Stocks vs previous close · Bitcoin 24-hour change</span></div>
+  <div class="grid grid--cols-3 gap--medium w--full">
+    {% for market in markets %}
+    <div class="flex flex--col gap--small stretch bg--gray-75 rounded--large p--3">
+      <div class="flex flex--row flex--between flex--center-y w--full"><span class="title title--small">{{ market.label | escape }}</span><span class="label label--small label--gray">{% if market.label == 'S&P 500' %}INDEX{% elsif market.label == 'Eli Lilly' %}LLY{% else %}BTC / USD{% endif %}</span></div>
+      {% if market.status == 'ok' %}
+      <div class="flex flex--row flex--between flex--center-y w--full"><span class="value value--large">{{ market.price_str | escape }}</span><span class="title title--small">{{ market.change_str | escape }}</span></div>
+      <svg class="w--full h--10" viewBox="0 0 114 40" preserveAspectRatio="none"><line x1="0" y1="38" x2="114" y2="38" stroke="#bbb"/>{% if market.spark != blank %}<polyline points="{{ market.spark | escape }}" stroke="black" stroke-width="2.5" fill="none" stroke-linejoin="round"/>{% endif %}</svg>
+      <span class="label label--small label--gray">{% if market.label == 'Bitcoin' %}7-day price trend{% else %}Recent sessions · delayed{% endif %}</span>
+      {% else %}<span class="value value--medium">—</span><span class="label label--gray">Quote unavailable</span><div class="h--10"></div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  <div class="flex flex--row flex--between flex--center-y w--full"><span class="title">Hamilton County Real Estate</span><span class="label label--small label--gray">Indiana · Local monthly statistics · National rates</span></div>
+  <div class="grid grid--cols-12 gap--medium w--full">
+    <div class="col--span-5 flex flex--col gap--small outline outline--muted rounded--large p--3">
+      {% if report.sold %}
+        <span class="label label--small label--gray">MEDIAN SOLD PRICE · {{ report.sold.period | escape }}</span>
+        <span class="value value--xlarge">USD {{ report.sold.value | round: 0 }}</span>
+        <span class="title title--small">{% render 'signed_change', val: report.sold.yoy %} year over year</span>
+        <span class="label label--small label--gray">Indiana REALTORS · Closed sales</span>
+      {% elsif housing.listing.value != nil %}
+        <span class="label label--small label--gray">MEDIAN ASKING PRICE · {{ housing.listing.date | date: '%b %Y' }}</span>
+        <span class="value value--xlarge">USD {{ housing.listing.value | round: 0 }}</span>
+        <span class="title title--small">{% render 'signed_change', val: housing.listing.yoy %} year over year</span>
+        <span class="label label--small label--gray">Realtor.com via FRED · Not sale price</span>
+      {% else %}<span class="label label--gray">Home-price feed unavailable</span>{% endif %}
+      {% if housing.listing_spark != blank %}
+      <svg class="w--full h--12" viewBox="0 0 114 40" preserveAspectRatio="none"><line x1="0" y1="38" x2="114" y2="38" stroke="#bbb"/><polyline points="{{ housing.listing_spark | escape }}" stroke="black" stroke-width="2.5" fill="none"/></svg>
+      <span class="label label--small label--gray">12-month median ASKING-price trend · FRED</span>
+      {% endif %}
+      {% if report.inventory and report.sales %}
+      <div class="flex flex--col gap--xsmall bg--gray-75 rounded--large p--2"><span class="label label--small label--gray">LOCAL MARKET PULSE · YoY</span><span class="title title--small">Inventory {% render 'signed_change', val: report.inventory.yoy %} · Sales {% render 'signed_change', val: report.sales.yoy %}</span></div>
+      {% endif %}
+    </div>
+    <div class="col--span-7 grid grid--cols-2 gap--small">
+      <div class="flex flex--col gap--xsmall bg--gray-75 rounded--large p--3"><span class="label label--small label--gray">{% if report.inventory %}AVAILABLE INVENTORY · IAR{% else %}ACTIVE LISTINGS · FRED{% endif %}</span><span class="value value--medium">{% if report.inventory %}{{ report.inventory.value | round: 0 }}{% elsif housing.active.value != nil %}{{ housing.active.value | round: 0 }}{% else %}—{% endif %}</span><span class="label label--small">{% if report.inventory %}{% render 'signed_change', val: report.inventory.yoy %} YoY{% elsif housing.active.yoy != nil %}{% render 'signed_change', val: housing.active.yoy %} YoY{% endif %}</span></div>
+      <div class="flex flex--col gap--xsmall bg--gray-75 rounded--large p--3"><span class="label label--small label--gray">30-YR FIXED · NATIONAL</span><span class="value value--medium">{% if housing.mortgage.value != nil %}{{ housing.mortgage.value | round: 2 }}%{% else %}—{% endif %}</span><span class="label label--small">{% if housing.mortgage.change_points != nil %}{% render 'signed_points', val: housing.mortgage.change_points %} pp weekly{% else %}Freddie Mac · FRED{% endif %}</span></div>
+      <div class="flex flex--col gap--xsmall bg--gray-75 rounded--large p--3"><span class="label label--small label--gray">{% if report.days %}DAYS TO PENDING{% else %}MEDIAN DAYS ON MARKET{% endif %}</span><span class="value value--medium">{% if report.days %}{{ report.days.value | round: 0 }}{% elsif housing.listing_days.value != nil %}{{ housing.listing_days.value | round: 0 }}{% else %}—{% endif %}</span><span class="label label--small label--gray">{% if report.days %}Indiana REALTORS{% else %}Realtor.com{% endif %}</span></div>
+      <div class="flex flex--col gap--xsmall bg--gray-75 rounded--large p--3"><span class="label label--small label--gray">MONTHS OF INVENTORY</span><span class="value value--medium">{% if report.supply %}{{ report.supply.value | round: 1 }}{% else %}—{% endif %}</span><span class="label label--small">{% if report.supply %}{% render 'signed_change', val: report.supply.yoy %} YoY{% else %}IAR feed pending{% endif %}</span></div>
+    </div>
+  </div>
+  <div class="flex flex--row flex--between flex--center-y w--full"><span class="title">The Briefing</span><span class="label label--small label--gray">Relevant developments · Three categories</span></div>
+  <div class="grid grid--cols-3 gap--medium w--full">
+    {% for category in news %}
+    <div class="flex flex--col gap--small outline outline--muted rounded--large p--3">
+      <span class="title title--small">{{ category.name | escape }}</span>
+      {% for item in category.items %}<div class="flex flex--col gap--xsmall w--full"><span class="label" data-clamp="3">{{ item.title | escape }}</span><span class="label label--small label--gray">{{ item.source | escape }} · {{ item.date | date: '%b %-d' }}</span></div>
+      {% else %}<span class="label label--gray">No recent headlines available</span>{% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  <div class="flex flex--row flex--between w--full"><span class="label label--small label--gray">Public sources · Housing monthly · Rates weekly · Market quotes may be delayed</span><span class="label label--small label--gray">USD · Eastern time</span></div>
+</div>
