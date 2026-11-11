@@ -1,0 +1,12 @@
+# Independent public-data screen; no API keys or private portfolio values.
+---
+id: 537634
+name: News & Markets Detail
+strategy: polling
+polling_verb: get
+polling_url: https://api.coinbase.com/v2/prices/BTC-USD/spot
+refresh_interval: 30
+framework_version: 3.4.6
+dark_mode: 'no'
+no_screen_padding: 'no'
+serverless_language: node
