@@ -1,3 +1,10 @@
+# 2026-11-15 — Market Intelligence typography, comparisons and headlines refined
+
+- Owner requested the iOS Gazette name be internal only. Removed it from on-screen masthead; **Market Intelligence** now stands alone in a local Georgia/Times-style serif headline, with serif section headings and sans-serif metrics/news copy.
+- All three financial cards now align their explicit comparison row below the value and above the 12-month sparkline: **Today vs previous close** for S&P/LLY, **24h vs 24h ago** for Bitcoin. Housing's comparable row remains **MoM/YoY** (mortgage **4W/1Y** as percentage-point differences). No calculations or collector data changed.
+- Two headlines in each news band have an editorial hierarchy: bold lead with moderate serif initial, then an **ALSO** label and hairline divider before the secondary headline. All six live headlines, three market metrics, four real estate metrics, charts, and footer fit in completed TRMNL X `v2/markup_full` preview.
+- GitHub `views/news-markets/full.liquid` updated and deployed to TRMNL `537634`; live GitHub match verified after deployment. No modification to other views, collector, account settings or playlist. Device hardware display still unverified.
+
 # 2026-11-15 — iOS Gazette Market Intelligence redesign deployed
 
 - Owner's **The iOS Gazette** editorial-minimalist standard applied to `News & Markets Detail` plugin `537634`. GitHub source: [views/news-markets/full.liquid](../views/news-markets/full.liquid). Scoped sans-serif CSS, Gazette masthead, unboxed 3-up market metrics/4-up housing metrics, subtle rules, 17px full-width news headlines and consistent source metadata. Retained all existing collector/market/housing/news logic, MoM/YoY comparison semantics and trends.
