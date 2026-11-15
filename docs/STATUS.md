@@ -1,3 +1,8 @@
+# 2026-11-15 — Faith view renamed Alvey Sabbath
+- Renamed the existing live TRMNL plugin and on-screen masthead to **Alvey Sabbath**, with the warm subtitle **TRADERS POINT · THIS WEEK’S WORSHIP & REFLECTION**. Existing sermon, Scripture, study prompts, layout, source/refresh logic and device rotation unchanged.
+- Confirmed playlist item `908451` remains Sunday-only (day 0, 00:00–23:59). No Saturday evening schedule added.
+- GitHub `views/faith/full.liquid` updated and deployed to TRMNL setting `541864`.
+
 # 2026-11-15 — Sunday Study added and deployed
 - New private webhook plugin **Sunday Study — Traders Point** (setting `541864`), independently deployed from `views/faith/full.liquid`, framework 3.4.6. Current confirmed message: **Beauty, Betrayal and Bread**, Nov 14, 2026, Mark 14:1–26, Aaron Brockett. Source: https://tpcc.org/messages/beauty-betrayal-and-bread.
 - Displays a short verified NLT excerpt from Mark 14:8, concise three-scene contrast, two independently written questions, an original prayer, and one action. The wording is not presented as an official church study guide.
