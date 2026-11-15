@@ -65,3 +65,11 @@ All ChatGPT, Codex, or other AI changes to visible layouts must follow this spec
 ## First implementation: News & Markets (2026-11-15)
 
 Deployed to TRMNL private plugin `537634`; code in `views/news-markets/full.liquid`. The X-model preview with refreshed 2026-11-15 feed confirmed all six headlines, 3 market panels, 4 equal housing metrics, charts, comparisons, citations and bottom attribution fit. Body uses an explicit Arial/Helvetica/sans-serif stack (no remote fonts), 34px masthead, 22px section headings, 33px market figures, 30px housing figures, 17px news headlines, 12–13px source captions, hairline dividers and unboxed panels. Shared 7px primary vertical rhythm is intentionally compact to tolerate multi-line live news and maintain footer visibility. Treat these as measured v1 values, not yet universal cross-view tokens. Custom scoped CSS is supported in the preview though TRMNL warns that framework classes are generally preferred; no runtime or data logic changed.
+
+## Editorial refinement (Market Intelligence, 2026-11-15)
+
+"The iOS Gazette" is the **internal name of the cross-screen design system**, not an on-screen logo or masthead brand. Screen titles remain the functional names users expect (e.g., **Market Intelligence**).
+
+For the first deployed view, use available **serif heading** fallbacks (Georgia, Times New Roman, serif) for page/section names, preserving sans-serif for KPIs, axes, captions, news copy, and comparison rows. Don't depend on remote fonts or assume platform-specific availability; verify the rendered fallback in the X preview. The first story in each news section may use a moderate serif drop cap and stronger weight; a hairline divider + small ALSO label sets the secondary story apart without excessive ornament.
+
+All metric panels follow **label → value → comparison row → sparkline → period/source note**. Stocks: `Today ±x%` versus previous trading close; Bitcoin: rolling `24h ±x%` versus 24 hours prior. Local housing: source-provided `MoM` and `YoY`; national weekly mortgage rate: `4W` and `1Y` as **percentage-point** changes. Avoid calling a rolling 24-hour change a trading-day change, or relabelling weekly rates as monthly. Keep comparisons aligned by location, not necessarily identical time windows.
