@@ -57,11 +57,18 @@
 .gz .gz-rows {border-top:1px solid #d6d6d6!important;}
 .gz .gz-rows th {border-bottom:1px solid #bbb!important;padding-top:8px!important;padding-bottom:8px!important;}
  .gz .gz-rows td {border-bottom:1px solid #e0e0e0!important;padding-top:4px!important;padding-bottom:4px!important;vertical-align:top;}
+.gz .gz-rows .gz-subsection {font-size:17px!important;white-space:nowrap;}
+.gz .gz-panel.gz-major-rule {border-top:2px solid #222!important;}
 .gz .gz-rows thead .label {font-size:12px!important;letter-spacing:.65px!important;font-weight:700!important;color:#555!important;}
 .gz .gz-rows [data-clamp] {font-weight:550;}
  .gz .gz-chart svg {overflow:visible;}
 .gz [data-person] {background:transparent!important;border:0!important;outline:none!important;border-radius:0!important;padding:4px!important;}
 .gz .gz-footer {border-top:1px solid #ddd;padding-top:4px;font-size:12px;color:#666;}
+
+/* Built-in TRMNL title bar is outside .gz; scope of this stylesheet is one plugin render. */
+.title_bar {background:transparent!important;border-top:1px solid #d5d5d5!important;border-radius:0!important;box-shadow:none!important;padding-top:5px!important;}
+.title_bar .title {font-size:13px!important;font-weight:700!important;}
+.title_bar .instance {font-size:12px!important;color:#686868!important;}
 </style>
 <div class="layout layout--col layout--top gap--medium gz">
   <div class="flex flex--row flex--between flex--center-y w--full gz-mast">
@@ -92,25 +99,25 @@
     </div>
   </div>
   <div class="grid grid--cols-12 gap--medium w--full gz-panels gz-hairline">
-    <div class="col--span-3 flex flex--col gap--small bg--gray-75 rounded--large p--3 gz-panel">
+    <div class="col--span-3 flex flex--col gap--small p--3 gz-panel">
       <span class="label label--small label--gray">SUNRISE / SUNSET</span>
       <span class="title gz-subsection">{% if today_index != nil and daily.sunrise[today_index] != nil %}{{ daily.sunrise[today_index] | date: '%-I:%M' }} AM{% else %}—{% endif %}</span>
       <span class="title">{% if today_index != nil and daily.sunset[today_index] != nil %}{{ daily.sunset[today_index] | date: '%-I:%M' }} PM{% else %}—{% endif %}</span>
       <span class="label label--small label--gray">Today · local time</span>
     </div>
-    <div class="col--span-3 flex flex--col gap--small bg--gray-75 rounded--large p--3 gz-panel">
+    <div class="col--span-3 flex flex--col gap--small p--3 gz-panel">
       <span class="label label--small label--gray">UV INDEX · NOW</span>
       <span class="value value--small gz-number">{% render "metric", value: uv, unit: '', precision: 1 %}</span>
       <span class="label">{% if uv == nil %}Unavailable{% elsif uv < 3 %}Low{% elsif uv < 6 %}Moderate{% elsif uv < 8 %}High{% elsif uv < 11 %}Very high{% else %}Extreme{% endif %}</span>
       <span class="label label--small label--gray">Current hour · estimated</span>
     </div>
-    <div class="col--span-3 flex flex--col gap--small bg--gray-75 rounded--large p--3 gz-panel">
+    <div class="col--span-3 flex flex--col gap--small p--3 gz-panel">
       <span class="label label--small label--gray">WIND · NOW</span>
       <span class="value value--small gz-number">{% render "metric", value: current.wind_speed_10m, unit: ' mph', precision: 0 %}</span>
       <span class="label">Gusts {% render "metric", value: current.wind_gusts_10m, unit: ' mph', precision: 0 %}</span>
       <span class="label label--small label--gray">{% if current.wind_direction_10m != nil %}{% assign directions = 'N,NE,E,SE,S,SW,W,NW' | split: ',' %}{% assign direction_i = current.wind_direction_10m | plus: 22.5 | modulo: 360 | divided_by: 45 | floor %}From {{ directions[direction_i] }}{% else %}Direction unavailable{% endif %}</span>
     </div>
-    <div class="col--span-3 flex flex--col gap--small bg--gray-75 rounded--large p--3 gz-panel">
+    <div class="col--span-3 flex flex--col gap--small p--3 gz-panel">
       <span class="label label--small label--gray">HUMIDITY · NOW</span>
       <span class="value value--small gz-number">{% render "metric", value: current.relative_humidity_2m, unit: '%', precision: 0 %}</span>
       <span class="label">Relative humidity</span>
