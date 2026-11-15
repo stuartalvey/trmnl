@@ -74,7 +74,7 @@
   </div>
 
   <div class="grid grid--cols-12 gap--medium w--full gz-panels gz-major-rule">
-    <div class="col--span-6 flex flex--col gap--small w--full--muted p--2 gz-panel">
+    <div class="col--span-6 flex flex--col gap--small w--full p--2 gz-panel">
       <div class="flex flex--col gap--small p--1 w--full">
       <div class="flex flex--row flex--between w--full"><span class="title gz-section">PGA Tour</span><span class="label label--small label--gray">{{ pga.state | default: 'Unavailable' | escape }}</span></div>
       <span class="title title--small w--full text--left" data-clamp="2">{{ pga.name | default: 'Tournament data unavailable' | escape }}</span>
@@ -95,7 +95,7 @@
       </div>{% endif %}
     </div>
 
-    <div class="col--span-6 flex flex--col gap--small w--full--muted p--2 gz-panel">
+    <div class="col--span-6 flex flex--col gap--small w--full p--2 gz-panel">
       <div class="flex flex--row flex--between w--full p--1"><span class="title gz-section">Fantasy Football</span><span class="label label--small label--gray">{{ season | default: 2026 }} · ESPN</span></div>
       {% for league in fantasy %}
       <div class="flex flex--col gap--xsmall p--2 w--full gz-panel gz-panel--top">
