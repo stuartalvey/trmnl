@@ -304,3 +304,13 @@ fresh Companion upload rather than a health reset alone.
 **Alternatives:** A literal newspaper theme, or a dense analytical command center. Both were considered; the owner selected editorial minimalism.
 
 **Consequences:** All subsequent UI work follows the standard; News & Markets is proposed as first implementation/prototype. This entry is **documentation-only**, not a claim that existing screens have been restyled or deployed.
+
+## 2026-11-15 — iOS Gazette first live screen: Market Intelligence
+
+**Decision:** Restyle News & Markets plugin `537634` with scoped CSS, an iOS Gazette masthead, explicit sans-serif typography, unboxed metric columns, light rules and full-width editorial headlines. Keep both major sections, all three market quotes with previous-close/24h differences and 12-month trends, all four real estate metrics with MoM/YoY and trend labels, all three news bands, and source/age semantics.
+
+**Reason:** Existing standard-framework gray cards, small type and inconsistent spacing felt visually weak. The owner selected editorial minimalism, not a literal serif newspaper skin.
+
+**Validation:** X-model `v2/markup_full` server preview after a live 2026-11-15 refresh showed complete content and footer without clipping. Long real-estate source labels can wrap into two lines. Live data refresh succeeded. This does not verify physical display.
+
+**Consequences:** Framework 3.4.6, source collector, credentials, plugin refresh strategy and playlist untouched. Design implementation is per plugin; document/shared styles do not automatically propagate. A TRMNL validator warning about a `<style>` block is acknowledged as an intentional, scoped design choice; missing `title_bar` warning predates this visual refactor.
