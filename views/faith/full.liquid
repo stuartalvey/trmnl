@@ -5,8 +5,8 @@
   Uses ePaper-friendly typography and the shared editorial design language.
 {% endcomment %}
 <style>
-.fs{font-family:Arial,Helvetica,sans-serif!important;color:#171717;width:100%;gap:0!important;}
-.fs *{box-sizing:border-box;}
+.fs{font-family:Arial,Helvetica,sans-serif!important;color:#171717;width:100%!important;max-width:none!important;gap:0!important;align-items:stretch!important;}
+.fs *{box-sizing:border-box;} .fs > *{width:100%!important;}
 .fs .fs-mast{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #171717;padding-bottom:9px;margin-bottom:16px;}
 .fs .fs-name{font-family:Georgia,"Times New Roman",serif!important;font-weight:700;font-size:36px;line-height:1;}
 .fs .fs-small{font-size:13px;font-weight:700;letter-spacing:1px;color:#555;}
@@ -17,18 +17,18 @@
 .fs .fs-quote{font-family:Georgia,"Times New Roman",serif!important;font-size:34px;line-height:1.15;letter-spacing:-.35px;font-weight:700;}
 .fs .fs-verse{font-size:13px;letter-spacing:.6px;font-weight:700;color:#666;margin-top:8px;}
 .fs .fs-idea{font-size:18px;font-weight:500;line-height:1.28;margin-top:12px;max-width:940px;}
-.fs .fs-mid{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid #ccc;padding:15px 0;}
-.fs .fs-contrast{padding-right:28px;}
-.fs .fs-contrast+.fs-contrast{border-left:1px solid #d1d1d1;padding-left:28px;padding-right:0;}
+.fs .fs-mid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid #ccc;padding:15px 0;}
+.fs .fs-contrast{padding-right:22px;}
+.fs .fs-contrast+.fs-contrast{border-left:1px solid #d1d1d1;padding-left:22px;padding-right:12px;}
 .fs .fs-contrast .fs-small{margin-bottom:5px;}
 .fs .fs-contrast p{font-size:17px;line-height:1.2;margin:0;}
 .fs .fs-body{display:grid;grid-template-columns:53% 47%;padding-top:19px;gap:0;flex:1;min-height:0;}
 .fs .fs-reflect{padding-right:27px;}
 .fs .fs-pray{border-left:1px solid #d0d0d0;padding-left:27px;}
 .fs .fs-section{font-family:Georgia,"Times New Roman",serif!important;font-size:24px;font-weight:700;line-height:1.05;margin-bottom:13px;}
-.fs .fs-question{font-size:19px;font-weight:600;line-height:1.24;margin:0 0 16px;}
+.fs .fs-question{font-size:21px;font-weight:600;line-height:1.24;margin:0 0 16px;}
 .fs .fs-question-number{font-family:Georgia,"Times New Roman",serif!important;font-size:22px;font-weight:700;margin-right:7px;}
-.fs .fs-prayer{font-size:18px;line-height:1.27;margin:0;}
+.fs .fs-prayer{font-size:20px;line-height:1.27;margin:0;}
 .fs .fs-action{border-top:1px solid #ccc;margin-top:14px;padding-top:10px;font-size:17px;line-height:1.24;}
 .fs .fs-action strong{font-size:12px;letter-spacing:.5px;margin-right:6px;}
 .fs .fs-footer{border-top:1px solid #d0d0d0;padding-top:7px;margin-top:12px;display:flex;justify-content:space-between;gap:14px;font-size:12px;color:#666;}
@@ -56,6 +56,10 @@
       <div class="fs-contrast">
         <div class="fs-small">{{ contrast_right_title | escape }}</div>
         <p>{{ contrast_right | escape }}</p>
+      </div>
+      <div class="fs-contrast">
+        <div class="fs-small">{{ contrast_third_title | escape }}</div>
+        <p>{{ contrast_third | escape }}</p>
       </div>
     </div>
     <div class="fs-body">
