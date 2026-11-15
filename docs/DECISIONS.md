@@ -314,3 +314,11 @@ fresh Companion upload rather than a health reset alone.
 **Validation:** X-model `v2/markup_full` server preview after a live 2026-11-15 refresh showed complete content and footer without clipping. Long real-estate source labels can wrap into two lines. Live data refresh succeeded. This does not verify physical display.
 
 **Consequences:** Framework 3.4.6, source collector, credentials, plugin refresh strategy and playlist untouched. Design implementation is per plugin; document/shared styles do not automatically propagate. A TRMNL validator warning about a `<style>` block is acknowledged as an intentional, scoped design choice; missing `title_bar` warning predates this visual refactor.
+
+## 2026-11-15 — Market Intelligence: editorial serif and shared comparison rows
+
+**Decision:** Keep "The iOS Gazette" as an internal design-system name only; remove its brand kicker from the live Market Intelligence screen. Use a local serif fallback stack (Georgia / Times New Roman / serif) for the page and section headings, retaining sans-serif numerical KPIs, labels, and news text. Put the daily comparison in its own row between price and history chart, aligned conceptually with the housing comparison rows. Stocks are labelled **Today vs previous close**; Bitcoin **24h vs 24h ago**; housing retains **MoM/YoY** and 30-year mortgage retains **4W/1Y percentage-point** change semantics. Make the first headline an editorial lead using a restrained serif initial; separate the second with a thin rule and small ALSO label.
+
+**Reason:** Owner feedback after first live screenshot requested less generic typography, no visible design-system branding, more explicit and consistent comparisons, and a clear difference between the two stories in each category.
+
+**Validation:** Live markup deployed to TRMNL instance `537634`, with a completed `v2/markup_full` X-model preview visually inspected: live long headlines, chart captions and footer are visible without clipping. No collector, credentials, playlist, source settings, or other screens changed. Physical panel check remains unverified.
