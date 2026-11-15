@@ -62,6 +62,9 @@ Other detail screens and refinements remain planned. See
 | [.trmnlp.yml](.trmnlp.yml) | Optional development-preview configuration |
 | [data-sources/](data-sources/) | Reviewed helper-plugin manifests and sports processing/tests |
 | [AGENTS.md](AGENTS.md) | Standing instructions shared by AI development environments |
+| [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) | The iOS Gazette: design rules for all five active screens |
+| [design/gazette.css](design/gazette.css) | Canonical shared editorial CSS embedded in four plugin templates |
+| [design/check_gazette.cjs](design/check_gazette.cjs) | Offline guard for shared CSS equality and visible design conventions |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Live plugin IDs, data contracts, screen and refresh behavior |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Synchronization, validation, deployment, drift checks, rollback |
 | [docs/DECISIONS.md](docs/DECISIONS.md) | Significant decisions and their evidence |
@@ -78,6 +81,8 @@ MCP can inspect and edit live TRMNL plugins and request previews. Verified
 TRMNL-to-GitHub Sync exports Home Page saves to this repository. GitHub-to-TRMNL
 deployment is manual, and helper-plugin changes must be captured explicitly.
 Follow [DEPLOYMENT.md](docs/DEPLOYMENT.md) in either environment.
+
+For design/style maintenance, run `node design/check_gazette.cjs` after changing the canonical shared theme or any view. The Market Intelligence screen retains its own tuned scoped CSS.
 
 The sports and balance tests require Node.js 20+ and no installed packages:
 
