@@ -1,0 +1,18 @@
+# Sunday Study — Traders Point (new, 2026-11-15)
+# This is a reviewed non-secret configuration manifest; not an import of credentials.
+plugin_setting_id: 541864
+plugin_name: "Sunday Study — Traders Point"
+strategy: webhook
+framework_version: "3.4.6"
+refresh_interval_minutes: 1440
+device_id: 75111
+playlist_item_id: 908451
+playlist_schedule:
+  days: [sunday]
+  start: "00:00"
+  end: "23:59"
+source:
+  official: "https://tpcc.org/messages/"
+  bible_translation: NLT
+  ai_assisted_update: "Weekly Sunday ChatGPT task using verified public sermon details"
+  source_guard: "Must be the current Saturday/Sunday sermon; stale data never rendered as current."
