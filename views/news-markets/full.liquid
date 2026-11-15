@@ -6,7 +6,7 @@
 {% assign report = housing.report %}
 <style>
 /* The iOS Gazette v1: scoped to this independent TRMNL plugin. CSS px = 1040x780 layout px. */
-.ig { color:#111; width:100%; gap:7px!important; font-family:Arial, Helvetica, sans-serif!important; }
+.ig { color:#111; width:100%; gap:9px!important; font-family:Arial, Helvetica, sans-serif!important; }
 .ig * { box-sizing:border-box; }
 .ig .ig-mast { display:flex; align-items:flex-end; justify-content:space-between; padding-bottom:8px; border-bottom:2px solid #171717; width:100%; }
 .ig .ig-kicker { font-size:13px; line-height:1.15; letter-spacing:1.55px; font-weight:700; color:#4b4b4b; }
@@ -19,8 +19,8 @@
 .ig .ig-section-note { font-size:13px; line-height:1.2; color:#555; text-align:right; }
 .ig .ig-section-index { color:#777; font-size:13px; letter-spacing:.8px; font-weight:650; margin-right:8px; }
 .ig .ig-market-grid, .ig .ig-housing-grid { display:grid; width:100%; min-width:0; }
-.ig .ig-market-grid { grid-template-columns:repeat(3,minmax(0,1fr)); border-top:1px solid #d3d3d3; border-bottom:1px solid #d3d3d3; padding:10px 0 8px; }
-.ig .ig-housing-grid { grid-template-columns:repeat(4,minmax(0,1fr)); border-top:1px solid #d3d3d3; border-bottom:1px solid #d3d3d3; padding:8px 0 7px; }
+.ig .ig-market-grid { grid-template-columns:repeat(3,minmax(0,1fr)); border-top:1px solid #d3d3d3; border-bottom:1px solid #d3d3d3; padding:13px 0 11px; }
+.ig .ig-housing-grid { grid-template-columns:repeat(4,minmax(0,1fr)); border-top:1px solid #d3d3d3; border-bottom:1px solid #d3d3d3; padding:11px 0 9px; }
 .ig .ig-market-card, .ig .ig-home-card { min-width:0; border-right:1px solid #d9d9d9; padding:0 13px; display:flex; flex-direction:column; gap:4px; }
 .ig .ig-market-card:first-child, .ig .ig-home-card:first-child { padding-left:0; }
 .ig .ig-market-card:last-child, .ig .ig-home-card:last-child { border-right:0; padding-right:0; }
@@ -30,18 +30,18 @@
 .ig .ig-price-row { display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 11px; }
 .ig .ig-price { font-size:33px; line-height:1.12; letter-spacing:-.7px; font-weight:750; white-space:nowrap; font-variant-numeric:tabular-nums; }
 .ig .ig-market-change { font-size:16px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; }
-.ig .ig-spark { display:block; width:100%; height:44px; margin-top:1px; overflow:visible; }
-.ig .ig-home-spark { display:block; width:100%; height:35px; margin-top:1px; }
+.ig .ig-spark { display:block; width:100%; height:48px; margin-top:1px; overflow:visible; }
+.ig .ig-home-spark { display:block; width:100%; height:39px; margin-top:1px; }
 .ig .ig-chart-line { stroke:#222; stroke-width:2; fill:none; stroke-linejoin:round; stroke-linecap:round; }
 .ig .ig-chart-baseline { stroke:#dadada; stroke-width:1; }
 .ig .ig-note { font-size:12px; line-height:1.2; color:#686868; }
 .ig .ig-news { display:flex; flex-direction:column; width:100%; gap:0; }
-.ig .ig-news-band { display:grid; grid-template-columns:120px minmax(0,1fr); gap:13px; padding:5px 0; border-bottom:1px solid #e0e0e0; width:100%; }
+.ig .ig-news-band { display:grid; grid-template-columns:120px minmax(0,1fr); gap:13px; padding:7px 0; border-bottom:1px solid #e0e0e0; width:100%; }
 .ig .ig-news-band:last-child { border-bottom:0; }
 .ig .ig-news-kicker { font-size:12px; line-height:1.25; letter-spacing:.9px; font-weight:750; color:#555; padding-top:3px; }
 .ig .ig-news-list { min-width:0; display:flex; flex-direction:column; gap:4px; }
 .ig .ig-story { display:grid; grid-template-columns:minmax(0,1fr) 135px; gap:12px; align-items:baseline; width:100%; }
-.ig .ig-story-text { font-size:16px; font-weight:500; line-height:1.2; overflow-wrap:break-word; min-width:0; }
+.ig .ig-story-text { font-size:17px; font-weight:500; line-height:1.2; overflow-wrap:break-word; min-width:0; }
 .ig .ig-story-meta { font-size:12px; line-height:1.2; color:#676767; text-align:right; }
 .ig .ig-housing-head { border-top:2px solid #222; padding-top:10px; }
 .ig .ig-home-label { font-size:13px; letter-spacing:.3px; line-height:1.15; font-weight:650; min-height:15px; }
