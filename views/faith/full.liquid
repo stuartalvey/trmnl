@@ -34,12 +34,17 @@
 .fs .fs-footer{border-top:1px solid #d0d0d0;padding-top:7px;margin-top:12px;display:flex;justify-content:space-between;gap:14px;font-size:12px;color:#666;}
 .fs .fs-footer span:last-child{text-align:right;}
 </style>
+{% assign sermon_epoch = sermon_date | date: '%s' | plus: 0 %}
+{% assign now_epoch = trmnl.system.timestamp_utc | plus: 0 %}
+{% assign sermon_age = now_epoch | minus: sermon_epoch %}
+{% assign is_current = false %}
+{% if source_status == 'confirmed' and sermon_age >= 0 and sermon_age < 259200 %}{% assign is_current = true %}{% endif %}
 <div class="layout layout--col layout--top fs">
   <div class="fs-mast">
     <div class="fs-name">Sunday Study</div>
-    <div class="fs-date">{{ weekend_label | escape }}</div>
+    <div class="fs-date">{% if is_current %}{{ weekend_label | escape }}{% else %}CURRENT MESSAGE PENDING{% endif %}</div>
   </div>
-  {% if source_status == 'confirmed' %}
+  {% if is_current %}
     <div class="fs-small">{{ church | escape }} · THIS WEEKEND'S MESSAGE</div>
     <div class="fs-title">{{ title | escape }}</div>
     <div class="fs-ref">{{ passage | escape }} · {{ pastor | escape }}</div>
