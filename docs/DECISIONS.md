@@ -350,3 +350,13 @@ fresh Companion upload rather than a health reset alone.
 **Reason:** The custom female dress/face icon was visually incongruous with the others, particularly at ~18px. The owner explicitly selected Tabler after reviewing the full four-icon set.
 
 **Consequences:** The MIT-licensed original paths are embedded locally in `src/shared.liquid` with uniform 24×24 viewport and stroke width 2; no emoji font or external fetch required at render time. Only the icon presentation changed. The full Home X-model preview completed with all seven days and the footer visible.
+
+## 2026-11-15 — Sunday-first church-specific study
+
+**Decision:** Add a standalone Sunday-only lead screen `541864`, rather than altering the everyday Home Page. Use verified official Traders Point sermon metadata plus a short verified NLT quotation. AI writes separately identifiable reflection questions, a prayer, and a practical action.
+
+**Reason:** Sunday should prioritize substantive faith reflection genuinely linked to the church the family attends, without fabricating the coming weekend's sermon or overwhelming the regular Home Page.
+
+**Alternatives:** Generic verse-of-the-day (already available), a permanently visible view, direct screen-side web scraping, or static unscheduled data. Those either aren't church-specific, hide routine information, or risk stale/misleading details.
+
+**Consequences:** The view must be updated through a weekly ChatGPT task and one complete webhook payload; the template independently refuses old source dates. Scheduled automation success will need to be verified on the first subsequent Sunday. The existing Home and other main pages remain intact.
