@@ -1,0 +1,81 @@
+{% comment %}
+  Sunday Study — Traders Point Christian Church.
+  Source fields are provided by a verified weekly update; never infer next week's sermon.
+  Study prompts and prayer are independent, not church-authored.
+  Uses ePaper-friendly typography and the shared editorial design language.
+{% endcomment %}
+<style>
+.fs{font-family:Arial,Helvetica,sans-serif!important;color:#171717;width:100%;gap:0!important;}
+.fs *{box-sizing:border-box;}
+.fs .fs-mast{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #171717;padding-bottom:9px;margin-bottom:16px;}
+.fs .fs-name{font-family:Georgia,"Times New Roman",serif!important;font-weight:700;font-size:36px;line-height:1;}
+.fs .fs-small{font-size:13px;font-weight:700;letter-spacing:1px;color:#555;}
+.fs .fs-date{font-size:14px;font-weight:700;white-space:nowrap;}
+.fs .fs-title{font-family:Georgia,"Times New Roman",serif!important;font-size:44px;font-weight:700;line-height:1.04;letter-spacing:-.6px;margin:5px 0 8px;}
+.fs .fs-ref{font-size:16px;letter-spacing:.35px;font-weight:700;color:#555;}
+.fs .fs-hero{border-top:1px solid #bbb;border-bottom:2px solid #171717;margin-top:16px;padding:17px 0 20px;}
+.fs .fs-quote{font-family:Georgia,"Times New Roman",serif!important;font-size:34px;line-height:1.15;letter-spacing:-.35px;font-weight:700;}
+.fs .fs-verse{font-size:13px;letter-spacing:.6px;font-weight:700;color:#666;margin-top:8px;}
+.fs .fs-idea{font-size:18px;font-weight:500;line-height:1.28;margin-top:12px;max-width:940px;}
+.fs .fs-mid{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid #ccc;padding:15px 0;}
+.fs .fs-contrast{padding-right:28px;}
+.fs .fs-contrast+.fs-contrast{border-left:1px solid #d1d1d1;padding-left:28px;padding-right:0;}
+.fs .fs-contrast .fs-small{margin-bottom:5px;}
+.fs .fs-contrast p{font-size:17px;line-height:1.2;margin:0;}
+.fs .fs-body{display:grid;grid-template-columns:53% 47%;padding-top:19px;gap:0;flex:1;min-height:0;}
+.fs .fs-reflect{padding-right:27px;}
+.fs .fs-pray{border-left:1px solid #d0d0d0;padding-left:27px;}
+.fs .fs-section{font-family:Georgia,"Times New Roman",serif!important;font-size:24px;font-weight:700;line-height:1.05;margin-bottom:13px;}
+.fs .fs-question{font-size:19px;font-weight:600;line-height:1.24;margin:0 0 16px;}
+.fs .fs-question-number{font-family:Georgia,"Times New Roman",serif!important;font-size:22px;font-weight:700;margin-right:7px;}
+.fs .fs-prayer{font-size:18px;line-height:1.27;margin:0;}
+.fs .fs-action{border-top:1px solid #ccc;margin-top:14px;padding-top:10px;font-size:17px;line-height:1.24;}
+.fs .fs-action strong{font-size:12px;letter-spacing:.5px;margin-right:6px;}
+.fs .fs-footer{border-top:1px solid #d0d0d0;padding-top:7px;margin-top:12px;display:flex;justify-content:space-between;gap:14px;font-size:12px;color:#666;}
+.fs .fs-footer span:last-child{text-align:right;}
+</style>
+<div class="layout layout--col layout--top fs">
+  <div class="fs-mast">
+    <div class="fs-name">Sunday Study</div>
+    <div class="fs-date">{{ weekend_label | escape }}</div>
+  </div>
+  {% if source_status == 'confirmed' %}
+    <div class="fs-small">{{ church | escape }} · THIS WEEKEND'S MESSAGE</div>
+    <div class="fs-title">{{ title | escape }}</div>
+    <div class="fs-ref">{{ passage | escape }} · {{ pastor | escape }}</div>
+    <div class="fs-hero">
+      <div class="fs-quote">“{{ verse_text | escape }}”</div>
+      <div class="fs-verse">{{ verse_ref | escape }} · {{ translation | escape }}</div>
+      <p class="fs-idea">{{ message_idea | escape }}</p>
+    </div>
+    <div class="fs-mid">
+      <div class="fs-contrast">
+        <div class="fs-small">{{ contrast_left_title | escape }}</div>
+        <p>{{ contrast_left | escape }}</p>
+      </div>
+      <div class="fs-contrast">
+        <div class="fs-small">{{ contrast_right_title | escape }}</div>
+        <p>{{ contrast_right | escape }}</p>
+      </div>
+    </div>
+    <div class="fs-body">
+      <div class="fs-reflect">
+        <div class="fs-section">Reflect</div>
+        <div class="fs-question"><span class="fs-question-number">1.</span>{{ question_1 | escape }}</div>
+        <div class="fs-question"><span class="fs-question-number">2.</span>{{ question_2 | escape }}</div>
+      </div>
+      <div class="fs-pray">
+        <div class="fs-section">A Prayer for This Week</div>
+        <p class="fs-prayer">{{ prayer | escape }}</p>
+        <div class="fs-action"><strong>TAKE ACTION</strong>{{ action | escape }}</div>
+      </div>
+    </div>
+    <div class="fs-footer">
+      <span>Message: {{ sermon_date | escape }} · tpcc.org/messages</span>
+      <span>Original prompts based on the published sermon summary</span>
+    </div>
+  {% else %}
+    <div class="fs-title">Awaiting This Weekend's Message</div>
+    <div class="fs-ref">The Sunday study appears when Traders Point's current Scripture and sermon are verified.</div>
+  {% endif %}
+</div>
