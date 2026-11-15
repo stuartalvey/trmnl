@@ -67,6 +67,8 @@ the project from this repository rather than rely on earlier conversations.
 
 ## Visual design — The iOS Gazette
 
-17. Before creating or changing any visible layout, read [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md). Its **iOS Gazette** editorial-minimalist principles govern typography, hierarchy, spacing, charts, grayscale contrast, content fitting, and shared conventions across all core views.
-18. Treat its numeric tokens as preview-tested targets, not proof of deployment. Prefer high-legibility visuals and avoid decorative gray cards, tiny metadata, needless borders, and headline truncation. Document deliberate deviations in DECISIONS.md.
-19. A shared design document does **not** automatically deploy CSS to independent TRMNL plugins. Preserve existing runtime behavior; stage visual changes by view and inspect a TRMNL X preview for each. Report committed, deployed, previewed, and physical-device statuses separately.
+18. Before **any** visible screen edit, read [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md). All five visible pages follow its editorial-minimalist standards. **Never print “iOS Gazette” as on-screen branding.** Functional page names remain unchanged.
+19. The shared token source is [design/gazette.css](design/gazette.css), embedded identically in the `full.liquid` templates for Home, Weather, Sports and Health. **After touching shared CSS, synchronize all four embeddings**, then run `node design/check_gazette.cjs`. Market Intelligence retains preview-tuned `.ig` CSS, which follows the same principles but is not blindly replaced.
+20. Refuse to reintroduce giant gray cards, rounded outlines, microtext, arbitrary white space or misleading chart labels. Preserve every original data feed, missing-state behavior, credential boundary, 7-day local calendars, sports and fantasy information, and health-source distinction.
+21. Verify every modified screen with an actual `v2/markup_full` TRMNL X preview, including the footer and long strings. A stale/weather-partial preview is a source refresh question, not proof of a broken design.
+22. Each plugin deploys independently. Report **GitHub committed**, **TRMNL markup deployed**, **X-model preview verified**, and **physical hardware observed** separately. Do not imply GitHub auto-imports the theme into other plugins.
