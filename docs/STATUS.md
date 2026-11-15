@@ -1,3 +1,10 @@
+# 2026-11-15 — Home Page follow-up: editorial verse, owner icons, fit corrected
+
+- Updated live Home Page plugin `535610` only. **Verse of the day** is an editorial scripture pull quote with a serif first-letter drop cap; today's readiness card remains unchanged in meaning.
+- **Family entries now follow the Games format:** monochrome owner SVG at left, bold event title on first line, start time on second. Stuart = male silhouette; Ali = female silhouette; shared = two people; US Holidays = calendar/star. Removed visible S/A/S+A/H legend while retaining source IDs, accessibility labels, deduplication and date semantics. Sports logos/times remain as before.
+- Applied Home-only spacing and legibility adjustments without modifying the canonical shared `design/gazette.css`. TRMNL X `v2/markup_full` preview completed with **all seven days and the entire footer visible**, even with multiple Family and Sports items on several days.
+- Source: `src/full.liquid` and `src/shared.liquid` (owner icons); [design principles](DESIGN_SYSTEM.md) updated. Calendar synthetic test assertions updated to check `data-owner` and the title-then-time structure; offline Node/LiquidJS test execution has **not** been confirmed in this chat. No data collectors, credentials, schedules, playlist positions or other views touched. Device's physical display still unverified.
+
 # 2026-11-15 — Full visible playlist overhaul: The iOS Gazette
 
 - **Design standard updated:** [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) now governs all five screens. A canonical stylesheet lives at [design/gazette.css](../design/gazette.css); Home, Weather, Sports and Health embed the same CSS. Added [design/check_gazette.cjs](../design/check_gazette.cjs), an offline equality/style guard. Market Intelligence continues to use its earlier preview-tuned editorial `.ig` styles.
