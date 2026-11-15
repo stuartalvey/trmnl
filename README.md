@@ -10,7 +10,7 @@ both regular ChatGPT and Codex. The live TRMNL account is the running deployment
 ## Start here
 
 Read [AGENTS.md](AGENTS.md) and [current status](docs/STATUS.md) before making
-changes. Then read the relevant [architecture](docs/ARCHITECTURE.md),
+changes. For visual work, follow [The iOS Gazette design system](docs/DESIGN_SYSTEM.md). Then read the relevant [architecture](docs/ARCHITECTURE.md),
 [deployment workflow](docs/DEPLOYMENT.md), and [decision log](docs/DECISIONS.md).
 
 A fresh-chat prompt:
