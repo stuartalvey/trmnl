@@ -342,3 +342,11 @@ fresh Companion upload rather than a health reset alone.
 **Implementation:** `src/full.liquid` uses Home-scoped density adjustments *after* the byte-identical shared Gazette CSS, and `src/shared.liquid` contains the `agenda_owner_icon` Liquid/SVG template. Title and start-time are stacked in each Family entry. The same source ownership codes remain as `data-owner`; no user calendar data is committed.
 
 **Validation:** TRMNL `535610` updated through MCP. Final `v2/markup_full` preview with live merged calendars showed distinct silhouettes, the verse drop cap, all seven local days including busy multi-event dates, unchanged sports logo/time rendering, and footer completely within bounds. The temporary render rejection during initial template development was corrected by moving SVG icon conditional markup to the shared template. GitHub's Home Page automatic export restored and then captured the live state; GitHub/live readback must remain the final consistency check. Physical e-paper check-in remains unverified.
+
+## 2026-11-15 — Home calendar ownership icons use Tabler
+
+**Decision:** Replace bespoke Home calendar silhouettes with four published [Tabler Icons](https://github.com/tabler/tabler-icons) outline SVGs: `man` (Stuart), `woman` (Ali), `users` (shared), and `calendar-event` (holiday). Preserve accessible ownership labels and the existing S/A/S+A/H classification logic.
+
+**Reason:** The custom female dress/face icon was visually incongruous with the others, particularly at ~18px. The owner explicitly selected Tabler after reviewing the full four-icon set.
+
+**Consequences:** The MIT-licensed original paths are embedded locally in `src/shared.liquid` with uniform 24×24 viewport and stroke width 2; no emoji font or external fetch required at render time. Only the icon presentation changed. The full Home X-model preview completed with all seven days and the footer visible.
