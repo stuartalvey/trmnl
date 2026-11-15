@@ -35,7 +35,7 @@ const count = (html, text) => html.split(text).length - 1;
   assert.match(html, /data-owner="H"/);
   assert.match(html, /data-owner-icon="H"/);
   html = await render([e({summary:'Holiday planning', calname:'Work'})], []);
-  assert.match(html, />S<\/span>/, 'titles do not determine holiday membership');
+  assert.match(html, /data-owner="S"/, 'titles do not determine holiday membership');
   // Event title precedes the time, aligned with the Sports agenda format.
   html = await render([e()], []);
   assert.match(html, /class="gz-agenda-title"[^>]*>Sample event<\/span>[\s\S]*?<span class="gz-agenda-when">9:00 AM<\/span>/);
