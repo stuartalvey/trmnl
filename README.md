@@ -37,7 +37,7 @@ does not transfer account authorization.
   basketball schedules from ESPN, with team logos and Eastern start times.
 - Daily NLT verse from DailyVerses.
 - **Today's Balance**: Stuart/Ali readiness scores and a normalized percentage donut beside the verse.
-- **Sunday Study — Traders Point**: Sunday-only lead view with the verified current church sermon, NLT anchor verse, two reflective questions, original prayer, and a tangible action. Weekly ChatGPT updater checks the church's official message; older sermons never masquerade as current.\n- **News & Markets Detail**: S&P 500, LLY, Bitcoin, four equal Hamilton County sold-price/days/inventory/mortgage cards, 12-month market/housing trends, and world/Lilly/housing news. Public-source collector deployed and X preview verified; physical display remains unverified.
+- **Alvey Sabbath**: Sunday-only lead view with the verified current church sermon, NLT anchor verse, two reflective questions, original prayer, and a tangible action. Weekly ChatGPT updater checks the church's official message; older sermons never masquerade as current.\n- **News & Markets Detail**: S&P 500, LLY, Bitcoin, four equal Hamilton County sold-price/days/inventory/mortgage cards, 12-month market/housing trends, and world/Lilly/housing news. Public-source collector deployed and X preview verified; physical display remains unverified.
 - **Sports Detail**: five team cards, PGA leaderboard/next tournament, and direct
   ESPN APEX/NOB fantasy matchups, live score snapshots/projections, win chances,
   and recent results; conference/division standings in the team cards.
@@ -56,7 +56,7 @@ Other detail screens and refinements remain planned. See
 | [src/](src/) | Home Page Liquid templates and exported plugin settings |
 | [views/sports/](views/sports/) | Sports Detail templates, direct ESPN collector, tests, and credential-free manifest |
 | [views/news-markets/](views/news-markets/) | Standalone Markets & News templates, public-data collector, and synthetic tests |
-| [views/faith/](views/faith/) | Sunday-only sermon study template, non-secret manifest, and weekly updating contract |\n| [views/health/](views/health/) | Health Detail templates and synthetic tests |
+| [views/faith/](views/faith/) | Sunday-only Alvey Sabbath sermon study template, non-secret manifest, and weekly updating contract |\n| [views/health/](views/health/) | Health Detail templates and synthetic tests |
 | [views/weather/](views/weather/) | Standalone Weather Detail templates and reviewed polling settings |
 | [tests/](tests/) | Synthetic calendar merge, weather, and Oura balance tests; no personal data |
 | [.trmnlp.yml](.trmnlp.yml) | Optional development-preview configuration |
