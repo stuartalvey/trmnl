@@ -1,5 +1,5 @@
 {% comment %}
-  Sunday Study — Traders Point Christian Church.
+  Alvey Sabbath — Traders Point Christian Church.
   Source fields are provided by a verified weekly update; never infer next week's sermon.
   Study prompts and prayer are independent, not church-authored.
   Uses ePaper-friendly typography and the shared editorial design language.
@@ -41,11 +41,11 @@
 {% if source_status == 'confirmed' and sermon_age >= 0 and sermon_age < 259200 %}{% assign is_current = true %}{% endif %}
 <div class="layout layout--col layout--top fs">
   <div class="fs-mast">
-    <div class="fs-name">Sunday Study</div>
+    <div class="fs-name">Alvey Sabbath</div>
     <div class="fs-date">{% if is_current %}{{ weekend_label | escape }}{% else %}CURRENT MESSAGE PENDING{% endif %}</div>
   </div>
   {% if is_current %}
-    <div class="fs-small">{{ church | escape }} · THIS WEEKEND'S MESSAGE</div>
+    <div class="fs-small">TRADERS POINT · THIS WEEK’S WORSHIP &amp; REFLECTION</div>
     <div class="fs-title">{{ title | escape }}</div>
     <div class="fs-ref">{{ passage | escape }} · {{ pastor | escape }}</div>
     <div class="fs-hero">
