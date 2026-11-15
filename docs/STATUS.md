@@ -1,3 +1,11 @@
+# 2026-11-15 — Full visible playlist overhaul: The iOS Gazette
+
+- **Design standard updated:** [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) now governs all five screens. A canonical stylesheet lives at [design/gazette.css](../design/gazette.css); Home, Weather, Sports and Health embed the same CSS. Added [design/check_gazette.cjs](../design/check_gazette.cjs), an offline equality/style guard. Market Intelligence continues to use its earlier preview-tuned editorial `.ig` styles.
+- **All five visible screens:** Home `535610`, Weather `536164`, Sports `536256`, Health `536354` are now deployed with serif major headings, unboxed panels, thin separators and compact footers; Market Intelligence `537634` was already deployed in the same visual family. “The iOS Gazette” is **not** printed on any page.
+- **Preview checks:** Each of the four new `v2/markup_full` server previews completed and was inspected. Home shows seven full days without event-time collisions (Today then weekday abbreviations); Weather showed a seven-day high/low chart after successful weather-feed refresh; Sports showed five teams plus PGA and two fantasy leagues; Health showed steps, Oura gauges and eight-week consistency including zero weeks. All footers fit at standard X preview resolution.
+- **No business-logic changes:** No data collector, plugin settings, source credentials, standings/health logic, playlist order, visibility or schedules were intentionally modified. TRMNL's custom-style advisory warning is expected; previews completed. The account's physical device check-in/display has not been verified. Additional automated Node/Liquid regression suites were not executed during this visual-only pass because the runtime lacked GitHub network access; the same CSS equality checks were directly evaluated against connected GitHub source contents.
+- **Next quality gate:** Inspect the appearance on the physical e-paper panel when it checks in; iterate only on proven readability/density issues, keeping the shared CSS and per-plugin deployment synchronized.
+
 # 2026-11-15 — Market Intelligence typography, comparisons and headlines refined
 
 - Owner requested the iOS Gazette name be internal only. Removed it from on-screen masthead; **Market Intelligence** now stands alone in a local Georgia/Times-style serif headline, with serif section headings and sans-serif metrics/news copy.
