@@ -1,101 +1,167 @@
+{% comment %}The iOS Gazette: editorial monochrome presentation. Data contracts unchanged.{% endcomment %}
 {% assign now_ts = trmnl.system.timestamp_utc | plus: 0 %}
 {% assign local_now = now_ts | plus: trmnl.user.utc_offset %}
 {% assign updated_ts = updated_at | date: '%s' | plus: 0 %}
 {% assign age = now_ts | minus: updated_ts %}
 {% assign report = housing.report %}
-<div class="layout layout--col layout--top gap--small">
-  <div class="flex flex--row flex--between flex--center-y w--full">
-    <span class="title title--large lg:title--xxlarge">Alvey Market Intelligence</span>
-    <div class="flex flex--col flex--right gap--xsmall">
-      <span class="label">{{ local_now | date: '%A, %B %-d' }} · Markets · Homes · News</span>
-      <span class="label label--small label--gray">{% if updated_at == nil %}Waiting for feeds{% elsif age > 3900 or age < -600 %}Data needs refresh{% else %}Fetched {{ updated_ts | plus: trmnl.user.utc_offset | date: '%-I:%M %p' }} ET{% endif %}</span>
+<style>
+/* The iOS Gazette v1: scoped to this independent TRMNL plugin. CSS px = 1040x780 layout px. */
+.ig { color:#111; width:100%; gap:10px!important; font-family:inherit; }
+.ig * { box-sizing:border-box; }
+.ig .ig-mast { display:flex; align-items:flex-end; justify-content:space-between; padding-bottom:10px; border-bottom:2px solid #171717; width:100%; }
+.ig .ig-kicker { font-size:13px; line-height:1.15; letter-spacing:1.55px; font-weight:700; color:#4b4b4b; }
+.ig .ig-mast-title { font-size:34px; font-weight:750; line-height:1.05; letter-spacing:-.8px; margin:3px 0 0; }
+.ig .ig-dateline { text-align:right; font-size:14px; line-height:1.25; font-weight:600; white-space:nowrap; }
+.ig .ig-muted { color:#626262; font-weight:450; }
+.ig .ig-date-secondary { font-size:12px; margin-top:4px; }
+.ig .ig-section-head { display:flex; align-items:baseline; justify-content:space-between; width:100%; gap:16px; padding-top:3px; }
+.ig .ig-section-name { font-size:22px; line-height:1.14; font-weight:750; letter-spacing:-.25px; }
+.ig .ig-section-note { font-size:13px; line-height:1.2; color:#555; text-align:right; }
+.ig .ig-section-index { color:#777; font-size:13px; letter-spacing:.8px; font-weight:650; margin-right:8px; }
+.ig .ig-market-grid, .ig .ig-housing-grid { display:grid; width:100%; min-width:0; }
+.ig .ig-market-grid { grid-template-columns:repeat(3,minmax(0,1fr)); border-top:1px solid #d3d3d3; border-bottom:1px solid #d3d3d3; padding:12px 0 9px; }
+.ig .ig-housing-grid { grid-template-columns:repeat(4,minmax(0,1fr)); border-top:1px solid #d3d3d3; border-bottom:1px solid #d3d3d3; padding:10px 0 9px; }
+.ig .ig-market-card, .ig .ig-home-card { min-width:0; border-right:1px solid #d9d9d9; padding:0 13px; display:flex; flex-direction:column; gap:4px; }
+.ig .ig-market-card:first-child, .ig .ig-home-card:first-child { padding-left:0; }
+.ig .ig-market-card:last-child, .ig .ig-home-card:last-child { border-right:0; padding-right:0; }
+.ig .ig-label-row { display:flex; justify-content:space-between; align-items:baseline; min-width:0; gap:7px; }
+.ig .ig-market-name { font-size:17px; font-weight:700; line-height:1.1; }
+.ig .ig-symbol { font-size:12px; letter-spacing:.6px; color:#666; font-weight:600; white-space:nowrap; }
+.ig .ig-price-row { display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 11px; }
+.ig .ig-price { font-size:33px; line-height:1.12; letter-spacing:-.7px; font-weight:750; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.ig .ig-market-change { font-size:16px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.ig .ig-spark { display:block; width:100%; height:44px; margin-top:1px; overflow:visible; }
+.ig .ig-home-spark { display:block; width:100%; height:35px; margin-top:1px; }
+.ig .ig-chart-line { stroke:#222; stroke-width:2; fill:none; stroke-linejoin:round; stroke-linecap:round; }
+.ig .ig-chart-baseline { stroke:#dadada; stroke-width:1; }
+.ig .ig-note { font-size:12px; line-height:1.2; color:#686868; }
+.ig .ig-news { display:flex; flex-direction:column; width:100%; gap:0; }
+.ig .ig-news-band { display:grid; grid-template-columns:120px minmax(0,1fr); gap:13px; padding:7px 0; border-bottom:1px solid #e0e0e0; width:100%; }
+.ig .ig-news-band:last-child { border-bottom:0; }
+.ig .ig-news-kicker { font-size:12px; line-height:1.25; letter-spacing:.9px; font-weight:750; color:#555; padding-top:3px; }
+.ig .ig-news-list { min-width:0; display:flex; flex-direction:column; gap:4px; }
+.ig .ig-story { display:grid; grid-template-columns:minmax(0,1fr) 135px; gap:12px; align-items:baseline; width:100%; }
+.ig .ig-story-text { font-size:16px; font-weight:575; line-height:1.19; overflow-wrap:break-word; min-width:0; }
+.ig .ig-story-meta { font-size:12px; line-height:1.2; color:#676767; text-align:right; }
+.ig .ig-housing-head { border-top:2px solid #222; padding-top:10px; }
+.ig .ig-home-label { font-size:13px; letter-spacing:.3px; line-height:1.15; font-weight:650; min-height:15px; }
+.ig .ig-home-value { font-size:30px; letter-spacing:-.45px; line-height:1.15; font-weight:760; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.ig .ig-comparisons { display:flex; justify-content:space-between; gap:5px; flex-wrap:wrap; }
+.ig .ig-change { font-size:13px; line-height:1.15; font-weight:650; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.ig .ig-home-footer { display:flex; flex-direction:column; gap:1px; }
+.ig .ig-source-footer { display:flex; justify-content:space-between; gap:12px; border-top:1px solid #dedede; padding-top:5px; width:100%; font-size:12px; color:#666; }
+</style>
+<div class="layout layout--col layout--top w--full ig">
+  <header class="ig-mast">
+    <div>
+      <div class="ig-kicker">THE iOS GAZETTE <span class="ig-muted">/ ALVEY EDITION</span></div>
+      <div class="ig-mast-title">Market Intelligence</div>
     </div>
+    <div class="ig-dateline">
+      <div>{{ local_now | date: '%A, %B %-d' }}</div>
+      <div class="ig-date-secondary ig-muted">{% if updated_at == nil %}Waiting for feeds{% elsif age > 3900 or age < -600 %}Data needs refresh{% else %}Updated {{ updated_ts | plus: trmnl.user.utc_offset | date: '%-I:%M %p' }} ET{% endif %}</div>
+    </div>
+  </header>
+
+  <div class="ig-section-head">
+    <div><span class="ig-section-index">01</span><span class="ig-section-name">Financial Markets</span></div>
+    <div class="ig-section-note">Stocks vs previous close · Bitcoin vs 24h ago</div>
   </div>
-  <div class="flex flex--row flex--between flex--center-y w--full"><span class="title">Financial Markets</span><span class="label label--small label--gray">Stocks vs previous close · Bitcoin 24-hour change</span></div>
-  <div class="grid grid--cols-3 gap--medium w--full">
+
+  <div class="ig-market-grid">
     {% for market in markets %}
-    <div class="flex flex--col gap--xsmall stretch bg--gray-75 rounded--large p--2">
-      <div class="flex flex--row flex--between flex--center-y w--full"><span class="title title--small">{{ market.label | escape }}</span><span class="label label--small label--gray">{% if market.label == 'S&P 500' %}INDEX{% elsif market.label == 'Eli Lilly' %}LLY{% else %}BTC / USD{% endif %}</span></div>
+    <div class="ig-market-card">
+      <div class="ig-label-row">
+        <span class="ig-market-name">{{ market.label | escape }}</span>
+        <span class="ig-symbol">{% if market.label == 'S&P 500' %}INDEX{% elsif market.label == 'Eli Lilly' %}LLY{% else %}BTC / USD{% endif %}</span>
+      </div>
       {% if market.status == 'ok' %}
-      <div class="flex flex--row flex--between flex--center-y w--full"><span class="value value--medium">{{ market.price_str | escape }}</span><span class="title title--small">{{ market.change_str | escape }}</span></div>
-      <svg class="w--full h--8" viewBox="0 0 114 40" preserveAspectRatio="none"><line x1="0" y1="38" x2="114" y2="38" stroke="#bbb"/>{% if market.spark != blank %}<polyline points="{{ market.spark | escape }}" stroke="black" stroke-width="2.5" fill="none" stroke-linejoin="round"/>{% endif %}</svg>
-      <span class="label label--small label--gray">{{ market.trend_label | default: 'History unavailable' | escape }}{% if market.label != 'Bitcoin' %} · Delayed{% endif %}</span>
-      {% else %}<span class="value value--medium">—</span><span class="label label--gray">Quote unavailable</span><div class="h--8"></div>{% endif %}
+        <div class="ig-price-row"><span class="ig-price">{{ market.price_str | escape }}</span><span class="ig-market-change">{{ market.change_str | escape }}</span></div>
+        <svg class="ig-spark" viewBox="0 0 114 40" preserveAspectRatio="none" aria-label="{{ market.trend_label | escape }}">
+          <line class="ig-chart-baseline" x1="0" y1="38" x2="114" y2="38"/>
+          {% if market.spark != blank %}<polyline class="ig-chart-line" points="{{ market.spark | escape }}"/>{% endif %}
+        </svg>
+        <div class="ig-note">{{ market.trend_label | default: 'History unavailable' | escape }}{% if market.label != 'Bitcoin' %} · Delayed quote{% endif %}</div>
+      {% else %}
+        <div class="ig-price">—</div>
+        <div class="ig-note">Quote unavailable</div>
+        <div style="height:44px"></div>
+      {% endif %}
     </div>
     {% endfor %}
   </div>
-  {% comment %}Financial market briefing: full-width headline rows immediately below market charts.{% endcomment %}
-  <div class="flex flex--col gap--small w--full">
+
+  <div class="ig-news">
     {% for category in news %}
-      {% if category.name != 'REAL ESTATE' %}
-      <div class="flex flex--col gap--xsmall outline outline--muted rounded--large p--2 w--full">
-        <div class="flex flex--row flex--between flex--center-y w--full">
-          <span class="title title--small">{{ category.name | escape }}</span>
-          <span class="label label--small label--gray">Top headlines</span>
-        </div>
+    {% if category.name != 'REAL ESTATE' %}
+    <div class="ig-news-band">
+      <div class="ig-news-kicker">{{ category.name | escape }}</div>
+      <div class="ig-news-list">
         {% for item in category.items %}
-        <div class="grid grid--cols-12 gap--small w--full">
-          <div class="col--span-10">
-            <span class="label" data-clamp="2">{{ item.title | escape }}</span>
-          </div>
-          <div class="col--span-2 flex flex--col flex--right">
-            <span class="label label--small label--gray">{{ item.source | escape }} · {{ item.date | date: '%b %-d' }}</span>
-          </div>
+        <div class="ig-story">
+          <div class="ig-story-text">{{ item.title | escape }}</div>
+          <div class="ig-story-meta">{{ item.source | escape }} · {{ item.date | date: '%b %-d' }}</div>
         </div>
         {% else %}
-        <span class="label label--gray">No recent headlines available</span>
+        <div class="ig-story-text ig-muted">No recent headlines available</div>
         {% endfor %}
       </div>
-      {% endif %}
-    {% endfor %}
-  </div>
-  <div class="flex flex--row flex--between flex--center-y w--full"><span class="title">Hamilton County Real Estate</span><span class="label label--small label--gray">Indiana · Local monthly statistics · National rates</span></div>
-  <div class="grid grid--cols-4 gap--small w--full">
-    {% for card in housing.cards %}
-      <div class="flex flex--col gap--xsmall stretch bg--gray-75 rounded--large p--2">
-        <span class="label label--small label--gray">{{ card.title | escape }}</span>
-        <span class="value value--medium">{{ card.display | escape }}</span>
-        <div class="flex flex--row flex--between w--full">
-          <span class="label label--small">{{ card.change_short | escape }}</span>
-          <span class="label label--small">{{ card.change_long | escape }}</span>
-        </div>
-        <svg class="w--full h--10" viewBox="0 0 114 40" preserveAspectRatio="none">
-          <line x1="0" y1="38" x2="114" y2="38" stroke="#bbb" stroke-width="1"/>
-          {% if card.spark != blank %}
-            <polyline points="{{ card.spark | escape }}" stroke="black" stroke-width="2.5" stroke-linejoin="round" fill="none"/>
-          {% else %}
-            <text x="57" y="23" text-anchor="middle" fill="#666" font-size="9">History unavailable</text>
-          {% endif %}
-        </svg>
-        <span class="label label--small label--gray">{{ card.trend_label | escape }}</span>
-        <span class="label label--small label--gray">{% if card.key == 'mortgage' %}National weekly survey{% else %}{{ card.subtitle | escape }}{% endif %}</span>
-      </div>
-    {% else %}
-      <span class="label label--gray">Waiting for real estate statistics</span>
-    {% endfor %}
-  </div>
-  {% comment %}Housing headlines are part of the real-estate section, not a third dashboard section.{% endcomment %}
-  {% for category in news %}
-    {% if category.name == 'REAL ESTATE' %}
-    <div class="flex flex--col gap--xsmall outline outline--muted rounded--large p--2 w--full">
-      <div class="flex flex--row flex--between flex--center-y w--full">
-        <span class="title title--small">REAL ESTATE NEWS</span>
-        <span class="label label--small label--gray">Local &amp; national housing</span>
-      </div>
-      {% for item in category.items %}
-      <div class="grid grid--cols-12 gap--small w--full">
-        <div class="col--span-10">
-          <span class="label" data-clamp="2">{{ item.title | escape }}</span>
-        </div>
-        <div class="col--span-2 flex flex--col flex--right">
-          <span class="label label--small label--gray">{{ item.source | escape }} · {{ item.date | date: '%b %-d' }}</span>
-        </div>
-      </div>
-      {% else %}
-      <span class="label label--gray">No recent housing headlines available</span>
-      {% endfor %}
     </div>
     {% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="ig-section-head ig-housing-head">
+    <div><span class="ig-section-index">02</span><span class="ig-section-name">Hamilton County Real Estate</span></div>
+    <div class="ig-section-note">Monthly local sales &amp; supply · National 30-year rate</div>
+  </div>
+
+  <div class="ig-housing-grid">
+    {% for card in housing.cards %}
+    <div class="ig-home-card">
+      <div class="ig-home-label">{{ card.title | escape }}</div>
+      <div class="ig-home-value">{{ card.display | escape }}</div>
+      <div class="ig-comparisons"><span class="ig-change">{{ card.change_short | escape }}</span><span class="ig-change">{{ card.change_long | escape }}</span></div>
+      <svg class="ig-home-spark" viewBox="0 0 114 40" preserveAspectRatio="none" aria-label="{{ card.trend_label | escape }}">
+        <line class="ig-chart-baseline" x1="0" y1="38" x2="114" y2="38"/>
+        {% if card.spark != blank %}
+          <polyline class="ig-chart-line" points="{{ card.spark | escape }}"/>
+        {% else %}
+          <text x="57" y="24" text-anchor="middle" fill="#666" font-size="9">No history</text>
+        {% endif %}
+      </svg>
+      <div class="ig-home-footer">
+        <span class="ig-note">{{ card.trend_label | escape }}</span>
+        <span class="ig-note">{% if card.key == 'mortgage' %}National weekly survey{% else %}{{ card.subtitle | escape }}{% endif %}</span>
+      </div>
+    </div>
+    {% else %}
+    <span class="ig-story-text ig-muted">Waiting for real estate statistics</span>
+    {% endfor %}
+  </div>
+
+  {% for category in news %}
+  {% if category.name == 'REAL ESTATE' %}
+  <div class="ig-news">
+    <div class="ig-news-band" style="border-bottom:0">
+      <div class="ig-news-kicker">REAL ESTATE NEWS</div>
+      <div class="ig-news-list">
+        {% for item in category.items %}
+        <div class="ig-story">
+          <div class="ig-story-text">{{ item.title | escape }}</div>
+          <div class="ig-story-meta">{{ item.source | escape }} · {{ item.date | date: '%b %-d' }}</div>
+        </div>
+        {% else %}
+        <div class="ig-story-text ig-muted">No recent housing headlines available</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
   {% endfor %}
-  <div class="flex flex--row flex--between w--full"><span class="label label--small label--gray">Housing: Indiana REALTORS · Mortgage: Freddie Mac / FRED · Quotes may be delayed</span><span class="label label--small label--gray">USD · Eastern time</span></div>
+
+  <footer class="ig-source-footer">
+    <span>Housing: Indiana REALTORS · Mortgage: Freddie Mac / FRED · Market quotes may be delayed</span>
+    <span>USD · Eastern time</span>
+  </footer>
 </div>
