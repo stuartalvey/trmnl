@@ -472,3 +472,9 @@ The `views/news-markets/full.liquid` layout now has exactly two major sections. 
 The five visible custom playlist items share the editorial design contract in [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md). Four screens (Home `src/full.liquid`, Weather, Sports, Health) embed byte-identical copies of [design/gazette.css](../design/gazette.css) in their `full.liquid` markup. Market Intelligence retains separately tuned `.ig` styles as the reference implementation.
 
 TRMNL does not dynamically load the repository CSS into the plugin service. This is an **explicit template deployment contract**; editors must sync the four embeddings, run [design/check_gazette.cjs](../design/check_gazette.cjs), deploy each changed plugin, and verify each X-model render. A custom-style warning is advisory and does not replace preview validation. No visual style source is a shared runtime API or a data-collector dependency. The physical device remains independently checked through its device telemetry.
+
+## Home editorial agenda follow-up (2026-11-15)
+
+Calendar ownership logic still computes `S`, `A`, `S+A`, and holiday `H` using exact source membership and the `US Holidays` calendar. The letters are stored in `data-owner` but are not printed as a legend. `src/shared.liquid` now provides the `agenda_owner_icon` template (monochrome, accessible SVG), invoked by `src/full.liquid` inside each family event. Family and sports events both display the title before a lighter time line; original sports team logos are preserved.
+
+The NLT verse receives a scoped CSS drop cap. Home-only typography and compact table spacing are defined in a second local `<style>` block **after** the embedded canonical Gazette CSS; the first block must remain byte-for-byte aligned to `design/gazette.css`. The `v2` server preview is the fit gate for all seven dates plus the footer. Don't change merge rules, private data, or source dependencies to repair visual overflow.
