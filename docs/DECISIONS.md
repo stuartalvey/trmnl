@@ -294,3 +294,13 @@ fresh Companion upload rather than a health reset alone.
 **Reason:** User reported substantial bottom whitespace and wanted headlines to span the screen and stay adjacent to their corresponding market data.
 
 **Consequences:** Exactly two information sections; existing source schema, financial markets, IAR metric card selection and calculations remain unchanged. The latest TRMNL X preview fits all article titles, sources and footer; physical-screen receipt remains unverified.
+
+## 2026-11-15 — The iOS Gazette visual identity
+
+**Decision:** Adopt **The iOS Gazette**: Apple-inspired editorial minimalism adapted to TRMNL X grayscale e-paper. Modern newspaper hierarchy and spacing are an influence, not a literal retro-paper treatment. The governing design contract is [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md).
+
+**Reason:** Existing independent screens feel inconsistent in font sizing, spacing, structure and information hierarchy. A shared visual language should guide ChatGPT, Codex and other contributors.
+
+**Alternatives:** A literal newspaper theme, or a dense analytical command center. Both were considered; the owner selected editorial minimalism.
+
+**Consequences:** All subsequent UI work follows the standard; News & Markets is proposed as first implementation/prototype. This entry is **documentation-only**, not a claim that existing screens have been restyled or deployed.
