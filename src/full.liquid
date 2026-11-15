@@ -69,7 +69,30 @@
 .title_bar .title {font-size:13px!important;font-weight:700!important;}
 .title_bar .instance {font-size:12px!important;color:#686868!important;}
 </style>
-<div class="layout layout--col layout--top gap--small gz">
+<style>
+/* Home Page: local editorial details; shared Gazette tokens remain in design/gazette.css. */
+.gz-home {gap:6px!important;}
+.gz-home .gz-mast {padding-bottom:6px!important;}
+.gz-home .gz-home-hero {gap:0!important; align-items:stretch;}
+.gz-home .gz-home-hero .gz-panel {padding-top:7px!important;padding-bottom:7px!important;}
+.gz-home .gz-home-verse {justify-content:center!important;min-width:0;}
+.gz-home .gz-verse-label {font-size:11px!important;font-weight:750;letter-spacing:.8px;}
+.gz-home .gz-verse-copy {font-family:Arial,Helvetica,sans-serif!important;font-size:16px;font-weight:550;line-height:1.24;margin:3px 0 0!important;color:#111;overflow-wrap:break-word;}
+.gz-home .gz-verse-copy::first-letter {font-family:Georgia,"Times New Roman",serif!important;font-weight:700;font-size:2.7em;line-height:.79;float:left;margin:4px 7px 0 0;}
+.gz-home .gz-verse-copy.gz-verse-long {font-size:14px;line-height:1.21;}
+.gz-home .gz-balance {justify-content:center!important;}
+.gz-home .gz-rows {width:100%;table-layout:fixed;}
+.gz-home .gz-rows th {padding-top:5px!important;padding-bottom:5px!important;}
+.gz-home .gz-rows td {padding-top:3px!important;padding-bottom:3px!important;}
+.gz-home .gz-agenda-list {gap:4px!important;min-width:0;}
+.gz-home .gz-agenda-item {display:flex;align-items:flex-start;gap:7px;min-width:0;width:100%;}
+.gz-home .gz-agenda-icon {width:21px!important;height:21px!important;flex:0 0 21px;object-fit:contain;margin-top:1px;}
+.gz-home .gz-agenda-copy {display:flex;flex-direction:column;gap:1px;min-width:0;flex:1 1 auto;}
+.gz-home .gz-agenda-title {display:block;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;line-height:1.12;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+.gz-home .gz-agenda-when {display:block;font-size:12px;line-height:1.14;color:#555;font-weight:500;}
+.gz-home .gz-rows .gz-subsection {font-size:16px!important;}
+</style>
+<div class="layout layout--col layout--top gap--small gz gz-home">
   <div class="flex flex--row flex--between flex--center-y w--full gz-mast">
     <div class="flex flex--col gap--xsmall">
       <span class="title title--large lg:title--xxlarge w--full text--left gz-title">Alvey Command Center</span>
@@ -78,20 +101,21 @@
     <span class="label label--large gz-date">{{ local_now | date: '%A, %B %-d' }}</span>
   </div>
 
-  <div class="grid grid--cols-12 gap--medium w--full gz-panels">
-    <div class="col--span-7 flex flex--col flex--left flex--center-y gap--small p--3 gz-panel gz-panel--lead">
+  <div class="grid grid--cols-12 gap--medium w--full gz-panels gz-home-hero">
+    <div class="col--span-7 flex flex--col gap--xsmall p--3 gz-panel gz-panel--lead gz-home-verse">
       {% if daily_verse.description != blank %}
         <div class="flex flex--row flex--between w--full">
-          <span class="label label--small">VERSE OF THE DAY</span>
+          <span class="label label--small gz-verse-label">VERSE OF THE DAY</span>
           <span class="label label--small">{{ daily_verse.title | escape }} · NLT</span>
         </div>
-        <span class="description description--large w--full text--left">{{ daily_verse.description | escape }}</span>
+        {% assign verse_length = daily_verse.description | size %}
+        <p class="gz-verse-copy {% if verse_length > 165 %}gz-verse-long{% endif %}">{{ daily_verse.description | strip | escape }}</p>
       {% else %}
         <span class="label w--full text--left">Verse of the day unavailable</span>
       {% endif %}
     </div>
 
-    <div class="col--span-5 flex flex--col gap--small p--2 gz-panel gz-panel--side" data-balance-card data-now="{{ trmnl.system.timestamp_utc }}" data-utc-offset="{{ trmnl.user.utc_offset }}">
+    <div class="col--span-5 flex flex--col gap--xsmall p--2 gz-panel gz-panel--side gz-balance" data-balance-card data-now="{{ trmnl.system.timestamp_utc }}" data-utc-offset="{{ trmnl.user.utc_offset }}">
       <div class="flex flex--row flex--between w--full">
         <span class="title title--small gz-subsection">Today's Balance</span>
         <span class="label label--small label--gray" data-balance-status>Oura readiness</span>
@@ -128,7 +152,7 @@
     <thead>
       <tr>
         <th class="w--24"><span class="label label--gray">DAY</span></th>
-        <th><span class="label label--gray">FAMILY · S = Stu · A = Ali · H = Holiday</span></th>
+        <th><span class="label label--gray">FAMILY</span></th>
         <th class="w--64"><span class="label label--gray">GAMES</span></th>
         <th class="w--36"><span class="label label--gray">WEATHER</span></th>
         <th class="w--16"><span class="label label--gray">PRECIP.</span></th>
@@ -154,7 +178,7 @@
             </div>
           </td>
           <td>
-            <div class="flex flex--col gap--small w--full">
+            <div class="flex flex--col gap--xsmall w--full gz-agenda-list">
 {% comment %}CalendarMerge:day:start{% endcomment %}
               {% assign day_events = 0 %}
               {% assign seen_keys = '' %}
@@ -187,10 +211,12 @@
                     {% assign source_calendar = event.calname | strip | downcase %}
                     {% if source_calendar == 'us holidays' %}{% assign owner = 'H' %}{% endif %}
                     {% assign day_events = day_events | plus: 1 %}
-                    <div class="flex flex--row gap--small w--full">
-                      <span class="label w--24 text--left">{% if event.all_day %}All day{% elsif event_day < day %}Continues{% else %}{{ event.start | escape }}{% endif %}</span>
-                      <span class="label label--small label--gray w--8 text--center" title="{% if owner == 'H' %}Holiday{% elsif owner == 'S' %}Stuart calendar{% elsif owner == 'A' %}Ali calendar{% else %}Both calendars{% endif %}">{{ owner }}</span>
-                      <span class="title title--small text--left stretch" data-clamp="1">{{ event.summary | default: 'Untitled event' | escape }}</span>
+                    <div class="gz-agenda-item" data-owner="{{ owner }}" data-agenda-kind="family">
+                      {% render "agenda_owner_icon", owner: owner %}
+                      <div class="gz-agenda-copy">
+                        <span class="gz-agenda-title" data-clamp="1">{{ event.summary | default: 'Untitled event' | escape }}</span>
+                        <span class="gz-agenda-when">{% if event.all_day %}All day{% elsif event_day < day %}Continues{% else %}{{ event.start | escape }}{% endif %}</span>
+                      </div>
                     </div>
                   {% endif %}
                 {% endunless %}
