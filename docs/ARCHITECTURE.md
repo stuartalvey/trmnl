@@ -466,3 +466,9 @@ News now allows up to four text lines per headline (two per category), with comp
 ### Two-section news layout (2026-11-11)
 
 The `views/news-markets/full.liquid` layout now has exactly two major sections. Financial Markets places the existing 3 market cards first, followed by full-width, independently bounded World & U.S. and Eli Lilly article bands. Hamilton County Real Estate places the same four equal metric cards first and its own full-width Real Estate News band beneath. Each article uses a 12-column grid with 10 columns for the headline and 2 for source/date. This keeps the category context close to the numbers and reduces the former bottom whitespace and narrow-column clipping. The source contract `news[3]` and all other data remain unchanged; the template routes by the existing category `name` values. Missing items have source-specific unavailable text, not an empty statistic.
+
+## Visual architecture — iOS Gazette (2026-11-15)
+
+The five visible custom playlist items share the editorial design contract in [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md). Four screens (Home `src/full.liquid`, Weather, Sports, Health) embed byte-identical copies of [design/gazette.css](../design/gazette.css) in their `full.liquid` markup. Market Intelligence retains separately tuned `.ig` styles as the reference implementation.
+
+TRMNL does not dynamically load the repository CSS into the plugin service. This is an **explicit template deployment contract**; editors must sync the four embeddings, run [design/check_gazette.cjs](../design/check_gazette.cjs), deploy each changed plugin, and verify each X-model render. A custom-style warning is advisory and does not replace preview validation. No visual style source is a shared runtime API or a data-collector dependency. The physical device remains independently checked through its device telemetry.
