@@ -30,11 +30,18 @@
 .gz .gz-rows {border-top:1px solid #d6d6d6!important;}
 .gz .gz-rows th {border-bottom:1px solid #bbb!important;padding-top:8px!important;padding-bottom:8px!important;}
  .gz .gz-rows td {border-bottom:1px solid #e0e0e0!important;padding-top:4px!important;padding-bottom:4px!important;vertical-align:top;}
+.gz .gz-rows .gz-subsection {font-size:17px!important;white-space:nowrap;}
+.gz .gz-panel.gz-major-rule {border-top:2px solid #222!important;}
 .gz .gz-rows thead .label {font-size:12px!important;letter-spacing:.65px!important;font-weight:700!important;color:#555!important;}
 .gz .gz-rows [data-clamp] {font-weight:550;}
  .gz .gz-chart svg {overflow:visible;}
 .gz [data-person] {background:transparent!important;border:0!important;outline:none!important;border-radius:0!important;padding:4px!important;}
 .gz .gz-footer {border-top:1px solid #ddd;padding-top:4px;font-size:12px;color:#666;}
+
+/* Built-in TRMNL title bar is outside .gz; scope of this stylesheet is one plugin render. */
+.title_bar {background:transparent!important;border-top:1px solid #d5d5d5!important;border-radius:0!important;box-shadow:none!important;padding-top:5px!important;}
+.title_bar .title {font-size:13px!important;font-weight:700!important;}
+.title_bar .instance {font-size:12px!important;color:#686868!important;}
 </style>
 <div class="layout layout--col layout--top gap--medium gz">
   <div class="flex flex--row flex--between flex--center-y gap--medium w--full gz-mast">
@@ -47,7 +54,7 @@
 
   <div class="flex flex--row gap--small w--full gz-panels">
     {% for team in teams %}
-    <div class="flex flex--col gap--xsmall stretch bg--gray-75 rounded--large p--3 gz-panel">
+    <div class="flex flex--col gap--xsmall stretch p--3 gz-panel">
       <div class="flex flex--row gap--small flex--center-y">
         {% if team.logo != blank %}<img class="image image-dither w--8 h--8" src="{{ team.logo | escape }}" alt="{{ team.name | escape }}">{% endif %}
         <span class="title title--small">{{ team.name | escape }}</span>
@@ -67,7 +74,7 @@
   </div>
 
   <div class="grid grid--cols-12 gap--medium w--full gz-panels gz-major-rule">
-    <div class="col--span-6 flex flex--col gap--small w--full outline outline--muted rounded--large p--2 gz-panel">
+    <div class="col--span-6 flex flex--col gap--small w--full--muted p--2 gz-panel">
       <div class="flex flex--col gap--small p--1 w--full">
       <div class="flex flex--row flex--between w--full"><span class="title gz-section">PGA Tour</span><span class="label label--small label--gray">{{ pga.state | default: 'Unavailable' | escape }}</span></div>
       <span class="title title--small w--full text--left" data-clamp="2">{{ pga.name | default: 'Tournament data unavailable' | escape }}</span>
@@ -81,17 +88,17 @@
       {% else %}<span class="label label--gray">PGA feed unavailable</span>{% endif %}
       </div>
       {% if pga.next %}
-      <div class="flex flex--col gap--small bg--gray-75 rounded--large p--3 w--full gz-panel gz-panel--top">
+      <div class="flex flex--col gap--small p--3 w--full gz-panel gz-panel--top">
         <span class="label label--small label--gray">NEXT TOURNAMENT</span>
         <span class="title title--large w--full text--left">{{ pga.next.date | date: '%a, %b %-d' }}</span>
         <span class="title title--small w--full text--left" data-clamp="2">{{ pga.next.name | escape }}</span>
       </div>{% endif %}
     </div>
 
-    <div class="col--span-6 flex flex--col gap--small w--full outline outline--muted rounded--large p--2 gz-panel">
+    <div class="col--span-6 flex flex--col gap--small w--full--muted p--2 gz-panel">
       <div class="flex flex--row flex--between w--full p--1"><span class="title gz-section">Fantasy Football</span><span class="label label--small label--gray">{{ season | default: 2026 }} · ESPN</span></div>
       {% for league in fantasy %}
-      <div class="flex flex--col gap--xsmall bg--gray-75 rounded--large p--2 w--full gz-panel gz-panel--top">
+      <div class="flex flex--col gap--xsmall p--2 w--full gz-panel gz-panel--top">
         <div class="flex flex--row flex--between w--full"><span class="title gz-subsection">{{ league.name | escape }}</span><span class="label label--small label--gray">{% if league.week != nil %}Week {{ league.week }}{% else %}ESPN Fantasy{% endif %}</span></div>
         {% if league.status == 'ok' %}
           <div class="flex flex--row flex--between w--full"><span class="label label--small">{{ league.record | escape }}{% if league.rank != nil and league.rank > 0 %} · Seed {{ league.rank }}{% endif %}</span><span class="label label--small label--gray">{{ league.matchup.state | default: 'No matchup returned' | escape }}</span></div>
