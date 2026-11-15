@@ -360,3 +360,7 @@ fresh Companion upload rather than a health reset alone.
 **Alternatives:** Generic verse-of-the-day (already available), a permanently visible view, direct screen-side web scraping, or static unscheduled data. Those either aren't church-specific, hide routine information, or risk stale/misleading details.
 
 **Consequences:** The view must be updated through a weekly ChatGPT task and one complete webhook payload; the template independently refuses old source dates. Scheduled automation success will need to be verified on the first subsequent Sunday. The existing Home and other main pages remain intact.
+
+## 2026-11-15 — Alvey Sabbath naming refinement
+
+**Decision:** Rename the existing Sunday Study screen to **Alvey Sabbath**, using the subtitle **TRADERS POINT · THIS WEEK’S WORSHIP & REFLECTION** while preserving the Sunday-only schedule. This is a presentation/name change, not a wider weekend schedule or new plugin.
