@@ -1,5 +1,5 @@
 # The iOS Gazette — TRMNL design system
-Version: 0.1 — adopted 2026-11-15. Status: design contract, NOT yet rolled out to live views.
+Version: 0.1 — adopted 2026-11-15. Status: News & Markets Gazette v1 is deployed and X-preview verified; other core views are pending.
 
 ## North star
 **Apple-inspired editorial minimalism on e-paper.** The product is named **The iOS Gazette**: calm, precise, legible, refined. Blend iOS information hierarchy with the measured rhythm of a modern newspaper. This is **not** a literal retro newspaper: avoid faux newsprint, distressed type, ornamented mastheads, decorative columns, and excessive rules.
@@ -43,7 +43,7 @@ Prefer established TRMNL classes when they already satisfy the specification; us
 - **Status:** show age/refresh and source failures accurately; a 0 measurement is not missing.
 - **Footer:** compact, consistent source attribution / last updated without stealing visual focus.
 
-## Rollout plan (not yet executed)
+## Rollout plan (News & Markets v1 completed; other screens pending)
 1. Create reference layouts / style prototype for **News & Markets** first; compare current versus Gazette at TRMNL X preview size.
 2. Validate headline fitting, market/housing trend readability and current-day deltas, including source outage states.
 3. Consolidate proven styles into reusable tracked artifacts or a tested injection/build convention. Avoid duplicating unreviewed CSS across plugins.
@@ -61,3 +61,7 @@ Prefer established TRMNL classes when they already satisfy the specification; us
 
 ## Ownership
 All ChatGPT, Codex, or other AI changes to visible layouts must follow this specification. Record deliberate deviations and design changes in `docs/DECISIONS.md`. Continue to follow `AGENTS.md` and `docs/DEPLOYMENT.md` for synchronization, testing and deployment.
+
+## First implementation: News & Markets (2026-11-15)
+
+Deployed to TRMNL private plugin `537634`; code in `views/news-markets/full.liquid`. The X-model preview with refreshed 2026-11-15 feed confirmed all six headlines, 3 market panels, 4 equal housing metrics, charts, comparisons, citations and bottom attribution fit. Body uses an explicit Arial/Helvetica/sans-serif stack (no remote fonts), 34px masthead, 22px section headings, 33px market figures, 30px housing figures, 17px news headlines, 12–13px source captions, hairline dividers and unboxed panels. Shared 7px primary vertical rhythm is intentionally compact to tolerate multi-line live news and maintain footer visibility. Treat these as measured v1 values, not yet universal cross-view tokens. Custom scoped CSS is supported in the preview though TRMNL warns that framework classes are generally preferred; no runtime or data logic changed.
