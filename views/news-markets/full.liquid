@@ -9,13 +9,12 @@
 .ig { color:#111; width:100%; gap:7px!important; font-family:Arial, Helvetica, sans-serif!important; }
 .ig * { box-sizing:border-box; }
 .ig .ig-mast { display:flex; align-items:flex-end; justify-content:space-between; padding-bottom:8px; border-bottom:2px solid #171717; width:100%; }
-.ig .ig-kicker { font-size:13px; line-height:1.15; letter-spacing:1.55px; font-weight:700; color:#4b4b4b; }
-.ig .ig-mast-title { font-size:34px; font-weight:750; line-height:1.05; letter-spacing:-.8px; margin:3px 0 0; }
+.ig .ig-mast-title { font-family:Georgia, 'Times New Roman', serif; font-size:36px; font-weight:700; line-height:1.04; letter-spacing:-.9px; margin:0; }
 .ig .ig-dateline { text-align:right; font-size:14px; line-height:1.25; font-weight:600; white-space:nowrap; }
 .ig .ig-muted { color:#626262; font-weight:450; }
 .ig .ig-date-secondary { font-size:12px; margin-top:4px; }
 .ig .ig-section-head { display:flex; align-items:baseline; justify-content:space-between; width:100%; gap:16px; padding-top:3px; }
-.ig .ig-section-name { font-size:22px; line-height:1.14; font-weight:750; letter-spacing:-.25px; }
+.ig .ig-section-name { font-family:Georgia, 'Times New Roman', serif; font-size:24px; line-height:1.13; font-weight:700; letter-spacing:-.35px; }
 .ig .ig-section-note { font-size:13px; line-height:1.2; color:#555; text-align:right; }
 .ig .ig-section-index { color:#777; font-size:13px; letter-spacing:.8px; font-weight:650; margin-right:8px; }
 .ig .ig-market-grid, .ig .ig-housing-grid { display:grid; width:100%; min-width:0; }
@@ -29,7 +28,7 @@
 .ig .ig-symbol { font-size:12px; letter-spacing:.6px; color:#666; font-weight:600; white-space:nowrap; }
 .ig .ig-price-row { display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 11px; }
 .ig .ig-price { font-size:33px; line-height:1.12; letter-spacing:-.7px; font-weight:750; white-space:nowrap; font-variant-numeric:tabular-nums; }
-.ig .ig-market-change { font-size:16px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.ig .ig-compare-context { font-size:12px; line-height:1.15; color:#666; font-weight:500; white-space:nowrap; }
 .ig .ig-spark { display:block; width:100%; height:44px; margin-top:1px; overflow:visible; }
 .ig .ig-home-spark { display:block; width:100%; height:35px; margin-top:1px; }
 .ig .ig-chart-line { stroke:#222; stroke-width:2; fill:none; stroke-linejoin:round; stroke-linecap:round; }
@@ -39,14 +38,18 @@
 .ig .ig-news-band { display:grid; grid-template-columns:120px minmax(0,1fr); gap:13px; padding:5px 0; border-bottom:1px solid #e0e0e0; width:100%; }
 .ig .ig-news-band:last-child { border-bottom:0; }
 .ig .ig-news-kicker { font-size:12px; line-height:1.25; letter-spacing:.9px; font-weight:750; color:#555; padding-top:3px; }
-.ig .ig-news-list { min-width:0; display:flex; flex-direction:column; gap:4px; }
+.ig .ig-news-list { min-width:0; display:flex; flex-direction:column; gap:3px; }
 .ig .ig-story { display:grid; grid-template-columns:minmax(0,1fr) 135px; gap:12px; align-items:baseline; width:100%; }
 .ig .ig-story-text { font-size:17px; font-weight:500; line-height:1.2; overflow-wrap:break-word; min-width:0; }
+.ig .ig-story--lead .ig-story-text { font-weight:650; }
+.ig .ig-story--lead .ig-story-text::first-letter { font-family:Georgia, 'Times New Roman', serif; font-size:1.5em; font-weight:700; line-height:.8; float:left; margin:3px 4px 0 0; }
+.ig .ig-story--secondary { border-top:1px solid #dadada; padding-top:4px; }
+.ig .ig-story-tag { font-size:11px; line-height:1; letter-spacing:.65px; color:#777; font-weight:700; margin-right:7px; white-space:nowrap; }
 .ig .ig-story-meta { font-size:12px; line-height:1.2; color:#676767; text-align:right; }
 .ig .ig-housing-head { border-top:2px solid #222; padding-top:10px; }
 .ig .ig-home-label { font-size:13px; letter-spacing:.3px; line-height:1.15; font-weight:650; min-height:15px; }
 .ig .ig-home-value { font-size:30px; letter-spacing:-.45px; line-height:1.15; font-weight:760; font-variant-numeric:tabular-nums; white-space:nowrap; }
-.ig .ig-comparisons { display:flex; justify-content:space-between; gap:5px; flex-wrap:wrap; }
+.ig .ig-comparisons { display:flex; justify-content:space-between; align-items:baseline; gap:4px; flex-wrap:nowrap; min-height:15px; }
 .ig .ig-change { font-size:13px; line-height:1.15; font-weight:650; font-variant-numeric:tabular-nums; white-space:nowrap; }
 .ig .ig-home-footer { display:flex; flex-direction:column; gap:1px; }
 .ig .ig-placeholder {height:44px;}\n.ig .ig-news-band--last {border-bottom:0;}
@@ -55,7 +58,6 @@
 <div class="layout layout--col layout--top w--full ig">
   <header class="ig-mast">
     <div>
-      <div class="ig-kicker">THE iOS GAZETTE <span class="ig-muted">/ ALVEY EDITION</span></div>
       <div class="ig-mast-title">Market Intelligence</div>
     </div>
     <div class="ig-dateline">
@@ -66,7 +68,7 @@
 
   <div class="ig-section-head">
     <div><span class="ig-section-index">01</span><span class="ig-section-name">Financial Markets</span></div>
-    <div class="ig-section-note">Stocks vs previous close · Bitcoin vs 24h ago</div>
+    <div class="ig-section-note">12-month market trends</div>
   </div>
 
   <div class="ig-market-grid">
@@ -77,7 +79,8 @@
         <span class="ig-symbol">{% if market.label == 'S&P 500' %}INDEX{% elsif market.label == 'Eli Lilly' %}LLY{% else %}BTC / USD{% endif %}</span>
       </div>
       {% if market.status == 'ok' %}
-        <div class="ig-price-row"><span class="ig-price">{{ market.price_str | escape }}</span><span class="ig-market-change">{{ market.change_str | escape }}</span></div>
+        <div class="ig-price-row"><span class="ig-price">{{ market.price_str | escape }}</span></div>
+        <div class="ig-comparisons"><span class="ig-change">{% if market.label == 'Bitcoin' %}24h{% else %}Today{% endif %} {{ market.change_str | escape }}</span><span class="ig-compare-context">vs {% if market.label == 'Bitcoin' %}24h ago{% else %}previous close{% endif %}</span></div>
         <svg class="ig-spark" viewBox="0 0 114 40" preserveAspectRatio="none" aria-label="{{ market.trend_label | escape }}">
           <line class="ig-chart-baseline" x1="0" y1="38" x2="114" y2="38"/>
           {% if market.spark != blank %}<polyline class="ig-chart-line" points="{{ market.spark | escape }}"/>{% endif %}
@@ -99,8 +102,8 @@
       <div class="ig-news-kicker">{{ category.name | escape }}</div>
       <div class="ig-news-list">
         {% for item in category.items %}
-        <div class="ig-story">
-          <div class="ig-story-text">{{ item.title | escape }}</div>
+        <div class="ig-story {% if forloop.first %}ig-story--lead{% else %}ig-story--secondary{% endif %}">
+          <div class="ig-story-text">{% unless forloop.first %}<span class="ig-story-tag">ALSO</span>{% endunless %}{{ item.title | escape }}</div>
           <div class="ig-story-meta">{{ item.source | escape }} · {{ item.date | date: '%b %-d' }}</div>
         </div>
         {% else %}
@@ -148,8 +151,8 @@
       <div class="ig-news-kicker">REAL ESTATE NEWS</div>
       <div class="ig-news-list">
         {% for item in category.items %}
-        <div class="ig-story">
-          <div class="ig-story-text">{{ item.title | escape }}</div>
+        <div class="ig-story {% if forloop.first %}ig-story--lead{% else %}ig-story--secondary{% endif %}">
+          <div class="ig-story-text">{% unless forloop.first %}<span class="ig-story-tag">ALSO</span>{% endunless %}{{ item.title | escape }}</div>
           <div class="ig-story-meta">{{ item.source | escape }} · {{ item.date | date: '%b %-d' }}</div>
         </div>
         {% else %}
