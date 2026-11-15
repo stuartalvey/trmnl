@@ -218,3 +218,9 @@ but reported set by the settings API; no header loss was inferred or overwritten
 All four X/full previews rendered and were visually checked. Public polling
 feeds were explicitly refreshed after stale snapshots were observed; this does
 not force new phone Health uploads or establish measurement freshness.
+
+## 2026-11-15 — iOS Gazette design system adopted (documentation only)
+
+- Owner selected **The iOS Gazette**: Apple-inspired editorial minimalism with a subtle modern-newspaper influence. New [design contract](DESIGN_SYSTEM.md) specifies initial typography, spacing, composition and visualization targets and a staged rollout, starting with News & Markets.
+- AGENTS.md now requires ChatGPT/Codex and other agents to use the design contract for future visible layouts. Existing Home, Health, Sports, Weather and News & Markets templates have **not yet been restyled**; no live TRMNL plugins or playlist settings were changed; no new previews or physical-device checks were performed.
+- Next: implement and visually validate News & Markets Gazette prototype, refine measured tokens, then migrate remaining core views one at a time.
