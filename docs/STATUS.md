@@ -1,3 +1,9 @@
+# 2026-11-15 — iOS Gazette Market Intelligence redesign deployed
+
+- Owner's **The iOS Gazette** editorial-minimalist standard applied to `News & Markets Detail` plugin `537634`. GitHub source: [views/news-markets/full.liquid](../views/news-markets/full.liquid). Scoped sans-serif CSS, Gazette masthead, unboxed 3-up market metrics/4-up housing metrics, subtle rules, 17px full-width news headlines and consistent source metadata. Retained all existing collector/market/housing/news logic, MoM/YoY comparison semantics and trends.
+- GitHub template committed and the identical `markup_full` deployed through TRMNL MCP. Final live-source refresh succeeded on Nov 15, 2026; fresh headlines were deliberately used to stress-test wrapping. A `v2` TRMNL X full-screen server preview completed and was visually inspected: all six headlines, markets, housing charts, source credits and footer fit without clipping. Source code for `transform.js`, settings, playlist and other views not changed. A physical device check-in/display is **not** established.
+- Custom scoped CSS and missing `title_bar` generate advisory validator warnings (the latter pre-existed). Do not assume GitHub commits auto-deploy to other independent plugins. Other four core views still await Gazette adaptation.
+
 # Current project status
 
 ## 2026-11-11 — News relocated under its corresponding market section
