@@ -1,3 +1,9 @@
+# 2026-11-15 — Home agenda icons replaced with official Tabler outlines
+
+- Owner selected professional Tabler icons after rejecting the custom female silhouette. Updated only Home Page `535610` `src/shared.liquid` `agenda_owner_icon` with official published **Tabler Icons** outline paths: `man`, `woman`, `users`, and `calendar-event`. All four have a consistent 24×24 viewBox, 2px stroke and monochrome local SVG rendering.
+- X-model `v2/markup_full` preview completed and was inspected: all four owner categories retain clear differentiation, event title/time layout is unchanged, all seven days and footer fit. No calendar logic, sports icons, data, playlist settings or other pages changed.
+- Repo [source](../src/shared.liquid) and live TRMNL plugin updated. Tabler artwork is MIT-licensed, with upstream source credited in the Liquid template. Physical hardware check-in not confirmed.
+
 # 2026-11-15 — Home Page follow-up: editorial verse, owner icons, fit corrected
 
 - Updated live Home Page plugin `535610` only. **Verse of the day** is an editorial scripture pull quote with a serif first-letter drop cap; today's readiness card remains unchanged in meaning.
