@@ -29,12 +29,45 @@
 {% assign hour_ts = time | date: '%s' | plus: 0 %}{% assign hour_age = local_now | minus: hour_ts %}
 {% if hour_age >= 0 and hour_age < 3600 %}{% assign uv = hourly.uv_index[forloop.index0] %}{% assign uv_hour = time %}{% endif %}
 {% endif %}{% endfor %}
-<div class="layout layout--col layout--top gap--medium">
-  <div class="flex flex--row flex--between flex--center-y w--full">
-    <div class="flex flex--col gap--xsmall"><span class="title title--large lg:title--xxlarge">Noblesville Weather</span><span class="label label--gray">{{ local_now | date: '%A, %B %-d' }} · Seven-day outlook</span></div>
+{% comment %}iOS Gazette: shared styles synced from design/gazette.css; no branding displayed{% endcomment %}
+<style>
+/* The iOS Gazette / shared presentation tokens — v1.1, 2026-11-15.
+   Canonical CSS. Synced verbatim into the four non-Market custom views.
+   Layout CSS pixels correspond to TRMNL's 1040×780 canvas. */
+.gz { font-family:Arial,Helvetica,sans-serif!important; color:#111; width:100%; gap:8px!important; }
+.gz * {box-sizing:border-box;}
+.gz .gz-mast { width:100%; border-bottom:2px solid #171717; padding-bottom:9px; align-items:flex-end; }
+.gz .gz-title {font-family:Georgia,"Times New Roman",serif!important; font-size:36px!important; line-height:1.05!important; font-weight:700!important; letter-spacing:-.65px!important; }
+.gz .gz-section {font-family:Georgia,"Times New Roman",serif!important; font-size:23px!important; font-weight:700!important; line-height:1.12!important; letter-spacing:-.25px!important;}
+.gz .gz-subsection {font-family:Georgia,"Times New Roman",serif!important; font-size:19px!important; font-weight:700!important; line-height:1.13!important;}
+.gz .gz-date {font-size:14px!important; font-weight:600!important; text-align:right;}
+.gz .gz-caption {font-size:12px!important; color:#666!important; line-height:1.22!important;}
+.gz .gz-kicker {font-size:12px!important; font-weight:700!important; letter-spacing:.7px!important; line-height:1.17!important; color:#555!important;}
+.gz .gz-number {font-size:31px!important; font-weight:750!important; line-height:1.07!important; font-variant-numeric:tabular-nums!important;}
+.gz .gz-hairline {border-top:1px solid #dadada;}
+.gz .gz-major-rule {border-top:2px solid #222;padding-top:10px;}
+.gz .gz-panels {gap:0!important;}
+.gz .gz-panel {background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:9px 12px!important;}
+.gz .gz-panel:first-child {padding-left:0!important;}
+.gz .gz-panel:last-child {padding-right:0!important;}
+ .gz .gz-panel--side, .gz .gz-panels > .gz-panel:not(:first-child) {border-left:1px solid #d8d8d8!important;}
+.gz .gz-panel--top {border-top:1px solid #ddd!important;}
+.gz .gz-panel--lead {border-left:3px solid #222!important;padding-left:13px!important;}
+.gz .gz-compact {gap:5px!important;}
+.gz .gz-rows {border-top:1px solid #d6d6d6!important;}
+.gz .gz-rows th {border-bottom:1px solid #bbb!important;padding-top:8px!important;padding-bottom:8px!important;}
+.gz .gz-rows td {border-bottom:1px solid #e0e0e0!important;padding-top:9px!important;padding-bottom:9px!important;vertical-align:top;}
+.gz .gz-rows thead .label {font-size:12px!important;letter-spacing:.65px!important;font-weight:700!important;color:#555!important;}
+.gz .gz-rows [data-clamp] {font-weight:550;}
+.gz .gz-chart svg {overflow:visible;}
+.gz .gz-footer {border-top:1px solid #ddd;padding-top:4px;font-size:12px;color:#666;}
+</style>
+<div class="layout layout--col layout--top gap--medium gz">
+  <div class="flex flex--row flex--between flex--center-y w--full gz-mast">
+    <div class="flex flex--col gap--xsmall"><span class="title title--large lg:title--xxlarge gz-title">Noblesville Weather</span><span class="label label--gray">{{ local_now | date: '%A, %B %-d' }} · Seven-day outlook</span></div>
     <div class="flex flex--row gap--medium flex--center-y">
       {% render "weather_icon", code: current.weather_code, is_day: current.is_day, description: 'Current conditions' %}
-      <span class="value value--large">{% render "metric", value: current.temperature_2m, unit: '°', precision: 0 %}</span>
+      <span class="value value--large gz-number">{% render "metric", value: current.temperature_2m, unit: '°', precision: 0 %}</span>
       <div class="flex flex--col gap--xsmall"><span class="label">{% render "weather_label", code: current.weather_code %}</span><span class="label label--small label--gray">Feels {% render "metric", value: current.apparent_temperature, unit: '°F', precision: 0 %}</span></div>
     </div>
   </div>
@@ -57,28 +90,28 @@
       <span class="label label--small label--gray">Shading = precipitation chance · dotted line = 100%</span>
     </div>
   </div>
-  <div class="grid grid--cols-12 gap--medium w--full">
-    <div class="col--span-3 flex flex--col gap--small bg--gray-75 rounded--large p--3">
+  <div class="grid grid--cols-12 gap--medium w--full gz-panels gz-hairline">
+    <div class="col--span-3 flex flex--col gap--small bg--gray-75 rounded--large p--3 gz-panel">
       <span class="label label--small label--gray">SUNRISE / SUNSET</span>
-      <span class="title">{% if today_index != nil and daily.sunrise[today_index] != nil %}{{ daily.sunrise[today_index] | date: '%-I:%M' }} AM{% else %}—{% endif %}</span>
+      <span class="title gz-subsection">{% if today_index != nil and daily.sunrise[today_index] != nil %}{{ daily.sunrise[today_index] | date: '%-I:%M' }} AM{% else %}—{% endif %}</span>
       <span class="title">{% if today_index != nil and daily.sunset[today_index] != nil %}{{ daily.sunset[today_index] | date: '%-I:%M' }} PM{% else %}—{% endif %}</span>
       <span class="label label--small label--gray">Today · local time</span>
     </div>
-    <div class="col--span-3 flex flex--col gap--small bg--gray-75 rounded--large p--3">
+    <div class="col--span-3 flex flex--col gap--small bg--gray-75 rounded--large p--3 gz-panel">
       <span class="label label--small label--gray">UV INDEX · NOW</span>
-      <span class="value value--small">{% render "metric", value: uv, unit: '', precision: 1 %}</span>
+      <span class="value value--small gz-number">{% render "metric", value: uv, unit: '', precision: 1 %}</span>
       <span class="label">{% if uv == nil %}Unavailable{% elsif uv < 3 %}Low{% elsif uv < 6 %}Moderate{% elsif uv < 8 %}High{% elsif uv < 11 %}Very high{% else %}Extreme{% endif %}</span>
       <span class="label label--small label--gray">Current hour · estimated</span>
     </div>
-    <div class="col--span-3 flex flex--col gap--small bg--gray-75 rounded--large p--3">
+    <div class="col--span-3 flex flex--col gap--small bg--gray-75 rounded--large p--3 gz-panel">
       <span class="label label--small label--gray">WIND · NOW</span>
-      <span class="value value--small">{% render "metric", value: current.wind_speed_10m, unit: ' mph', precision: 0 %}</span>
+      <span class="value value--small gz-number">{% render "metric", value: current.wind_speed_10m, unit: ' mph', precision: 0 %}</span>
       <span class="label">Gusts {% render "metric", value: current.wind_gusts_10m, unit: ' mph', precision: 0 %}</span>
       <span class="label label--small label--gray">{% if current.wind_direction_10m != nil %}{% assign directions = 'N,NE,E,SE,S,SW,W,NW' | split: ',' %}{% assign direction_i = current.wind_direction_10m | plus: 22.5 | modulo: 360 | divided_by: 45 | floor %}From {{ directions[direction_i] }}{% else %}Direction unavailable{% endif %}</span>
     </div>
-    <div class="col--span-3 flex flex--col gap--small bg--gray-75 rounded--large p--3">
+    <div class="col--span-3 flex flex--col gap--small bg--gray-75 rounded--large p--3 gz-panel">
       <span class="label label--small label--gray">HUMIDITY · NOW</span>
-      <span class="value value--small">{% render "metric", value: current.relative_humidity_2m, unit: '%', precision: 0 %}</span>
+      <span class="value value--small gz-number">{% render "metric", value: current.relative_humidity_2m, unit: '%', precision: 0 %}</span>
       <span class="label">Relative humidity</span>
       <span class="label label--small label--gray">Latest conditions</span>
     </div>
