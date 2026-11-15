@@ -322,3 +322,13 @@ fresh Companion upload rather than a health reset alone.
 **Reason:** Owner feedback after first live screenshot requested less generic typography, no visible design-system branding, more explicit and consistent comparisons, and a clear difference between the two stories in each category.
 
 **Validation:** Live markup deployed to TRMNL instance `537634`, with a completed `v2/markup_full` X-model preview visually inspected: live long headlines, chart captions and footer are visible without clipping. No collector, credentials, playlist, source settings, or other screens changed. Physical panel check remains unverified.
+
+## 2026-11-15 — All five visible playlist pages use the iOS Gazette design
+
+**Decision:** Roll the approved Market Intelligence editorial principles across all visible TRMNL X screens: Home `535610`, Weather `536164`, Sports `536256`, Health `536354`, plus the already-redesigned Market Intelligence `537634`. Keep “iOS Gazette” strictly internal. Introduce [canonical CSS](../design/gazette.css) replicated in the four additional independent Liquid templates, and an offline equality guard [`design/check_gazette.cjs`](../design/check_gazette.cjs). Market Intelligence's tuned `.ig` style remains independent.
+
+**Reason:** The owner requested a system-wide overhaul rather than independently styled screens. Serif titles and major sections, readable sans-serif data, unboxed panels, hairline dividers and compact consistent footers establish a unified visual language without suppressing each screen's unique information.
+
+**Evidence:** TRMNL `v2/markup_full` previews completed on the live four redesigned screens; Weather source was refreshed after an outdated snapshot initially showed only one forecast day, and the next preview confirmed seven forecast days. Home initially clipped a seventh day, fixed by tighter row spacing; day labels after Today use abbreviated weekdays to avoid collision with event times. Live PGA/Fantasy, Oura, and workout charts remained visible. Market Intelligence was separately validated earlier the same day.
+
+**Boundaries:** No merge-variable sources, polling transform code, saved credentials, playlist visibility/order, schedules or refresh intervals were changed by the design pass. Custom CSS receives advisory TRMNL style warnings; server previews succeeded. A physical panel check-in was not established. Other source quality / missing-feed questions should remain separate from cosmetic work.
