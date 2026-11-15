@@ -1,3 +1,11 @@
+# 2026-11-15 — Sunday Study added and deployed
+- New private webhook plugin **Sunday Study — Traders Point** (setting `541864`), independently deployed from `views/faith/full.liquid`, framework 3.4.6. Current confirmed message: **Beauty, Betrayal and Bread**, Nov 14, 2026, Mark 14:1–26, Aaron Brockett. Source: https://tpcc.org/messages/beauty-betrayal-and-bread.
+- Displays a short verified NLT excerpt from Mark 14:8, concise three-scene contrast, two independently written questions, an original prayer, and one action. The wording is not presented as an official church study guide.
+- Device `75111`: visible playlist item `908451` is scheduled **Sunday 00:00–23:59**, ordered first; the prior five main screens are preserved in their relative order. Stale sermon data older than 72 hours yields an awaiting-current-message fallback.
+- X-model server preview completed and visually inspected after the initial layout fixes: full-width newspaper typography, three-scene strip, questions/prayer/action and footer visible, no clipping. Last timestamp guard was committed and deployed afterward; a subsequent render was queued but physical device display remains unverified.
+- Recurring ChatGPT task **Refresh Traders Point Sunday Study** (`6af9ddf858c0819193cf77ddc4b9e346`) created for Sunday mornings, starting Nov 22. It is designed to verify source date/passage, generate original prompts, and replace the entire webhook JSON. It has not run yet, so live automatic refresh remains **untested**. Verify after first execution.
+- Code, non-secret manifest, and docs captured in GitHub; no other view templates or data pipelines changed.
+
 # 2026-11-15 — Home agenda icons replaced with official Tabler outlines
 
 - Owner selected professional Tabler icons after rejecting the custom female silhouette. Updated only Home Page `535610` `src/shared.liquid` `agenda_owner_icon` with official published **Tabler Icons** outline paths: `man`, `woman`, `users`, and `calendar-event`. All four have a consistent 24×24 viewBox, 2px stroke and monochrome local SVG rendering.
