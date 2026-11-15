@@ -149,7 +149,7 @@
         <tr>
           <td>
             <div class="flex flex--col gap--xsmall w--full">
-              <span class="title title--small w--full text--left gz-subsection">{% if offset == 0 %}Today{% elsif offset == 1 %}Tomorrow{% else %}{{ day_stamp | date: '%a' }}{% endif %}</span>
+              <span class="title title--small w--full text--left gz-subsection">{% if offset == 0 %}Today{% else %}{{ day_stamp | date: '%a' }}{% endif %}</span>
               <span class="label label--gray w--full text--left">{{ day_stamp | date: '%b %-d' }}</span>
             </div>
           </td>
