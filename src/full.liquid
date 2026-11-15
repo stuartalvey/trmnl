@@ -69,30 +69,7 @@
 .title_bar .title {font-size:13px!important;font-weight:700!important;}
 .title_bar .instance {font-size:12px!important;color:#686868!important;}
 </style>
-<style>
-/* Home Page: local editorial details; shared gazebo tokens remain in design/gazette.css. */
-.gz-home {gap:6px!important;}
-.gz-home .gz-mast {padding-bottom:6px!important;}
-.gz-home .gz-home-hero {gap:0!important; align-items:stretch;}
-.gz-home .gz-home-hero .gz-panel {padding-top:7px!important;padding-bottom:7px!important;}
-.gz-home .gz-home-verse {justify-content:center!important;min-width:0;}
-.gz-home .gz-verse-label {font-size:11px!important;font-weight:750;letter-spacing:.8px;}
-.gz-home .gz-verse-copy {font-family:Arial,Helvetica,sans-serif!important;font-size:16px;font-weight:550;line-height:1.24;margin:3px 0 0!important;color:#111;overflow-wrap:break-word;}
-.gz-home .gz-verse-copy::first-letter {font-family:Georgia,"Times New Roman",serif!important;font-weight:700;font-size:2.7em;line-height:.79;float:left;margin:4px 7px 0 0;}
-.gz-home .gz-verse-copy.gz-verse-long {font-size:14px;line-height:1.21;}
-.gz-home .gz-balance {justify-content:center!important;}
-.gz-home .gz-rows {width:100%;table-layout:fixed;}
-.gz-home .gz-rows th {padding-top:5px!important;padding-bottom:5px!important;}
-.gz-home .gz-rows td {padding-top:3px!important;padding-bottom:3px!important;}
-.gz-home .gz-agenda-list {gap:4px!important;min-width:0;}
-.gz-home .gz-agenda-item {display:flex;align-items:flex-start;gap:7px;min-width:0;width:100%;}
-.gz-home .gz-agenda-icon {width:21px!important;height:21px!important;flex:0 0 21px;object-fit:contain;margin-top:1px;}
-.gz-home .gz-agenda-copy {display:flex;flex-direction:column;gap:1px;min-width:0;flex:1 1 auto;}
-.gz-home .gz-agenda-title {display:block;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;line-height:1.12;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
-.gz-home .gz-agenda-when {display:block;font-size:12px;line-height:1.14;color:#555;font-weight:500;}
-.gz-home .gz-rows .gz-subsection {font-size:16px!important;}
-</style>
-<div class="layout layout--col layout--top gap--small gz gz-home">
+<div class="layout layout--col layout--top gap--small gz">
   <div class="flex flex--row flex--between flex--center-y w--full gz-mast">
     <div class="flex flex--col gap--xsmall">
       <span class="title title--large lg:title--xxlarge w--full text--left gz-title">Alvey Command Center</span>
@@ -101,21 +78,20 @@
     <span class="label label--large gz-date">{{ local_now | date: '%A, %B %-d' }}</span>
   </div>
 
-  <div class="grid grid--cols-12 gap--medium w--full gz-panels gz-home-hero">
-    <div class="col--span-7 flex flex--col gap--xsmall p--3 gz-panel gz-panel--lead gz-home-verse">
+  <div class="grid grid--cols-12 gap--medium w--full gz-panels">
+    <div class="col--span-7 flex flex--col flex--left flex--center-y gap--small p--3 gz-panel gz-panel--lead">
       {% if daily_verse.description != blank %}
         <div class="flex flex--row flex--between w--full">
-          <span class="label label--small gz-verse-label">VERSE OF THE DAY</span>
+          <span class="label label--small">VERSE OF THE DAY</span>
           <span class="label label--small">{{ daily_verse.title | escape }} · NLT</span>
         </div>
-        {% assign verse_length = daily_verse.description | size %}
-        <p class="gz-verse-copy {% if verse_length > 165 %}gz-verse-long{% endif %}">{{ daily_verse.description | strip | escape }}</p>
+        <span class="description description--large w--full text--left">{{ daily_verse.description | escape }}</span>
       {% else %}
         <span class="label w--full text--left">Verse of the day unavailable</span>
       {% endif %}
     </div>
 
-    <div class="col--span-5 flex flex--col gap--xsmall p--2 gz-panel gz-panel--side gz-balance" data-balance-card data-now="{{ trmnl.system.timestamp_utc }}" data-utc-offset="{{ trmnl.user.utc_offset }}">
+    <div class="col--span-5 flex flex--col gap--small p--2 gz-panel gz-panel--side" data-balance-card data-now="{{ trmnl.system.timestamp_utc }}" data-utc-offset="{{ trmnl.user.utc_offset }}">
       <div class="flex flex--row flex--between w--full">
         <span class="title title--small gz-subsection">Today's Balance</span>
         <span class="label label--small label--gray" data-balance-status>Oura readiness</span>
@@ -152,7 +128,7 @@
     <thead>
       <tr>
         <th class="w--24"><span class="label label--gray">DAY</span></th>
-        <th><span class="label label--gray">FAMILY</span></th>
+        <th><span class="label label--gray">FAMILY · S = Stu · A = Ali · H = Holiday</span></th>
         <th class="w--64"><span class="label label--gray">GAMES</span></th>
         <th class="w--36"><span class="label label--gray">WEATHER</span></th>
         <th class="w--16"><span class="label label--gray">PRECIP.</span></th>
@@ -178,7 +154,7 @@
             </div>
           </td>
           <td>
-            <div class="flex flex--col gap--xsmall w--full gz-agenda-list">
+            <div class="flex flex--col gap--small w--full">
 {% comment %}CalendarMerge:day:start{% endcomment %}
               {% assign day_events = 0 %}
               {% assign seen_keys = '' %}
@@ -211,31 +187,10 @@
                     {% assign source_calendar = event.calname | strip | downcase %}
                     {% if source_calendar == 'us holidays' %}{% assign owner = 'H' %}{% endif %}
                     {% assign day_events = day_events | plus: 1 %}
-                    <div class="gz-agenda-item" data-owner="{{ owner }}" data-agenda-kind="family">
-                      <svg class="gz-agenda-icon" viewBox="0 0 28 28" role="img" aria-label="{% if owner == 'H' %}Holiday{% elsif owner == 'S' %}Stuart{% elsif owner == 'A' %}Ali{% else %}Stuart and Ali{% endif %}" xmlns="http://www.w3.org/2000/svg">
-                        {% if owner == 'S' %}
-                          <circle cx="14" cy="6.5" r="4.5" fill="#111"/>
-                          <path d="M5.5 26v-8.5c0-4.4 3.8-7 8.5-7s8.5 2.6 8.5 7V26Z" fill="#111"/>
-                        {% elsif owner == 'A' %}
-                          <path d="M7.3 11.1C6.2 4.8 9.3 2 14 2s7.8 2.8 6.7 9.1l2.4 3.4h-5.1l-1.2-3.2H11l-1.2 3.2H4.9Z" fill="#333"/>
-                          <circle cx="14" cy="7" r="3.5" fill="#fff"/>
-                          <path d="M9.8 13h8.4L22 25.5H6Z" fill="#111"/>
-                        {% elsif owner == 'S+A' %}
-                          <circle cx="8.7" cy="7.5" r="3.7" fill="#111"/>
-                          <circle cx="19.3" cy="7.5" r="3.7" fill="#555"/>
-                          <path d="M2 26v-8c0-4 2.9-6.4 6.7-6.4s6.7 2.4 6.7 6.4v8Z" fill="#111"/>
-                          <path d="M12.6 26v-8c0-4 2.9-6.4 6.7-6.4S26 14 26 18v8Z" fill="#555"/>
-                          <path d="M11.7 18.3l2.3 1.9 2.3-1.9" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                        {% elsif owner == 'H' %}
-                          <rect x="3.5" y="5" width="21" height="19" rx="2" fill="none" stroke="#222" stroke-width="2"/>
-                          <path d="M4.5 11h19M9 3v5M19 3v5" stroke="#222" stroke-width="2" stroke-linecap="round"/>
-                          <path d="m14 13.6 1.2 3 3.2.2-2.5 2 1 3-2.9-1.7-2.9 1.7 1-3-2.5-2 3.2-.2Z" fill="#222"/>
-                        {% endif %}
-                      </svg>
-                      <div class="gz-agenda-copy">
-                        <span class="gz-agenda-title" data-clamp="1">{{ event.summary | default: 'Untitled event' | escape }}</span>
-                        <span class="gz-agenda-when">{% if event.all_day %}All day{% elsif event_day < day %}Continues{% else %}{{ event.start | escape }}{% endif %}</span>
-                      </div>
+                    <div class="flex flex--row gap--small w--full">
+                      <span class="label w--24 text--left">{% if event.all_day %}All day{% elsif event_day < day %}Continues{% else %}{{ event.start | escape }}{% endif %}</span>
+                      <span class="label label--small label--gray w--8 text--center" title="{% if owner == 'H' %}Holiday{% elsif owner == 'S' %}Stuart calendar{% elsif owner == 'A' %}Ali calendar{% else %}Both calendars{% endif %}">{{ owner }}</span>
+                      <span class="title title--small text--left stretch" data-clamp="1">{{ event.summary | default: 'Untitled event' | escape }}</span>
                     </div>
                   {% endif %}
                 {% endunless %}
@@ -250,20 +205,18 @@
             </div>
           </td>
           <td>
-            <div class="flex flex--col gap--xsmall w--full gz-agenda-list">
-              {% assign day_games = 0 %>
+            <div class="flex flex--col gap--small w--full">
+              {% assign day_games = 0 %}
               {% for game in sports.games %}
                 {% if game.day == day %}
                   {% assign day_games = day_games | plus: 1 %}
-                  <div class="gz-agenda-item" data-agenda-kind="sports">
+                  <div class="flex flex--row gap--small w--full">
                     {% if game.logo != blank %}
-                      <img class="image image-dither gz-agenda-icon" src="{{ game.logo | escape }}" alt="{{ game.team | escape }}">
-                    {% else %}
-                      <svg class="gz-agenda-icon" viewBox="0 0 28 28" role="img" aria-label="Sports event"><circle cx="14" cy="14" r="10" fill="none" stroke="#222" stroke-width="2"/><path d="m8 14 4 4 8-9" fill="none" stroke="#222" stroke-width="2"/></svg>
+                      <img class="image image-dither w--5 h--5" src="{{ game.logo | escape }}" alt="{{ game.team | escape }}">
                     {% endif %}
-                    <div class="gz-agenda-copy">
-                      <span class="gz-agenda-title" data-clamp="1">{{ game.matchup | escape }}</span>
-                      <span class="gz-agenda-when">{{ game.time_label | escape }}</span>
+                    <div class="flex flex--col gap--none stretch">
+                      <span class="title title--small w--full text--left" data-clamp="1">{{ game.matchup | escape }}</span>
+                      <span class="label label--small w--full text--left">{{ game.time_label | escape }}</span>
                     </div>
                   </div>
                 {% endif %}
