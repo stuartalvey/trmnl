@@ -58,11 +58,18 @@
 .gz .gz-rows {border-top:1px solid #d6d6d6!important;}
 .gz .gz-rows th {border-bottom:1px solid #bbb!important;padding-top:8px!important;padding-bottom:8px!important;}
  .gz .gz-rows td {border-bottom:1px solid #e0e0e0!important;padding-top:4px!important;padding-bottom:4px!important;vertical-align:top;}
+.gz .gz-rows .gz-subsection {font-size:17px!important;white-space:nowrap;}
+.gz .gz-panel.gz-major-rule {border-top:2px solid #222!important;}
 .gz .gz-rows thead .label {font-size:12px!important;letter-spacing:.65px!important;font-weight:700!important;color:#555!important;}
 .gz .gz-rows [data-clamp] {font-weight:550;}
  .gz .gz-chart svg {overflow:visible;}
 .gz [data-person] {background:transparent!important;border:0!important;outline:none!important;border-radius:0!important;padding:4px!important;}
 .gz .gz-footer {border-top:1px solid #ddd;padding-top:4px;font-size:12px;color:#666;}
+
+/* Built-in TRMNL title bar is outside .gz; scope of this stylesheet is one plugin render. */
+.title_bar {background:transparent!important;border-top:1px solid #d5d5d5!important;border-radius:0!important;box-shadow:none!important;padding-top:5px!important;}
+.title_bar .title {font-size:13px!important;font-weight:700!important;}
+.title_bar .instance {font-size:12px!important;color:#686868!important;}
 </style>
 <div class="layout layout--col layout--top gap--medium gz" data-health-detail data-now="{{ now_ts }}" data-offset="{{ trmnl.user.utc_offset }}">
   <div class="flex flex--row flex--between flex--center-y w--full gz-mast">
@@ -70,7 +77,7 @@
     <div class="flex flex--col flex--right gap--xsmall"><span class="label">{{ local_now | date: '%A, %B %-d' }}</span><span class="label label--small label--gray">Movement · Recovery · Consistency</span></div>
   </div>
   <div class="grid grid--cols-12 gap--medium w--full gz-panels">
-    <div class="col--span-7 flex flex--col gap--small outline outline--muted rounded--large p--3 gz-panel">
+    <div class="col--span-7 flex flex--col gap--small--muted p--3 gz-panel">
       <div class="flex flex--row flex--between flex--center-y w--full">
         <span class="title gz-section">Daily steps · Stuart + Ali</span>
         <span class="label label--small label--gray">Goal reference: {{ goal | round }} steps</span>
@@ -109,7 +116,7 @@
       <template data-apple-source="ali">{{ private_plugin_536547.merge_variables.health.metrics | json | escape }}</template>
     </div>
 
-    <div class="col--span-5 flex flex--col gap--small outline outline--muted rounded--large p--3 gz-panel gz-panel--side">
+    <div class="col--span-5 flex flex--col gap--small--muted p--3 gz-panel gz-panel--side">
       <div class="flex flex--row flex--between w--full"><span class="title gz-section">Recovery</span><span class="label label--small label--gray">Oura scores / 100</span></div>
       {% render "recovery_person", person: 'stuart', name: 'Stuart' %}
       {% render "recovery_person", person: 'ali', name: 'Ali' %}
@@ -119,7 +126,7 @@
     </div>
   </div>
 
-  <div class="flex flex--col gap--medium outline outline--muted rounded--large p--3 w--full gz-panel gz-major-rule">
+  <div class="flex flex--col gap--medium--muted p--3 w--full gz-panel gz-major-rule">
     <div class="flex flex--row flex--between flex--center-y w--full">
       <span class="title gz-section">Workout consistency</span>
       <span class="label label--small label--gray">Protein Social · last 8 weeks</span>
