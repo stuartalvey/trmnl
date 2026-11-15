@@ -64,3 +64,9 @@ this repository, including agents editing TRMNL directly through MCP.
 
 The owner may use either interface for any task. A new chat should reconstruct
 the project from this repository rather than rely on earlier conversations.
+
+## Visual design — The iOS Gazette
+
+17. Before creating or changing any visible layout, read [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md). Its **iOS Gazette** editorial-minimalist principles govern typography, hierarchy, spacing, charts, grayscale contrast, content fitting, and shared conventions across all core views.
+18. Treat its numeric tokens as preview-tested targets, not proof of deployment. Prefer high-legibility visuals and avoid decorative gray cards, tiny metadata, needless borders, and headline truncation. Document deliberate deviations in DECISIONS.md.
+19. A shared design document does **not** automatically deploy CSS to independent TRMNL plugins. Preserve existing runtime behavior; stage visual changes by view and inspect a TRMNL X preview for each. Report committed, deployed, previewed, and physical-device statuses separately.
