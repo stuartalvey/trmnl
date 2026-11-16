@@ -35,4 +35,25 @@ function compact(input,now){
  }
  return{normalization_version:VERSION,updated_at:new Date(now).toISOString(),health:{metrics:[...groups.values()].sort((a,b)=>a.start_date.localeCompare(b.start_date)),step_hours:[...hours.values()].sort((a,b)=>a.date.localeCompare(b.date)||a.hour-b.hour)}};
 }
-function run(input){const ts=Number(input?.trmnl?.system?.timestamp_utc);return compact(input,Number.isFinite(ts)&&ts>0?ts*1000:Date.now());}
+
+// Persist the latest *valid* step total across reminders-only and empty webhook uploads.
+function validSavedSteps(s){return s&&/^\d{4}-\d\d-\d\d$/.test(s.date||"")&&Number.isFinite(s.count)&&s.count>=0&&s.count<200000?{date:s.date,count:Math.round(s.count),observed_at:typeof s.observed_at==="string"&&Number.isFinite(Date.parse(s.observed_at))?s.observed_at:null}:null;}
+function freshest(a,b){if(!a)return b;if(!b)return a;if(b.date!==a.date)return b.date>a.date?b:a;const x=a.observed_at?Date.parse(a.observed_at):0,y=b.observed_at?Date.parse(b.observed_at):0;return y>=x?b:a;}
+function run(input){
+ const ts=Number(input?.trmnl?.system?.timestamp_utc);
+ const now=Number.isFinite(ts)&&ts>0?ts*1000:Date.now();
+ const out=compact(input,now);
+ const past=input?.trmnl?.state&&typeof input.trmnl.state==="object"?input.trmnl.state:{};
+ let last=validSavedSteps(past.last_valid_steps)||validSavedSteps(input?.trmnl?.previous_merge_variables?.health?.last_valid_steps);
+ let hasSteps=false;
+ for(const row of out.health.metrics){
+   if(row?.metric_type!=="steps"||!Number.isFinite(row.value))continue;
+   const date=localDay(Date.parse(row.start_date)),candidate=validSavedSteps({date,count:row.value,observed_at:row.end_date});
+   if(!candidate)continue;
+   last=freshest(last,candidate);hasSteps=true;
+ }
+ out.health.last_valid_steps=last;
+ out.health_feed_valid=hasSteps;
+ out.trmnl_state={last_valid_steps:last};
+ return out;
+}
