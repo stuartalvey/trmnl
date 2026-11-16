@@ -103,67 +103,88 @@
   let samples=null;try{samples=JSON.parse(appleNode?.content?.textContent||"null");}catch{}
   const nowMs=Number(page.dataset.now)*1000;
   const movement=appleSummary(samples,nowMs);
+  const retainedNode=page.querySelector("template[data-ali-retained]");
+  let retained=null;try{retained=JSON.parse(retainedNode?.content?.textContent||"null");}catch{}
+  const isRetained=retained&&typeof retained.date==="string"&&Number.isFinite(retained.count)&&retained.count>=0&&retained.count<200000;
+  const nowLocalDay=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Indiana/Indianapolis",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(nowMs));
+  const gd=k=>nowLocalDay.find(x=>x.type===k)?.value;
+  const todayLocal=gd("year")+"-"+gd("month")+"-"+gd("day");
+  const toLabel=date=>{const p=date.split("-").map(Number);return new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",timeZone:"UTC"}).format(new Date(Date.UTC(p[0],p[1]-1,p[2])));};
   const set=(selector,value)=>{const node=page.querySelector(selector);if(node)node.textContent=value;};
-  set("[data-ali-steps]",movement.steps===null?"—":Math.round(movement.steps).toLocaleString("en-US"));
   const fmtTime=ms=>new Intl.DateTimeFormat("en-US",{timeZone:"America/Indiana/Indianapolis",hour:"numeric",minute:"2-digit"}).format(new Date(ms));
+  let aliPlotSteps=movement.steps,aliPlotAt=movement.lastSteps;
   if(movement.steps!==null){
-    set("[data-ali-sync]","Today · as of "+fmtTime(movement.lastSteps));
-    set("[data-ali-secondary]",movement.energy===null?"Ali: steps synced":"Ali: "+Math.round(movement.energy)+" active kcal");
+    set("[data-ali-steps]",Math.round(movement.steps).toLocaleString("en-US"));
+    set("[data-ali-sync]","as of "+fmtTime(movement.lastSteps));
+  }else if(isRetained){
+    set("[data-ali-steps]",Math.round(retained.count).toLocaleString("en-US"));
+    const observed=Date.parse(retained.observed_at||"");
+    const timeGood=retained.date===todayLocal&&Number.isFinite(observed)&&observed<=nowMs+300000;
+    if(timeGood){aliPlotSteps=retained.count;aliPlotAt=observed;set("[data-ali-sync]","retained "+fmtTime(observed));}
+    else{set("[data-ali-sync]","last "+toLabel(retained.date)+" · stale");}
   }else if(movement.recentDay!==null){
-    const p=movement.recentDay.split("-").map(Number);
-    const label=new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",timeZone:"UTC"}).format(new Date(Date.UTC(p[0],p[1]-1,p[2])));
-    set("[data-ali-sync]","Last "+label+": "+Math.round(movement.recentSteps).toLocaleString("en-US"));
-    set("[data-ali-secondary]","Ali's steps not synced today");
+    set("[data-ali-steps]",Math.round(movement.recentSteps).toLocaleString("en-US"));
+    set("[data-ali-sync]","last "+toLabel(movement.recentDay)+" · stale");
   }else{
-    set("[data-ali-sync]","Awaiting Apple Health steps");
-    set("[data-ali-secondary]","Ali's steps not synced today");
+    set("[data-ali-steps]","—");
+    set("[data-ali-sync]","awaiting Apple Health");
   }
   const chart=page.querySelector("[data-goal-chart]");
   if(chart){
-    const scale=Math.max(Number(chart.dataset.scale),movement.steps===null?0:movement.steps*1.1);
-    const goal=Number(chart.dataset.goal),bottom=176,height=146;
+    const scale=Math.max(Number(chart.dataset.scale),aliPlotSteps===null?0:aliPlotSteps*1.08);
+    const goal=Number(chart.dataset.goal),bottom=231,height=207;
     if(Number.isFinite(scale)&&scale>0&&Number.isFinite(goal)&&goal>0){
-      const goalLine=chart.querySelector("[data-goal-line]");
-      if(goalLine){const y=bottom-height*goal/scale;goalLine.setAttribute("y1",String(y));goalLine.setAttribute("y2",String(y));}
       const stuPoint=chart.querySelector("[data-current-step-point]");
       if(stuPoint){const stu=Number(stuPoint.dataset.steps);if(Number.isFinite(stu))stuPoint.setAttribute("cy",String(bottom-height*stu/scale));}
       const logistic=t=>1/(1+Math.exp(-0.30586*(t-14.9835)));
       const lo=logistic(0),hi=logistic(24);
       const frac=t=>(logistic(t)-lo)/(hi-lo);
-      const y=t=>bottom-height*goal*frac(t)/scale;
-      const slope=t=>{const z=logistic(t);return -height*goal/scale*0.30586*z*(1-z)/(hi-lo);};
-      const d=["M40 "+bottom];
-      for(let i=0;i<96;i++){
-        const t=i/4,x0=40+456*t/24,x1=40+456*(t+0.25)/24,dx=x1-x0;
-        d.push("C"+(x0+dx/3).toFixed(2)+","+(y(t)+slope(t)/12).toFixed(2)+" "+(x1-dx/3).toFixed(2)+","+(y(t+0.25)-slope(t+0.25)/12).toFixed(2)+" "+x1.toFixed(2)+","+y(t+0.25).toFixed(2));
-      }
+      const y=(t,n)=>bottom-height*n*frac(t)/scale;
+      const coords=n=>Array.from({length:97},(_,i)=>{const t=i/4;return (40+450*t/24).toFixed(2)+","+y(t,n).toFixed(2)});
+      const band=chart.querySelector("[data-pace-band]");
+      if(band)band.setAttribute("d","M"+coords(10000).join(" L")+" L"+coords(7000).reverse().join(" L")+" Z");
+      for(const n of [7000,8000,9000]){const el=chart.querySelector("[data-pace-"+n+"]");if(el)el.setAttribute("d","M"+coords(n).join(" L"));}
       const curve=chart.querySelector("[data-smooth-pace]");
-      if(curve)curve.setAttribute("d",d.join(" "));
+      if(curve)curve.setAttribute("d","M"+coords(10000).join(" L"));
+      for(const n of [7000,8000,9000,10000]){const el=chart.querySelector("[data-label-"+n+"]");if(el)el.setAttribute("y",String(y(24,n)+4));}
       const point=chart.querySelector("[data-ali-step-point]");
-      if(point&&movement.steps!==null&&movement.lastSteps!==null){
-        const localMs=movement.lastSteps+Number(page.dataset.offset)*1000;
+      if(point&&aliPlotSteps!==null&&aliPlotAt!==null){
+        const localMs=aliPlotAt+Number(page.dataset.offset)*1000;
         const dayMs=((localMs%86400000)+86400000)%86400000;
-        const cx=40+456*dayMs/86400000;
+        const cx=40+450*dayMs/86400000;
         point.setAttribute("cx",String(cx));
-        point.setAttribute("cy",String(bottom-height*movement.steps/scale));
+        point.setAttribute("cy",String(bottom-height*aliPlotSteps/scale));
         point.setAttribute("visibility","visible");
       }
     }
   }
+
+  const ouraModels={};
   for(const person of ["stuart","ali"]){
-   const source=page.querySelector('template[data-oura-source="'+person+'"]');
-   const model=oura(source?.content?.textContent||"",Number(page.dataset.now),Number(page.dataset.offset));
-   const panel=page.querySelector('[data-person="'+person+'"]');if(!panel)continue;
-   const outdated=model.status==="stale";
-   panel.querySelector("[data-oura-status]").textContent=model.status==="fresh"?"Current snapshot":outdated&&model.timestamp?"Stale · "+model.timestamp:"Sync Oura";
-   for(const name of Object.keys(model.scores)){
-    const gauge=panel.querySelector('[data-score="'+name+'"]'),n=model.scores[name];if(!gauge)continue;
-    const value=gauge.querySelector("[data-number]"),arc=gauge.querySelector("[data-arc]");
-    value.textContent=n===null?"—":String(n);
-    value.setAttribute("fill",outdated?"#888":"black");
-    arc.setAttribute("stroke",outdated?"#999":"black");
-    arc.setAttribute("stroke-dasharray",n===null?"0 100":n+" "+(100-n));
-   }
+    const source=page.querySelector('template[data-oura-source="'+person+'"]');
+    const model=oura(source?.content?.textContent||"",Number(page.dataset.now),Number(page.dataset.offset));
+    ouraModels[person]=model;
+    const status=page.querySelector('[data-oura-person-status="'+person+'"]');
+    if(status){
+      status.textContent=model.status==="fresh"?"Current":model.status==="stale"&&model.timestamp?"Stale "+model.timestamp:"Unavailable";
+    }
+  }
+  for(const metric of ["Readiness","Sleep","Activity"]){
+    const section=page.querySelector('[data-oura-metric="'+metric+'"]');if(!section)continue;
+    for(const person of ["stuart","ali"]){
+      const row=section.querySelector('[data-oura-score-person="'+person+'"]');if(!row)continue;
+      const model=ouraModels[person];
+      const n=model?.scores?.[metric];
+      const valid=Number.isFinite(n)&&n>=0&&n<=100;
+      const value=row.querySelector("[data-oura-score-value]");
+      const fill=row.querySelector("[data-oura-score-fill]");
+      if(value)value.textContent=valid?String(n):"—";
+      if(fill){
+        fill.style.width=valid?n+"%":"0%";
+        fill.style.opacity=model.status==="stale"?"0.55":"1";
+      }
+      row.style.opacity=model.status==="stale"?"0.7":"1";
+    }
   }
  }
  if(typeof document!=="undefined"){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",render,{once:true});else render();}
