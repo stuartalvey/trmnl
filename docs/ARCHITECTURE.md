@@ -484,3 +484,19 @@ The NLT verse receives a scoped CSS drop cap. Home-only typography and compact t
 Standalone private webhook plugin `541864`, template `views/faith/full.liquid`, non-secret settings in `views/faith/settings.yml`. Its Sunday-only playlist item `908451` is ordered first on device `75111`, followed by the existing five visible screens. A scheduled ChatGPT task beginning November 22 attempts to verify that the official TPCC message is from the current Saturday/Sunday and sends one complete webhook payload to `updatePluginSettingData`. Partial JSON writes are destructive (not a merge). Fields include `title`, `sermon_date`, `passage`, `pastor`, `verse_ref`, `verse_text`, `message_idea`, scene contrasts, two questions, prayer, action, and source metadata.
 
 The display suppresses a `confirmed` message 72 hours after its date; if verification fails, show an awaiting-current-message fallback. Human/AI-authored reflection, prayers, and actions are *not* attributed to the church or its pastor. Church content is referenced only from the official sermon page; short NLT snippets are independently verified. This is not a full sermon-transcript ingestion. No secret fields or personal family data are committed in the repository. The first automation run and physical display remain unverified.
+
+### Direct Apple Health retention safeguard (2026-11-16)
+
+Ali's existing Node webhook now emits `health.last_valid_steps` and stores
+`last_valid_steps` via `trmnl_state`, using only validated step observations.
+If incoming data contains only reminders or empty health metrics, the last known
+count/date/time survive without inventing freshness. Health Detail independently
+checks sample date before plotting a today-dot and labels stale prior readings.
+
+Stuart's current `536212` setting is a read-only recipe install, so the
+server-side last-good retention transform in
+`data-sources/stu-apple-health/transform.js` is **staged but NOT deployed**.
+Do not claim reliable persistence for Stuart until an editable, Node-enabled
+direct webhook has been connected from his Companion and tested end to end.
+Phone uploads are still needed for current data; screen renders and hidden
+source playlist status are not equivalent to source freshness.
