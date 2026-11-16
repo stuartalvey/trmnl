@@ -12,24 +12,59 @@
     {% if latest_day == '' or entry.date > latest_day %}{% assign latest_record = entry %}{% assign latest_day = entry.date %}{% endif %}
   {% endif %}
 {% endfor %}
-{% comment %}Personalized pace = bounded sigmoid fit to 31 complete Indianapolis-local days of Stuart's historical Apple Health step data. It is a goal trajectory, not either person's observed intraday history.{% endcomment %}
-{% assign scale_max = goal %}
-{% if today_record.m.step_count > scale_max %}{% assign scale_max = today_record.m.step_count %}{% endif %}
-{% assign scale_max = scale_max | times: 1.1 %}
-{% assign goal_height = goal | times: 146.0 | divided_by: scale_max %}
-{% assign goal_y = 176 | minus: goal_height %}
-{% assign stu_sample_local = local_now %}
-{% if health.updated_at %}
-  {% assign stu_sample_local = health.updated_at | date: '%s' | plus: trmnl.user.utc_offset %}
-  {% assign stu_sample_day = stu_sample_local | date: '%Y-%m-%d' %}
-  {% if stu_sample_day != today %}{% assign stu_sample_local = local_now %}{% endif %}
+{% assign saved_stu = health.last_valid_steps %}
+{% assign stu_today_steps = today_record.m.step_count %}
+{% assign stu_observed = health.updated_at %}
+{% if stu_today_steps == nil and saved_stu.date == today and saved_stu.count != nil %}
+  {% assign stu_today_steps = saved_stu.count %}
+  {% assign stu_observed = saved_stu.observed_at %}
 {% endif %}
+{% assign updated_day = '' %}
+{% if health.updated_at %}
+  {% assign updated_local = health.updated_at | date: '%s' | plus: trmnl.user.utc_offset %}
+  {% assign updated_day = updated_local | date: '%Y-%m-%d' %}
+{% endif %}
+{% if stu_today_steps == nil and updated_day == today %}
+  {% for metric in health.metrics %}
+    {% if metric.type == 'step_count' and metric.value != nil %}
+      {% assign stu_today_steps = metric.value %}
+      {% assign stu_observed = health.updated_at %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+{% assign stu_last_date = latest_record.date %}
+{% assign stu_last_steps = latest_record.m.step_count %}
+{% if saved_stu.count != nil %}
+  {% if stu_last_date == nil or saved_stu.date > stu_last_date %}
+    {% assign stu_last_date = saved_stu.date %}
+    {% assign stu_last_steps = saved_stu.count %}
+  {% endif %}
+{% endif %}
+{% assign stu_time_known = false %}
+{% assign stu_observed_local = nil %}
+{% assign stu_age_minutes = 999999 %}
+{% if stu_observed %}
+  {% assign stu_obs_ts = stu_observed | date: '%s' | plus: 0 %}
+  {% assign stu_observed_local = stu_obs_ts | plus: trmnl.user.utc_offset %}
+  {% assign stu_observed_day = stu_observed_local | date: '%Y-%m-%d' %}
+  {% assign stu_age_minutes = now_ts | minus: stu_obs_ts | divided_by: 60 %}
+  {% if stu_observed_day == today and stu_age_minutes >= -5 %}
+    {% assign stu_time_known = true %}
+  {% endif %}
+{% endif %}
+{% comment %}Personalized pace = bounded sigmoid fit to 31 complete Indianapolis-local days of Stuart's historical Apple Health step data. It is a goal trajectory, not either person's observed intraday history.{% endcomment %}
+{% assign scale_max = 10000 %}
+{% if stu_today_steps > scale_max %}{% assign scale_max = stu_today_steps %}{% endif %}
+{% assign scale_max = scale_max | times: 1.08 %}
+{% assign goal_height = goal | times: 207.0 | divided_by: scale_max %}
+{% assign goal_y = 231 | minus: goal_height %}
+{% assign stu_sample_local = stu_observed_local | default: local_now %}
 {% assign stu_hour = stu_sample_local | date: '%H' | plus: 0 %}
 {% assign stu_minute = stu_sample_local | date: '%M' | plus: 0 %}
 {% assign stu_elapsed_minutes = stu_hour | times: 60 | plus: stu_minute %}
-{% assign stu_point_x = stu_elapsed_minutes | times: 456.0 | divided_by: 1440 | plus: 40 %}
-{% assign stu_point_height = today_record.m.step_count | times: 146.0 | divided_by: scale_max %}
-{% assign stu_point_y = 176 | minus: stu_point_height %}
+{% assign stu_point_x = stu_elapsed_minutes | times: 450.0 | divided_by: 1440 | plus: 40 %}
+{% assign stu_point_height = stu_today_steps | times: 207.0 | divided_by: scale_max %}
+{% assign stu_point_y = 231 | minus: stu_point_height %}
 {% comment %}iOS Gazette: shared styles synced from design/gazette.css; no branding displayed{% endcomment %}
 <style>
 /* The iOS Gazette / shared presentation tokens — v1.1, 2026-11-15.
@@ -70,103 +105,142 @@
 .title_bar {background:transparent!important;border-top:1px solid #d5d5d5!important;border-radius:0!important;box-shadow:none!important;padding-top:5px!important;}
 .title_bar .title {font-size:13px!important;font-weight:700!important;}
 .title_bar .instance {font-size:12px!important;color:#686868!important;}
+
+/* Health Detail graph-forward layout. Conserve chart real estate, preserve Gazette styling. */
+.gz .health-top {height:358px!important; min-height:358px!important; align-items:stretch!important;}
+.gz .health-steps, .gz .health-recovery {height:100%!important; min-height:0!important;}
+.gz .health-steps {gap:0!important; padding-top:6px!important; padding-bottom:4px!important;}
+.gz .health-recovery {padding-top:6px!important;}
+.gz .health-panel-head {min-height:29px!important; flex-shrink:0!important; gap:10px!important;}
+.gz .health-steps-chart {flex:1 1 0!important; min-height:0!important; width:100%!important;}
+.gz .health-steps-chart svg {display:block!important; height:100%!important; width:100%!important;}
+.gz .health-subline {font-size:11px!important; line-height:1.12!important; color:#666!important; white-space:nowrap!important; padding-top:1px!important; flex-shrink:0!important;}
+.gz .health-subline .label {font-size:11px!important;}
+.gz .health-training {height:278px!important; min-height:278px!important; gap:0!important; padding-top:6px!important; padding-bottom:4px!important;}
+.gz .health-training-chart {flex:1 1 0!important; width:100%!important; min-height:0!important;}
+.gz .health-training-chart svg {height:100%!important; width:100%!important; display:block!important;}
+.gz .health-strength-summary {font-size:12px!important; white-space:nowrap!important; font-variant-numeric:tabular-nums!important;}
+.gz .health-strength-summary b {font-size:14px!important; font-weight:750!important;}
+.gz .health-muted {color:#aaa!important; padding:0 4px!important;}
+.gz .health-training-foot {margin-top:2px!important;}
+
+/* Comparison by score category: both Oura accounts on the same 0–100 scale. */
+.gz .health-recovery {gap:0!important; padding-bottom:4px!important;}
+.gz .health-oura-sections {display:flex!important; flex-direction:column!important; flex:1 1 0!important; min-height:0!important; width:100%!important;}
+.gz .health-oura-category {display:flex!important; flex-direction:column!important; justify-content:center!important; flex:1 1 0!important; min-height:0!important; width:100%!important; padding:4px 3px!important; border-bottom:1px solid #d7d7d7!important;}
+.gz .health-oura-category:last-child {border-bottom:0!important;}
+.gz .health-oura-category-name {font-family:Georgia,"Times New Roman",serif!important; font-size:17px!important; font-weight:700!important; line-height:1.15!important; margin:0 0 6px!important;}
+.gz .health-oura-score-row {display:flex!important; flex-direction:row!important; align-items:center!important; width:100%!important; gap:8px!important; min-height:24px!important;}
+.gz .health-oura-owner {flex:0 0 28px!important; width:28px!important; font-size:11px!important; font-weight:700!important; color:#505050!important;}
+.gz .health-oura-track {flex:1 1 0!important; min-width:0!important; height:12px!important; background:#f0f0f0!important; border:1px solid #c3c3c3!important; overflow:hidden!important;}
+.gz .health-oura-fill {height:100%!important; width:0%; transition:none!important;}
+.gz .health-oura-stu-fill {background:#222!important;}
+.gz .health-oura-ali-fill {background:#999!important;}
+.gz .health-oura-value {flex:0 0 30px!important; text-align:right!important; font-size:17px!important; font-weight:700!important; font-variant-numeric:tabular-nums!important; line-height:1!important;}
+.gz .health-oura-status-line {width:100%!important; display:flex!important; justify-content:space-between!important; font-size:11px!important; color:#666!important; white-space:nowrap!important; gap:5px!important; padding:5px 2px 0!important;}
 </style>
-<div class="layout layout--col layout--top gap--medium gz" data-health-detail data-now="{{ now_ts }}" data-offset="{{ trmnl.user.utc_offset }}">
+
+<div class="layout layout--col layout--top gap--small gz" data-health-detail data-now="{{ now_ts }}" data-offset="{{ trmnl.user.utc_offset }}">
   <div class="flex flex--row flex--between flex--center-y w--full gz-mast">
     <span class="title title--large lg:title--xxlarge gz-title">Alvey Health</span>
     <div class="flex flex--col flex--right gap--xsmall"><span class="label">{{ local_now | date: '%A, %B %-d' }}</span><span class="label label--small label--gray">Movement · Recovery · Consistency</span></div>
   </div>
-  <div class="grid grid--cols-12 gap--medium w--full gz-panels">
-    <div class="col--span-7 flex flex--col gap--small p--3 gz-panel">
-      <div class="flex flex--row flex--between flex--center-y w--full">
+  <div class="grid grid--cols-12 gap--small w--full gz-panels health-top">
+    <div class="col--span-7 flex flex--col gap--none p--1 gz-panel health-steps">
+      <div class="flex flex--row flex--between flex--center-y w--full health-panel-head">
         <span class="title gz-section">Daily steps · Stuart + Ali</span>
-        <span class="label label--small label--gray">Goal reference: {{ goal | round }} steps</span>
+        <span class="label label--small label--gray">7K–10K modeled pace</span>
       </div>
-      <div class="grid grid--cols-2 gap--medium w--full">
-        <div class="flex flex--col gap--xsmall">
-          <span class="label label--small">● Stuart</span>
-          <span class="value value--medium gz-number">{% if today_record.m.step_count != nil %}{{ today_record.m.step_count | round }}{% else %}—{% endif %}</span>
-          <span class="label label--small label--gray">{% if today_record.m.step_count != nil %}Today · synced {{ stu_sample_local | date: '%-I:%M %p' }}{% elsif latest_record.m.step_count != nil %}Last {{ latest_record.date | date: '%b %-d' }}: {{ latest_record.m.step_count | round }}{% else %}Awaiting Apple Health{% endif %}</span>
-        </div>
-        <div class="flex flex--col gap--xsmall">
-          <span class="label label--small">○ Ali</span>
-          <span class="value value--medium gz-number" data-ali-steps>—</span>
-          <span class="label label--small label--gray" data-ali-sync>Checking Apple Health data</span>
-        </div>
+      <div class="health-steps-chart">
+        <svg viewBox="0 0 520 260" preserveAspectRatio="none" role="img" aria-label="Modeled 7,000 to 10,000 step pace trajectories; black and outlined dots mark Stuart and Ali's actual step snapshots" data-goal-chart data-scale="{{ scale_max }}" data-goal="{{ goal }}">
+          <text x="42" y="24" font-size="13" fill="#111" font-weight="600">● Stuart: {% if stu_today_steps != nil %}{{ stu_today_steps | round }} steps · {% if stu_time_known %}{% if stu_age_minutes > 180 %}stale {% else %}as of {% endif %}{{ stu_sample_local | date: '%-I:%M %p' }}{% else %}sync time unknown{% endif %}{% elsif stu_last_steps != nil %}Last {{ stu_last_date | date: '%b %-d' }}: {{ stu_last_steps | round }} · stale{% else %}Awaiting Apple Health{% endif %}</text>
+          <text x="42" y="41" font-size="12" fill="#666">○ Ali: <tspan data-ali-steps>—</tspan><tspan> · </tspan><tspan data-ali-sync>Awaiting Apple Health</tspan></text>
+          <line x1="40" y1="231" x2="490" y2="231" stroke="#aaa" stroke-width="1"/>
+          <path data-pace-band fill="#dedede" fill-opacity=".75"/>
+          <path data-pace-7000 fill="none" stroke="#999" stroke-width="1" stroke-dasharray="3 4"/>
+          <path data-pace-8000 fill="none" stroke="#999" stroke-width="1" stroke-dasharray="3 4"/>
+          <path data-pace-9000 fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3 4"/>
+          <path data-smooth-pace fill="none" stroke="#111" stroke-width="2.3" stroke-linecap="round" d="M40 231"/>
+          {% if stu_today_steps != nil and stu_time_known %}
+            <line x1="{{ stu_point_x }}" y1="52" x2="{{ stu_point_x }}" y2="231" stroke="#aaa" stroke-width="1" stroke-dasharray="2 4" data-stu-time/>
+            <circle cx="{{ stu_point_x }}" cy="{{ stu_point_y }}" r="5" fill="#111" stroke="white" stroke-width="1.5" data-current-step-point data-steps="{{ stu_today_steps }}"/>
+          {% endif %}
+          <circle data-ali-step-point cx="40" cy="231" r="5" fill="white" stroke="#111" stroke-width="2" visibility="hidden"/>
+          <text data-label-10000 x="494" y="35" font-size="10" fill="#222">10K</text>
+          <text data-label-9000 x="494" y="54" font-size="10" fill="#555">9K</text>
+          <text data-label-8000 x="494" y="74" font-size="10" fill="#555">8K</text>
+          <text data-label-7000 x="494" y="94" font-size="10" fill="#555">7K</text>
+          {% for hour in (0..4) %}{% assign hx = hour | times: 112.5 | plus: 40 %}<text x="{{ hx }}" y="251" font-size="11" fill="#666" text-anchor="middle">{% case hour %}{% when 0 %}12 AM{% when 1 %}6 AM{% when 2 %}12 PM{% when 3 %}6 PM{% when 4 %}12 AM{% endcase %}</text>{% endfor %}
+        </svg>
       </div>
-      <svg class="w--full h--48" viewBox="0 0 520 216" preserveAspectRatio="none" role="img" aria-label="Stuart's personalized goal pace and separate Stuart and Ali step snapshots" data-goal-chart data-scale="{{ scale_max }}" data-goal="{{ goal }}">
-        <line x1="40" y1="176" x2="496" y2="176" stroke="#aaa" stroke-width="1"/>
-        <line x1="40" y1="{{ goal_y }}" x2="496" y2="{{ goal_y }}" stroke="#888" stroke-width="1.6" stroke-dasharray="5 4" data-goal-line/>
-        <path data-smooth-pace fill="none" stroke="black" stroke-width="3" stroke-linecap="round" d="M40 176"/>
-        {% if today_record.m.step_count != nil %}
-          <line x1="{{ stu_point_x }}" y1="12" x2="{{ stu_point_x }}" y2="176" stroke="#aaa" stroke-width="1" stroke-dasharray="2 4" data-stu-time/>
-          <circle cx="{{ stu_point_x }}" cy="{{ stu_point_y }}" r="6" fill="black" stroke="white" stroke-width="2" data-current-step-point data-steps="{{ today_record.m.step_count }}"/>
-        {% endif %}
-        <circle data-ali-step-point cx="40" cy="176" r="6" fill="white" stroke="black" stroke-width="2.4" visibility="hidden"/>
-        {% for hour in (0..4) %}{% assign hx = hour | times: 114 | plus: 40 %}<text x="{{ hx }}" y="202" font-size="13" fill="#666" text-anchor="middle">{% case hour %}{% when 0 %}12 AM{% when 1 %}6 AM{% when 2 %}12 PM{% when 3 %}6 PM{% when 4 %}12 AM{% endcase %}</text>{% endfor %}
-      </svg>
-      <div class="flex flex--row flex--between w--full">
-        <span class="label label--small label--gray">Curve: goal pace · Dashed: goal · ● Stu · ○ Ali</span>
-        <span class="label label--small label--gray">{% if today_record.m.step_count != nil %}Stuart: current-day snapshot{% else %}Awaiting today's step sync{% endif %}</span>
-      </div>
-      <div class="flex flex--row flex--between w--full">
-        <span class="label label--small label--gray" data-ali-secondary>Ali: awaiting today's steps</span>
-        <span class="label label--small label--gray">{% if today_record.m.active_energy != nil %}Stu: {{ today_record.m.active_energy | round }} kcal{% endif %}{% if today_record.m.resting_heart_rate != nil %} · RHR {{ today_record.m.resting_heart_rate | round }} bpm{% endif %}</span>
+      <div class="flex flex--row flex--between w--full health-subline">
+        <span class="label label--small label--gray">Shaded: goal pace · Dots: observed snapshots</span>
+        <span class="label label--small label--gray">{% if today_record.m.active_energy != nil %}{{ today_record.m.active_energy | round }} active kcal{% endif %}{% if today_record.m.resting_heart_rate != nil %} · RHR {{ today_record.m.resting_heart_rate | round }} bpm{% endif %}</span>
       </div>
       <template data-apple-source="ali">{{ private_plugin_536547.merge_variables.health.metrics | json | escape }}</template>
+      <template data-ali-retained>{{ private_plugin_536547.merge_variables.health.last_valid_steps | json | escape }}</template>
     </div>
-
-    <div class="col--span-5 flex flex--col gap--small p--3 gz-panel gz-panel--side">
-      <div class="flex flex--row flex--between w--full"><span class="title gz-section">Recovery</span><span class="label label--small label--gray">Oura scores / 100</span></div>
-      {% render "recovery_person", person: 'stuart', name: 'Stuart' %}
-      {% render "recovery_person", person: 'ali', name: 'Ali' %}
-      <span class="label label--small label--gray">Apple Health: Stuart + Ali · Oura: both accounts</span>
+    <div class="col--span-5 flex flex--col gap--none p--1 gz-panel gz-panel--side health-recovery">
+      <div class="flex flex--row flex--between w--full health-panel-head">
+        <span class="title gz-section">Oura comparison</span>
+        <span class="label label--small label--gray">Scores / 100</span>
+      </div>
+      <div class="health-oura-sections">
+        {% assign oura_metrics = 'Readiness,Sleep,Activity' | split: ',' %}
+        {% for metric in oura_metrics %}
+        <div class="health-oura-category" data-oura-metric="{{ metric }}">
+          <div class="health-oura-category-name">{{ metric }}</div>
+          <div class="health-oura-score-row" data-oura-score-person="stuart">
+            <span class="health-oura-owner">STU</span>
+            <div class="health-oura-track"><div class="health-oura-fill health-oura-stu-fill" data-oura-score-fill></div></div>
+            <span class="health-oura-value" data-oura-score-value>—</span>
+          </div>
+          <div class="health-oura-score-row" data-oura-score-person="ali">
+            <span class="health-oura-owner">ALI</span>
+            <div class="health-oura-track"><div class="health-oura-fill health-oura-ali-fill" data-oura-score-fill></div></div>
+            <span class="health-oura-value" data-oura-score-value>—</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="health-oura-status-line">
+        <span>Stu: <span data-oura-person-status="stuart">Syncing Oura</span></span>
+        <span>Ali: <span data-oura-person-status="ali">Syncing Oura</span></span>
+      </div>
       <template data-oura-source="stuart">{{ oura_536089.markup_full | escape }}</template>
       <template data-oura-source="ali">{{ oura_536097.markup_full | escape }}</template>
     </div>
   </div>
-
-  <div class="flex flex--col gap--medium p--3 w--full gz-panel gz-major-rule">
-    <div class="flex flex--row flex--between flex--center-y w--full">
-      <span class="title gz-section">Workout consistency</span>
-      <span class="label label--small label--gray">Protein Social · last 8 weeks</span>
+  <div class="flex flex--col gap--none p--1 w--full gz-panel gz-major-rule health-training">
+    <div class="flex flex--row flex--between flex--center-y w--full health-panel-head">
+      <span class="title gz-section">Resistance training consistency</span>
+      {% if training.status == 'ok' or training.status == 'partial' %}
+        <span class="label health-strength-summary"><b>{{ training.active_days }}</b>&nbsp;strength days / 8w&nbsp;&nbsp;·&nbsp;&nbsp;<b>{{ training.this_week }}</b>&nbsp;this week&nbsp;&nbsp;·&nbsp;&nbsp;<b>{{ training.last_week }}</b>&nbsp;last week&nbsp;&nbsp;·&nbsp;&nbsp;<b>3</b>&nbsp;goal/wk</span>
+      {% else %}<span class="label label--small label--gray">Protein Social · 8 weeks</span>{% endif %}
     </div>
     {% if training.status == 'ok' or training.status == 'partial' %}
-      <div class="flex flex--row flex--between flex--center-y w--full">
-        <div class="flex flex--row gap--small flex--center-y">
-          <span class="value value--large">{{ training.active_days }}</span>
-          <div class="flex flex--col gap--xsmall">
-            <span class="label">Workout days</span>
-            <span class="label label--small label--gray">Last 8 weeks</span>
-          </div>
-        </div>
-        <div class="flex flex--row gap--large flex--center-y">
-          <div class="flex flex--col gap--xsmall">
-            <span class="value value--medium">{{ training.this_week }}</span>
-            <span class="label label--small label--gray">This week</span>
-          </div>
-          <div class="flex flex--col gap--xsmall">
-            <span class="value value--medium">{{ training.last_week }}</span>
-            <span class="label label--small label--gray">Last week</span>
-          </div>
-        </div>
-      </div>
-      {% assign max_week = 1 %}
+      {% assign max_week = 3 %}
       {% for week in training.weeks %}{% if week.count > max_week %}{% assign max_week = week.count %}{% endif %}{% endfor %}
-      <svg class="w--full h--44" viewBox="0 0 860 178" preserveAspectRatio="none" role="img" aria-label="Weekly count of workout days. Completed and partial workouts count equally.">
-        <line x1="30" y1="137" x2="830" y2="137" stroke="#999" stroke-width="1"/>
-        {% for week in training.weeks %}
-          {% assign x = forloop.index0 | times: 101 | plus: 72 %}
-          {% assign h = week.count | times: 112.0 | divided_by: max_week %}
-          {% assign y = 137 | minus: h %}
-          {% if week.count > 0 %}<rect x="{{ x | minus: 24 }}" y="{{ y }}" width="48" height="{{ h }}" rx="4" fill="{% if forloop.last %}black{% else %}#aaa{% endif %}"/>{% endif %}
-          <text x="{{ x }}" y="{{ y | minus: 6 }}" text-anchor="middle" font-size="18" fill="black">{{ week.count }}</text>
-          <text x="{{ x }}" y="159" text-anchor="middle" font-size="16" fill="#666">{{ week.start | date: '%b %-d' }}</text>
-        {% endfor %}
-      </svg>
-      <span class="label label--small label--gray w--full">One workout day per calendar date with any logged training session.{% if training.status == 'partial' %} · History may be incomplete{% endif %}</span>
+      {% assign goal_height = 180.0 | times: 3 | divided_by: max_week %}
+      {% assign training_goal_y = 211 | minus: goal_height %}
+      <div class="health-training-chart">
+        <svg viewBox="0 0 860 244" preserveAspectRatio="none" role="img" aria-label="Eight week resistance training days, including partial workouts, with three days per week goal">
+          <line x1="30" y1="211" x2="830" y2="211" stroke="#aaa" stroke-width="1"/>
+          <line x1="30" y1="{{ training_goal_y }}" x2="830" y2="{{ training_goal_y }}" stroke="#555" stroke-width="1.5" stroke-dasharray="6 5"/>
+          <text x="33" y="{{ training_goal_y | minus: 8 }}" font-size="12" fill="#555">3 DAYS / WEEK</text>
+          {% for week in training.weeks %}
+            {% assign x = forloop.index0 | times: 101 | plus: 72 %}
+            {% assign h = week.count | times: 180.0 | divided_by: max_week %}
+            {% assign y = 211 | minus: h %}
+            {% if week.count > 0 %}<rect x="{{ x | minus: 24 }}" y="{{ y }}" width="48" height="{{ h }}" rx="3" fill="{% if forloop.last %}#111{% else %}#aaa{% endif %}"/>{% endif %}
+            <text x="{{ x }}" y="{{ y | minus: 7 }}" text-anchor="middle" font-size="16" fill="#222">{{ week.count }}</text>
+            <text x="{{ x }}" y="236" text-anchor="middle" font-size="14" fill="#666">{{ week.start | date: '%b %-d' }}</text>
+          {% endfor %}
+        </svg>
+      </div>
+      <div class="health-subline health-training-foot">Protein Social strength sessions only · Partial workouts count · Excludes standalone cardio, walks, and yard work{% if training.status == 'partial' %} · History may be incomplete{% endif %}</div>
     {% else %}
-      <span class="label label--gray">Workout history unavailable</span>
+      <span class="label label--gray">Resistance training history unavailable</span>
     {% endif %}
   </div>
 </div>
