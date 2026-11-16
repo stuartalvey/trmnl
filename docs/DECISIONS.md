@@ -364,3 +364,21 @@ fresh Companion upload rather than a health reset alone.
 ## 2026-11-15 — Alvey Sabbath naming refinement
 
 **Decision:** Rename the existing Sunday Study screen to **Alvey Sabbath**, using the subtitle **TRADERS POINT · THIS WEEK’S WORSHIP & REFLECTION** while preserving the Sunday-only schedule. This is a presentation/name change, not a wider weekend schedule or new plugin.
+
+## 2026-11-16 — Preserve last good direct-webhook step reading
+
+**Decision:** Persist last valid steps and observation date in TRMNL Serverless
+Saved State where the source is editable, and show clearly labelled stale data
+rather than dropping the count or presenting it as today's observation.
+Keep phone-to-TRMNL direct webhooks; do not introduce ChatGPT schedule dependency.
+
+**Reason:** Both Apple Health feeds can contain empty uploads. The Ali upload
+now includes reminders without Health samples. Stuart's Nov 16 valid reading
+was followed by empty source variables, revealing that screen rendering alone
+cannot preserve it. Source-empty and measurement-zero are distinct cases.
+
+**Constraint:** Ali's editable Node webhook has this protection deployed.
+Stuart's read-only recipe cannot be modified through the available interface;
+its equivalent source transform exists only in GitHub until a user-controlled
+migration to an editable webhook. Keep existing integrations untouched until
+fresh uploads prove the new destination works.
