@@ -15,4 +15,18 @@ assert.equal(ctx.compact({normalization_version:"ali-health-v1",health:{metrics:
 const many=[];for(let i=0;i<3500;i++){const start=now-(i+1)*60000;many.push(s("steps",1,"count",new Date(start).toISOString(),new Date(start+30000).toISOString()));}
 out=ctx.compact({health:{metrics:many}},now);assert.equal(out.health.metrics.reduce((n,x)=>n+x.value,0),3500);assert(Buffer.byteLength(JSON.stringify(out))<30000);
 assert.equal(ctx.localDay(Date.parse("2026-11-01T05:30Z")),ctx.localDay(Date.parse("2026-11-01T06:30Z")));
+
+const globals={system:{timestamp_utc:now/1000},state:{}};
+const fresh=ctx.run({trmnl:globals,health:{metrics:[s("steps",150)]}});
+assert.equal(fresh.health.last_valid_steps.count,150);
+assert.equal(fresh.health.last_valid_steps.date,"2026-11-09");
+assert.equal(fresh.health_feed_valid,true);
+const disappeared=ctx.run({trmnl:{system:globals.system,state:fresh.trmnl_state},reminders:[{title:"SYNTHETIC"}]});
+assert.equal(disappeared.health.metrics.length,0);
+assert.equal(disappeared.health_feed_valid,false);
+assert.equal(disappeared.health.last_valid_steps.count,150);
+assert(!JSON.stringify(disappeared).includes("SYNTHETIC"));
+const zero=ctx.run({trmnl:globals,health:{metrics:[s("steps",0)]}});
+assert.equal(zero.health.last_valid_steps.count,0,"genuine zero must remain valid");
+
 console.log("Passed: aggregation, duplicate filtering, units, latest resting HR, zero/missing/invalid samples, seven-day window, idempotence, privacy, DST, and 3500-sample size reduction.");
